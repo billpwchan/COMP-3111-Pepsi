@@ -6,8 +6,6 @@ package core.comp3111;
 
 //For I/O
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 /**
  * @author billpwchan

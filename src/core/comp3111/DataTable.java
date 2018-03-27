@@ -124,10 +124,21 @@ public class DataTable {
 		Map.Entry<String, DataColumn> entry = dc.entrySet().iterator().next();
 		return dc.get(entry.getKey()).getSize();
 	}
+	
+	public String getDataTableName() {
+		return dataTableName;
+	}
+
+	public void setDataTableName(String dataTableName) {
+		this.dataTableName = dataTableName;
+	}
+	
 
 	// attribute: A java.util.Map interface
 	// KeyType: String
 	// ValueType: DataColumn
 	private Map<String, DataColumn> dc;
+	private String dataTableName;
+
 
 }
