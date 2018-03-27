@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 //For File Chooser
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 //Arrays related
 import java.util.Arrays;
@@ -85,12 +84,53 @@ public class DataManager {
         	int columnNo = 1;
         	for (String value: row) {
                 System.out.println("Line " + lineNo + " Column " + columnNo + ": " + value);
+                //If a column contains all numerical value or "", then it should be treated as ""
+                //Special Case: All "", so no mean, medium or mode
+                
+                //Regardless Text or Numerical, make it "" if missing value is found.
+                if (value.isEmpty()) {value = "";}
                 columnNo++;
         	}
         	lineNo++;
         }
+        
+        //Function: Read Column by Column
+        //Special Case need: No Row. Empty CSV File   
+		int totalColumnNum = rows.get(0).size();
+		for (int i = 0; i < totalColumnNum; i++) {
+			if (checkNumericalColumn(i, rows)) {
+				System.out.println("This is a numerical column");
+			}
+		}
+        
 	}
 	
+	private static boolean checkNumericalColumn(int columnNum, List<List<String>> rows) {
+		if (columnNum < 0 ) { return false; } 
+		
+		boolean flag = true;
+		//Special Case?? Potential Error?
+		//From first row (Ignore header), check all remaining rows
+		for (int row_index = 1; row_index < rows.size(); row_index ++) {
+			String value = rows.get(row_index).get(columnNum);
+			if (value != "" && !stringIsNumeric(value)) {
+				//If enter here, that means not a numerical or ""
+				flag = false;
+				break;
+			} 
+		}
+		
+		//If only have less than 2 rows (Only header), then not a numerical column.
+		return flag;
+	}
+	
+	private static boolean stringIsNumeric(String str){
+	    for (char c : str.toCharArray())
+	    {
+	        if (!Character.isDigit(c)) return false;
+	    }
+	    return true;
+	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		DataManager.dataImport();
