@@ -69,12 +69,15 @@ public class DataManager {
         //Two-dimensional ArrayList for storing .csv file
         List<List<String>> rows = new ArrayList<>();
         
+        //Store all data into the two-dimensional ArrayList (String Type) 
         while(scanner.hasNext()){
 		    String line = scanner.nextLine();
 		    String[] line_values = line.split(",",-1);
 		    rows.add(Arrays.asList(line_values));
 		}
 		scanner.close();
+		
+		
         
         //Iteration Testing
         int lineNo = 1;
