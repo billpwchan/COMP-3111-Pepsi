@@ -18,6 +18,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 /**
  * The Main class of this GUI application
@@ -33,42 +44,59 @@ public class Main extends Application {
 	// Hint: Use java.util.List interface and its implementation classes (e.g.
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
-
+	ListView<String> dataTable = new ListView<String>();
+	
+	
+	//ObservableList<String> items =FXCollections.observableArrayList ("Single", "Double", "Suite", "Family App");
+	//list.setItems(items);
 	// Attributes: Scene and Stage
-	private static final int SCENE_NUM = 2;
+	
+	
+	private static final int SCENE_NUM = 3;
 	private static final int SCENE_MAIN_SCREEN = 0;
-	private static final int SCENE_LINE_CHART = 1;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" };
+	private static final int SCENE_LINE_CHART = 1;;
+	private static final int SCENE_DATA_FILTER_OPTION_SCREEN = 2;
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
 	// To keep this application more structural,
 	// The following UI components are used to keep references after invoking
 	// createScene()
-
 	// Screen 1: paneMainScreen
-	private Button btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart;
+	private Button btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
 	private Label lbSampleDataTable, lbMainScreenTitle;
+	
+	//private ListView<DataTable> datasetListView;
+	
+	       
+	
+	//private ListView<> ChartListView;
 
 	// Screen 2: paneSampleLineChartScreen
 	private LineChart<Number, Number> lineChart = null;
 	private NumberAxis xAxis = null;
 	private NumberAxis yAxis = null;
 	private Button btLineChartBackMain = null;
+	
 
 	/**
 	 * create all scenes in this application
 	 */
 	private void initScenes() {
 		scenes = new Scene[SCENE_NUM];
-		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 400, 500);
+		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 1000, 500);
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
+
+		//scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 700, 600);
 		for (Scene s : scenes) {
 			if (s != null)
 				// Assumption: all scenes share the same stylesheet
 				s.getStylesheets().add("Main.css");
 		}
+
 	}
+	
 
 	/**
 	 * This method will be invoked after createScenes(). In this stage, all UI
@@ -139,6 +167,9 @@ public class Main extends Application {
 	 * Initialize event handlers of the main screen
 	 */
 	private void initMainScreenHandlers() {
+		
+		
+		
 
 		// click handler
 		btSampleLineChartData.setOnAction(e -> {
@@ -148,7 +179,7 @@ public class Main extends Application {
 			lbSampleDataTable.setText(String.format("SampleDataTable: %d rows, %d columns", sampleDataTable.getNumRow(),
 					sampleDataTable.getNumCol()));
 
-			populateSampleDataTableValuesToChart("Sample 1");
+			populateSampleDataTableValuesToChart("Sample 10");
 
 		});
 
@@ -166,8 +197,49 @@ public class Main extends Application {
 
 		// click handler
 		btSampleLineChart.setOnAction(e -> {
+			
 			putSceneOnStage(SCENE_LINE_CHART);
 		});
+		
+		showChartButton.setOnAction(e -> {
+			
+			//Won your show chart function here
+			//Log G will pass you the chart
+			//delete the line below if u need
+			putSceneOnStage(SCENE_LINE_CHART);
+		});
+		
+		
+		importButton.setOnAction(e -> {
+			//Bill Please add your function here
+			//dataSets.add(DataManager.dataImport()); 
+			
+
+			
+		});
+		
+		exportButton.setOnAction(e -> {
+			//Bill Please add your function here
+		});
+		
+		savingButton.setOnAction(e -> {
+			//Bill Please add your function here
+		});
+		
+		loadingButton.setOnAction(e -> {
+			//Bill Please add your function here
+		});
+		
+		dataFilteringAndTransformationButton.setOnAction(e -> {
+			//Log G Please add your function here
+		});
+		
+		plotGraphButton.setOnAction(e -> {
+			//Won Please add your function here
+			//Log G will pass you the Dataset here
+		});
+		
+		
 
 	}
 
@@ -212,17 +284,37 @@ public class Main extends Application {
 		lbMainScreenTitle = new Label("COMP3111 Chart");
 		btSampleLineChartData = new Button("Sample 1");
 		btSampleLineChartDataV2 = new Button("Sample 2");
-		btSampleLineChart = new Button("Sample Line Chart");
+		btSampleLineChart = new Button("Demo Plot Chart with random data");
 		lbSampleDataTable = new Label("DataTable: empty");
+		
+		importButton = new Button("Import .csv");
+		exportButton = new Button("Export .csv");
+		savingButton = new Button("Save as .comp3111");
+		loadingButton = new Button("Load .comp3111 to our program");
+		dataFilteringAndTransformationButton = new Button("Data Filtering and Transformation");
+		plotGraphButton = new Button("Plot Graph with selected dataset");
+		
+		showChartButton = new Button("Show Chart");
+		
 
 		// Layout the UI components
+
+		HBox groupofBill = new HBox(20);
+
+		groupofBill.setAlignment(Pos.CENTER);
+		groupofBill.getChildren().addAll(importButton, exportButton , savingButton ,loadingButton);
+
+		
+		HBox groupofChartandTrans = new HBox(20);
+		groupofChartandTrans.setAlignment(Pos.CENTER);
+		groupofChartandTrans.getChildren().addAll(dataFilteringAndTransformationButton, showChartButton, plotGraphButton);
 
 		HBox hc = new HBox(20);
 		hc.setAlignment(Pos.CENTER);
 		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
 
 		VBox container = new VBox(20);
-		container.getChildren().addAll(lbMainScreenTitle, hc, lbSampleDataTable, new Separator(), btSampleLineChart);
+		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), groupofChartandTrans);
 		container.setAlignment(Pos.CENTER);
 
 		BorderPane pane = new BorderPane();
@@ -283,5 +375,6 @@ public class Main extends Application {
 	 */
 	public static void main(String[] args) {
 		launch(args);
+
 	}
 }
