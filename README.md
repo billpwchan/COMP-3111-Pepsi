@@ -8,5 +8,3 @@ JUNG, Won Young	(wyjung@connect.ust.hk)
 
 
 CHENG, Log G	(lgcheng@connect.ust.hk)
-
-modify readme.md
