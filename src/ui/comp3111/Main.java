@@ -281,6 +281,7 @@ public class Main extends Application {
 		importButton.setOnAction(e -> {
 			//Will provide a file chooser, return with a dataTable object.
 			try {
+				//temp will return null if user cancel action in the middle.
 				DataTable temp = DataManager.dataImport();
 				if (temp != null) { dataTables.add(temp); }
 			} catch (FileNotFoundException e1) {

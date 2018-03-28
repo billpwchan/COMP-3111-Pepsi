@@ -86,6 +86,13 @@ public class DataManager {
 		return returnVal == JFileChooser.APPROVE_OPTION ? dataTable : null;
 	}
 	
+    /**
+     * Store a DataTable object to .csv file with file chooser.
+     * 
+     * @param dataTable
+     * 			- defined in DataTable class. Should not be a null object.
+     * @return Void
+     */
 	public static void dataExport(DataTable dataTable) {
 		if (dataTable == null) {return;}
 		
@@ -96,7 +103,9 @@ public class DataManager {
 		List<DataColumn> inputDataColsValue = dataTable.getAllColValue();
 		List<String> inputDataColsName = dataTable.getAllColName();
 		
-		if (inputDataColsValue.size()!=inputDataColsName.size()) { System.out.println("BUGGGG> NOT EQUAL> NEED HANDLE.");}
+		if (inputDataColsValue.size()!=inputDataColsName.size()) { 
+			System.out.println("BUGGGG> NOT EQUAL> NEED HANDLE.");
+		}
 		
 		for (int index = 0; index < inputDataColsValue.size() && index < inputDataColsName.size(); index++) {
 			List<String> temp = new ArrayList<>();
@@ -111,8 +120,6 @@ public class DataManager {
 		
 		rows = transpose(columns);
 		saveCSVFile(rows);
-		
-		
 	}
 	
 	private static void saveCSVFile(List<List<String>> rows) {
@@ -179,7 +186,7 @@ public class DataManager {
 				//If it is a numerical column, then need to provide function for replacing!! For all columns. 
 				System.out.println("This is a numerical column");
 				containNumericalColumn = true;
-				//Option = 0  ==> Mean;  Option = 1 ==> Median
+				//Option = 0  ==> Mean;  Option = 1 ==> Median Option = 2 ==> Zero
 				handleNumericalMissingValue(column_index, columns, option);
 				
 
@@ -234,7 +241,7 @@ public class DataManager {
 	    
 		
 	    
-	    Object[] possibilities = {"Replace with Mean", "Replace with Median"};  
+	    Object[] possibilities = {"Replace with Mean", "Replace with Median", "Replace with Zero"};  
         Integer selection = (Integer) JOptionPane.showOptionDialog(frame,   
         		"Please preferred way for replacing missing numerical values",  "Please select...",   
                 JOptionPane.INFORMATION_MESSAGE, 1,  icon, possibilities, 0);
@@ -257,7 +264,9 @@ public class DataManager {
 	    	}
 	    	realNumCount += columns.get(column_index).get(row_index).equals("") ? 0 : 1;
 	    }
-	    average /= realNumCount;
+	    
+	    //Please check this. Should ensure always not 0.
+	    average /= realNumCount == 0 ? 1.0 : realNumCount;
 	    
 	    Collections.sort(tempMedianCalc);
 	    
@@ -272,6 +281,7 @@ public class DataManager {
 			
 			if (block.equals("") && option == 0) {columns.get(column_index).set(row_index, "" + average);}
 			if (block.equals("") && option == 1) {columns.get(column_index).set(row_index, "" + median);}
+			if (block.equals("") && option == 2) {columns.get(column_index).set(row_index, "" + 0);}
 		}
 	}
 	
