@@ -281,7 +281,8 @@ public class Main extends Application {
 		importButton.setOnAction(e -> {
 			//Will provide a file chooser, return with a dataTable object.
 			try {
-				dataTables.add(DataManager.dataImport());
+				DataTable temp = DataManager.dataImport();
+				if (temp != null) { dataTables.add(temp); }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} 			
@@ -302,7 +303,6 @@ public class Main extends Application {
 				DataManager.dataExport(sampleDataTable);
 				
 				
-				putSceneOnStage(SCENE_DATA_FILTER);	
 				showDataLabel.setText(String.format("Welcome!"));
 				
 			}

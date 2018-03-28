@@ -83,7 +83,7 @@ public class DataManager {
 
 		}
 		
-		return dataTable;
+		return returnVal == JFileChooser.APPROVE_OPTION ? dataTable : null;
 	}
 	
 	public static void dataExport(DataTable dataTable) {
