@@ -294,12 +294,26 @@ public class Main extends Application {
 		exportButton.setOnAction(e -> {
 			//Bill Please add your function here
 			
-			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			System.out.println(datasetsSelectedIndex );
+			if (datasetsSelectedIndex==-1) {
+				showDataLabel.setText(String.format("Please select a dataset to export to .csv"));
+				
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				DataManager.dataExport(sampleDataTable);
+				
+				
+				putSceneOnStage(SCENE_DATA_FILTER);	
+				showDataLabel.setText(String.format("Welcome!"));
+				
+			}
 		});
 		
 		savingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			//save dataTables and TODO charts
+			
 			
 		});
 		
