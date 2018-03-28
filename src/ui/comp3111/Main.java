@@ -44,8 +44,18 @@ public class Main extends Application {
 	// Hint: Use java.util.List interface and its implementation classes (e.g.
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
-	ListView<String> dataTable = new ListView<String>();
+	private ListView<String> dataTablesName = new ListView<String>();
+
+	private List<DataTable> dataTables = new ArrayList<DataTable>();
 	
+	private ListView<String> datasetslist = new ListView<String>();
+	private ObservableList<String> datasetsname =FXCollections.observableArrayList ("Dataset 1", "Dataset 2", "Dataset 3", "Dataset 4");
+	
+	
+	private ListView<String> chartslist = new ListView<String>();
+	private ObservableList<String> chartsname =FXCollections.observableArrayList ("Chart 1", "Chart 2", "Chart 3", "Chart 4");
+	
+	//Just for testing puropose
 	
 	//ObservableList<String> items =FXCollections.observableArrayList ("Single", "Double", "Suite", "Family App");
 	//list.setItems(items);
@@ -55,7 +65,7 @@ public class Main extends Application {
 	private static final int SCENE_NUM = 3;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;;
-	private static final int SCENE_DATA_FILTER_OPTION_SCREEN = 2;
+	private static final int SCENE_DATA_FILTER = 2;
 	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
@@ -64,7 +74,7 @@ public class Main extends Application {
 	// The following UI components are used to keep references after invoking
 	// createScene()
 	// Screen 1: paneMainScreen
-	private Button btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
+	private Button dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
 	private Label lbSampleDataTable, lbMainScreenTitle;
 	
 	//private ListView<DataTable> datasetListView;
@@ -88,6 +98,8 @@ public class Main extends Application {
 		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 1000, 500);
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
 
+		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
+
 		//scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 700, 600);
 		for (Scene s : scenes) {
 			if (s != null)
@@ -106,6 +118,7 @@ public class Main extends Application {
 	private void initEventHandlers() {
 		initMainScreenHandlers();
 		initLineChartScreenHandlers();
+		initDataFilterScreenHandlers();
 	}
 
 	/**
@@ -115,6 +128,14 @@ public class Main extends Application {
 
 		// click handler
 		btLineChartBackMain.setOnAction(e -> {
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+		});
+	}
+	
+	private void initDataFilterScreenHandlers() {
+
+		// click handler
+		dataFilterBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
 		});
 	}
@@ -232,6 +253,9 @@ public class Main extends Application {
 		
 		dataFilteringAndTransformationButton.setOnAction(e -> {
 			//Log G Please add your function here
+
+			putSceneOnStage(SCENE_DATA_FILTER);
+			
 		});
 		
 		plotGraphButton.setOnAction(e -> {
@@ -279,6 +303,21 @@ public class Main extends Application {
 	 * 
 	 * @return a Pane component to be displayed on a scene
 	 */
+	
+	private Pane paneDataFilterScreen() {
+		
+		VBox container = new VBox(20);
+		dataFilterBackMain = new Button("Back");
+		container.getChildren().addAll(dataFilterBackMain);
+		container.setAlignment(Pos.CENTER);
+		
+		BorderPane pane = new BorderPane();
+		pane.setCenter(container);
+		pane.getStyleClass().add("screen-background");
+
+		return pane;
+		
+	}
 	private Pane paneMainScreen() {
 
 		lbMainScreenTitle = new Label("COMP3111 Chart");
@@ -296,9 +335,23 @@ public class Main extends Application {
 		
 		showChartButton = new Button("Show Chart");
 		
+		
+		datasetslist.setItems(datasetsname);
 
+		chartslist.setItems(chartsname);
+		
+		datasetslist.setPrefWidth(400);
+		datasetslist.setPrefHeight(300);
+		
+		chartslist.setPrefWidth(400);
+		chartslist.setPrefHeight(300);
 		// Layout the UI components
 
+		HBox groupofList = new HBox(20);
+		
+		groupofList.getChildren().addAll(datasetslist, chartslist );
+
+		groupofList.setAlignment(Pos.CENTER);
 		HBox groupofBill = new HBox(20);
 
 		groupofBill.setAlignment(Pos.CENTER);
@@ -314,7 +367,7 @@ public class Main extends Application {
 		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
 
 		VBox container = new VBox(20);
-		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), groupofChartandTrans);
+		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), groupofList, new Separator(), groupofChartandTrans);
 		container.setAlignment(Pos.CENTER);
 
 		BorderPane pane = new BorderPane();
@@ -350,13 +403,22 @@ public class Main extends Application {
 	}
 
 	/**
+	 * 
 	 * All JavaFx GUI application needs to override the start method You can treat
 	 * it as the main method (i.e. the entry point) of the GUI application
 	 */
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			
+			//TODO delete this if import data
+			dataTables.add(SampleDataGenerator.generateSampleLineData());
 
+			dataTables.add(SampleDataGenerator.generateSampleLineData());
+			System.out.println();
+
+			//TODO delete this if import data
+			
 			stage = primaryStage; // keep a stage reference as an attribute
 			initScenes(); // initialize the scenes
 			initEventHandlers(); // link up the event handlers
