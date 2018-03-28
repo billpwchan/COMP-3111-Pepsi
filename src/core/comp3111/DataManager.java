@@ -42,7 +42,6 @@ public class DataManager {
 				FileSystemView.getFileSystemView().getHomeDirectory()
 		);
 		fc.setDialogTitle("Please select .csv dataset for import");
-		//fc.setMultiSelectionEnabled(true);
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setApproveButtonText("OPEN...");
 		
@@ -113,8 +112,15 @@ public class DataManager {
 				int option = 0;
 				handleNumericalMissingValue(column_index, columns, option);
 				
-				// Add a numerical value column
-				Number[] numValues = columns.get(column_index).toArray(new Integer[columns.get(column_index).size()]);
+				// Add a numerical value column Method 1
+//				Number[] numValues = new Number[columns.get(column_index).size()];
+//				numValues = columns.get(column_index).toArray(numValues);
+//				DataColumn numValuesCol = new DataColumn(DataType.TYPE_NUMBER, numValues);
+				// Add a numerical value column Method 2
+				Number[] numValues = new Number[columns.get(column_index).size()];
+				for (int i = 1; i < columns.get(column_index).size(); i++) {
+					numValues[i] = Double.parseDouble(columns.get(column_index).get(i));
+				}
 				DataColumn numValuesCol = new DataColumn(DataType.TYPE_NUMBER, numValues);
 				//Add to DataTable
 				try {
