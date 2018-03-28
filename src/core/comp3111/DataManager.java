@@ -76,6 +76,27 @@ public class DataManager {
 	}
 	
 	public static void dataExport(DataTable dataTable) {
+		List<List<String>> columns = new ArrayList<>();
+		List<List<String>> rows = new ArrayList<>();  //Use transpose function to convert.
+		
+		//Following two arraylists should have same size.
+		List<DataColumn> inputDataColsValue = dataTable.getAllColValue();
+		List<String> inputDataColsName = dataTable.getAllColName();
+		
+		if (inputDataColsValue.size()!=inputDataColsName.size()) { System.out.println("BUGGGG> NOT EQUAL> NEED HANDLE.");}
+		
+		for (int index = 0; index < inputDataColsValue.size() && index < inputDataColsName.size(); index++) {
+			List<String> temp = new ArrayList<>();
+			//Column header
+			temp.add(inputDataColsName.get(index));
+			//Iterate each row in a given column and store it into temp listString.
+			for (Object block : inputDataColsValue.get(index).getData()) {
+				temp.add(block.toString());
+			}
+			columns.add(temp);
+		}
+		
+		printColumnbyColumn(columns);
 		
 	}
 	
@@ -241,10 +262,13 @@ public class DataManager {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		DataTable temp = DataManager.dataImport();
-		System.out.println(temp.getNumCol());
-		System.out.println(temp.getNumRow());
-		temp.getAllColValue();
+//		DataTable temp = DataManager.dataImport();
+//		System.out.println(temp.getNumCol());
+//		System.out.println(temp.getNumRow());
+//		temp.getAllColValue();
+		
+		
+		DataManager.dataExport(SampleDataGenerator.generateSampleLineData());
 	}
 }
 
