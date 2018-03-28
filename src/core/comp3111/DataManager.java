@@ -23,8 +23,7 @@ import java.util.List;
 public class DataManager {
 
 	//attributes
-	private static List<DataTable> dataTables;
-	private static String fileName;
+	private static DataTable dataTable;
 	
 	//Functions
 	
@@ -35,7 +34,9 @@ public class DataManager {
      * @param None
      * @return Void
      */
-	public static DataTable dataImport() throws FileNotFoundException {		
+	public static DataTable dataImport() throws FileNotFoundException {	
+		dataTable = new DataTable();
+		
 		//Basic Settings for FileChooser (Open Version)
 		JFileChooser fc = new JFileChooser(
 				FileSystemView.getFileSystemView().getHomeDirectory()
@@ -54,27 +55,24 @@ public class DataManager {
 		int returnVal = fc.showOpenDialog(null);
 		
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			
-			//Multiple Files can be selected
 			File file = fc.getSelectedFile();
-			System.out.println("Multiple Files Loaded.");  //Testing Message
 			
-			//Perform CSV File Handle for each selected .csv
-				if (file.isFile()) {
-					System.out.println(file.getName());
-					
-					//ToDo Save file name to DataTable Object
-					fileName = file.getName();
-					try {
-						handleCSVFile(file);
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					}
+			//Perform CSV File Handle for the selected .csv
+			if (file.isFile()) {
+				System.out.println(file.getName());
+				
+				//ToDo Save file name to DataTable Object. Maybe use .csv file name ??? 
+				dataTable.setDataTableName(file.getName());
+				try {
+					handleCSVFile(file);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
 				}
+			}
 
 		}
 		
-		return null;
+		return dataTable;
 	}
 	
 	private static void handleCSVFile(File file) throws FileNotFoundException{
@@ -105,14 +103,38 @@ public class DataManager {
 		int totalColumnNum = rows.get(0).size();
 		for (int column_index = 0; column_index < totalColumnNum; column_index++) {
 			if (checkNumericalColumn(column_index, columns)) {
+				if (!containNumericalColumn) { System.out.println("GUI Implementation Required"); }//Need to open GUI for selection!!!! }
+				containNumericalColumn = true;
+				
 				//If it is a numerical column, then need to provide function for replacing!! For all columns. 
 				System.out.println("This is a numerical column");
 				containNumericalColumn = true;
 				//Option = 0  ==> Mean;  Option = 1 ==> Median
-				int option = 1;
+				int option = 0;
 				handleNumericalMissingValue(column_index, columns, option);
+				
+				// Add a numerical value column
+				Number[] numValues = columns.get(column_index).toArray(new Integer[columns.get(column_index).size()]);
+				DataColumn numValuesCol = new DataColumn(DataType.TYPE_NUMBER, numValues);
+				//Add to DataTable
+				try {
+					dataTable.addCol(columns.get(column_index).get(0), numValuesCol);
+				} catch (DataTableException e) {
+					e.printStackTrace();
+				}
+				
 			} else {
 				System.out.println("This is a string column");
+				
+				String[] stringValues = columns.get(column_index).toArray(new String[columns.get(column_index).size()]);
+				DataColumn stringValuesCol = new DataColumn(DataType.TYPE_STRING,stringValues);
+				//Add to DataTable
+				try {
+					dataTable.addCol(columns.get(column_index).get(0), stringValuesCol);
+				} catch (DataTableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		printColumnbyColumn(columns);
@@ -225,7 +247,9 @@ public class DataManager {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		DataManager.dataImport();
+		DataTable temp = DataManager.dataImport();
+		System.out.println(temp.getNumCol());
+		System.out.println(temp.getNumRow());
 	}
 }
 
