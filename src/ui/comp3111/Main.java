@@ -292,8 +292,6 @@ public class Main extends Application {
 		});
 		
 		exportButton.setOnAction(e -> {
-			//Bill Please add your function here
-			
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
 			System.out.println(datasetsSelectedIndex );
 			if (datasetsSelectedIndex==-1) {
