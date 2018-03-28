@@ -1,6 +1,7 @@
 package ui.comp3111;
 
 import core.comp3111.DataColumn;
+import core.comp3111.DataManager;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
@@ -19,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.Arrays;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -270,11 +272,12 @@ public class Main extends Application {
 		
 		
 		importButton.setOnAction(e -> {
-			//Bill Please add your function here
-			//dataSets.add(DataManager.dataImport()); 
-
-			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
-			
+			//Will provide a file chooser, return with a dataTable object.
+			try {
+				dataTables.add(DataManager.dataImport());
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} 			
 			
 			updateDatasetsListandChartList();
 

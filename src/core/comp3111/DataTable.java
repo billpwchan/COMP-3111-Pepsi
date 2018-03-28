@@ -2,6 +2,12 @@ package core.comp3111;
 
 import java.util.HashMap;
 import java.util.Map;
+//Arrays related
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * 2D array of data values with the following requirements: (1) There are 0 to
@@ -107,6 +113,41 @@ public class DataTable {
 	 */
 	public int getNumCol() {
 		return dc.size();
+	}
+	
+	
+	/**
+	 * Return all datacolumn instances in the data table
+	 * 
+	 * @return the arraylist of datacolumn instances in the data table
+	 */
+	public List<DataColumn> getAllColValue() {
+		if (dc == null) { return null; }
+		
+		List<DataColumn> allCol = new ArrayList<>();
+		
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			System.out.println(entry.getKey() + "/" + entry.getValue());
+			allCol.add(entry.getValue());
+		}
+		return allCol;
+	}
+	
+	/**
+	 * Return all column name in the data table
+	 * 
+	 * @return the arraylist of column name in the data table
+	 */
+	public List<String> getAllColName() {
+		if (dc == null) { return null; }
+		
+		List<String> allCol = new ArrayList<>();
+		
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			System.out.println(entry.getKey() + "/" + entry.getValue());
+			allCol.add(entry.getKey());
+		}
+		return allCol;
 	}
 
 	/**
