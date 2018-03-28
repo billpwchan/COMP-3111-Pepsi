@@ -83,7 +83,7 @@ public class DataManager {
 
 		}
 		
-		return dataTable;
+		return returnVal == JFileChooser.APPROVE_OPTION ? dataTable : null;
 	}
 	
 	public static void dataExport(DataTable dataTable) {
@@ -103,8 +103,8 @@ public class DataManager {
 			//Column header
 			temp.add(inputDataColsName.get(index));
 			//Iterate each row in a given column and store it into temp listString.
-			for (Object block : inputDataColsValue.get(index).getData()) {
-				temp.add(block.toString());
+			for (int i = 1; i < inputDataColsValue.get(index).getData().length; i++) {
+				temp.add(inputDataColsValue.get(index).getData()[i].toString());
 			}
 			columns.add(temp);
 		}
