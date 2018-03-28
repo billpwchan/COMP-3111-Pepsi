@@ -12,6 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 //Arrays related
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class DataManager {
 		scanner.close();
 
         //Replacing all missing values with "" (Regardless numerical / String)
-		printColumnbyColumn(rows);
+		//printColumnbyColumn(rows);
         
 		//Transpose to columns for further testing.
         List<List<String>> columns = transpose(rows);
@@ -98,17 +99,17 @@ public class DataManager {
 
         
         
-        //Function: Read Column by Column
         //Special Case need: No Row. Empty CSV File   
         boolean containNumericalColumn = false;
         
 		int totalColumnNum = rows.get(0).size();
 		for (int column_index = 0; column_index < totalColumnNum; column_index++) {
-			if (checkNumericalColumn(column_index, rows)) {
+			if (checkNumericalColumn(column_index, columns)) {
+				//If it is a numerical column, then need to provide function for replacing!! For all columns. 
 				System.out.println("This is a numerical column");
 				containNumericalColumn = true;
 				//Option = 0  ==> Mean;  Option = 1 ==> Median
-				int option = 0;
+				int option = 1;
 				handleNumericalMissingValue(column_index, columns, option);
 			} else {
 				System.out.println("This is a string column");
@@ -122,15 +123,25 @@ public class DataManager {
 	private static void handleNumericalMissingValue(int column_index, List<List<String>> columns, int option) {
 	    int realNumCount = 0;
 		Double average = 0.0;
+		List<Double> tempMedianCalc = new ArrayList<>();
+		
 	    //Iterate row by row. Ignore "" values.
 	    for (int row_index = 1; row_index < columns.get(column_index).size();row_index++) {
-	    	average += columns.get(column_index).get(row_index).equals("") ? 
-	    		0 : Double.parseDouble(columns.get(column_index).get(row_index));
+	    	if (!columns.get(column_index).get(row_index).equals("")) {
+	    		average += Double.parseDouble(columns.get(column_index).get(row_index));
+	    		tempMedianCalc.add(Double.parseDouble(columns.get(column_index).get(row_index)));
+	    	}
 	    	realNumCount += columns.get(column_index).get(row_index).equals("") ? 0 : 1;
 	    }
 	    average /= realNumCount;
 	    
-	    Double median = 0.0;
+	    Collections.sort(tempMedianCalc);
+	    
+		Double median = 0.0;
+	    if (tempMedianCalc.size() % 2 == 0 ) {
+	    	median = (tempMedianCalc.get(tempMedianCalc.size()/2) + tempMedianCalc.get(tempMedianCalc.size()/2-1))/2.0;
+	    }else { median = tempMedianCalc.get(tempMedianCalc.size()/2);}
+
 		
 		for (int row_index = 0; row_index < columns.get(column_index).size(); row_index++) {
 			String block = columns.get(column_index).get(row_index);
@@ -154,26 +165,29 @@ public class DataManager {
         return ret;
     }
 	
-	private static boolean checkNumericalColumn(int columnNum, List<List<String>> rows) {
+	private static boolean checkNumericalColumn(int columnNum, List<List<String>> columns) {
 		if (columnNum < 0 ) { return false; } 
-		if (rows.size() < 2) {return false; }	//If the .csv file only have header.
 		
 		boolean flag = true;
-		//Special Case?? Potential Error?
+		boolean avoidAllEmptyFlag = false;
+
 		//From first row (Ignore header), check all remaining rows
-		for (int row_index = 1; row_index < rows.size(); row_index ++) {
-			String value = rows.get(row_index).get(columnNum);
-			if (!value.equals("")&& !stringIsNumeric(value)) {
+		for (int row_index = 1; row_index < columns.get(columnNum).size(); row_index ++) {
+			String value = columns.get(columnNum).get(row_index);
+			if (!value.equals("") && !stringIsNumeric(value)) {
 				//If enter here, that means not a numerical or ""
 				flag = false;
 				break;
 			} 
+			//Avoid column with all "" value be considered as numerical column.
+			if (!value.equals("") && stringIsNumeric(value)) {avoidAllEmptyFlag = true;}
 		}
 		
-		//If only have less than 2 rows (Only header), then not a numerical column.
-		return flag;
+		return flag && avoidAllEmptyFlag;
 	}
 	
+	
+	//Assumption: Not ""
 	private static boolean stringIsNumeric(String str){
 	    for (char c : str.toCharArray())
 	    {
@@ -189,11 +203,9 @@ public class DataManager {
         	int columnNo = 1;
         	for (String value: row) {
                 System.out.println("Line " + lineNo + " Column " + columnNo + ": " + value);
-                //If a column contains all numerical value or "", then it should be treated as ""
-                //Special Case: All "", so no mean, medium or mode
                 
-                //Regardless Text or Numerical, make it "" if missing value is found.
-                if (value.isEmpty()) {value = "";}
+                // Regardless Text or Numerical, make it "" if missing value is found.
+                // if (value.isEmpty()) {value = "";}
                 columnNo++;
         	}
         	lineNo++;
