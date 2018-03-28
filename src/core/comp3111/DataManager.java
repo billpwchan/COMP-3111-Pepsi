@@ -3,6 +3,7 @@
  */
 package core.comp3111;
 
+import java.awt.Image;
 //For I/O
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,9 +11,13 @@ import java.io.FileWriter;
 import java.util.Scanner;
 import java.io.IOException;
 import java.io.Writer;
+
+import javax.swing.ImageIcon;
 //For File Chooser
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.JOptionPane;
 //Arrays related
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,6 +87,8 @@ public class DataManager {
 	}
 	
 	public static void dataExport(DataTable dataTable) {
+		if (dataTable == null) {return;}
+		
 		List<List<String>> columns = new ArrayList<>();
 		List<List<String>> rows = new ArrayList<>();  //Use transpose function to convert.
 		
@@ -165,20 +172,17 @@ public class DataManager {
 		int totalColumnNum = rows.get(0).size();
 		for (int column_index = 0; column_index < totalColumnNum; column_index++) {
 			if (checkNumericalColumn(column_index, columns)) {
-				if (!containNumericalColumn) { System.out.println("GUI Implementation Required"); }//Need to open GUI for selection!!!! }
+				int option = 0;
+				if (!containNumericalColumn) { option = getUserReplacementOption();}//Need to open GUI for selection!!!! }
 				containNumericalColumn = true;
 				
 				//If it is a numerical column, then need to provide function for replacing!! For all columns. 
 				System.out.println("This is a numerical column");
 				containNumericalColumn = true;
 				//Option = 0  ==> Mean;  Option = 1 ==> Median
-				int option = 0;
 				handleNumericalMissingValue(column_index, columns, option);
 				
-				// Add a numerical value column Method 1
-//				Number[] numValues = new Number[columns.get(column_index).size()];
-//				numValues = columns.get(column_index).toArray(numValues);
-//				DataColumn numValuesCol = new DataColumn(DataType.TYPE_NUMBER, numValues);
+
 				// Add a numerical value column Method 2
 				Number[] numValues = new Number[columns.get(column_index).size()];
 				for (int i = 1; i < columns.get(column_index).size(); i++) {
@@ -208,6 +212,35 @@ public class DataManager {
 		}
 		printColumnbyColumn(columns);
         
+	}
+	
+	private static int getUserReplacementOption() {
+		//Set up JOptionPane Picture.
+        ImageIcon icon = new ImageIcon("src/images/selection.jpg");
+        
+		Image image = icon.getImage(); // transform it 
+	    Image newimg = image.getScaledInstance(100, 100,  Image.SCALE_SMOOTH); // scale it the smooth way  
+	    icon = new ImageIcon(newimg);  // transform it back
+        
+        
+	    // create a jframe
+	    JFrame frame = new JFrame("JOptionPane showMessageDialog example");
+
+	    // show a JOptionPane dialog using showMessageDialog
+//	    JOptionPane.showMessageDialog(frame,
+//	        "Please select methods",
+//	        "Please preferred way for replacing missing numerical values",
+//	        JOptionPane.INFORMATION_MESSAGE);
+	    
+		
+	    
+	    Object[] possibilities = {"Replace with Mean", "Replace with Median"};  
+        Integer selection = (Integer) JOptionPane.showOptionDialog(frame,   
+        		"Please preferred way for replacing missing numerical values",  "Please select...",   
+                JOptionPane.INFORMATION_MESSAGE, 1,  icon, possibilities, 0);
+        
+		
+		return selection;
 	}
 	
 	//Responsible for handling numerical column only. Will assume all is numerical value.
@@ -347,13 +380,13 @@ public class DataManager {
     }
 	
 	public static void main(String[] args) throws FileNotFoundException {
-//		DataTable temp = DataManager.dataImport();
-//		System.out.println(temp.getNumCol());
-//		System.out.println(temp.getNumRow());
-//		temp.getAllColValue();
+		DataTable temp = DataManager.dataImport();
+		System.out.println(temp.getNumCol());
+		System.out.println(temp.getNumRow());
+		temp.getAllColValue();
 		
 		
-		DataManager.dataExport(SampleDataGenerator.generateSampleLineData());
+//		DataManager.dataExport(SampleDataGenerator.generateSampleLineData());
 	}
 }
 

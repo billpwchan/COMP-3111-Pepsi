@@ -264,7 +264,9 @@ public class Main extends Application {
 		
 		exportButton.setOnAction(e -> {
 			//Bill Please add your function here
-			
+			//Log G, please give me a datatable for export. 
+			//Use Methods:
+			//DataManager.dataExport(dataTable);
 			
 		});
 		
