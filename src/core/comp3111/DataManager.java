@@ -6,7 +6,10 @@ package core.comp3111;
 //For I/O
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.util.Scanner;
+import java.io.IOException;
+import java.io.Writer;
 //For File Chooser
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
@@ -16,6 +19,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * @author billpwchan
  *
@@ -24,6 +28,8 @@ public class DataManager {
 
 	//attributes
 	private static DataTable dataTable;
+    private static final char DEFAULT_SEPARATOR = ',';
+
 	
 	//Functions
 	
@@ -44,6 +50,7 @@ public class DataManager {
 		fc.setDialogTitle("Please select .csv dataset for import");
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setApproveButtonText("OPEN...");
+		fc.setAcceptAllFileFilterUsed(false);  //Remove "All Files" filter. 
 		
 		//Use ExtensionFileFilter to display only .csv file & Directories
 		fc.setFileFilter(new ExtensionFileFilter(
@@ -74,6 +81,64 @@ public class DataManager {
 		return dataTable;
 	}
 	
+	public static void dataExport(DataTable dataTable) {
+		List<List<String>> columns = new ArrayList<>();
+		List<List<String>> rows = new ArrayList<>();  //Use transpose function to convert.
+		
+		//Following two arraylists should have same size.
+		List<DataColumn> inputDataColsValue = dataTable.getAllColValue();
+		List<String> inputDataColsName = dataTable.getAllColName();
+		
+		if (inputDataColsValue.size()!=inputDataColsName.size()) { System.out.println("BUGGGG> NOT EQUAL> NEED HANDLE.");}
+		
+		for (int index = 0; index < inputDataColsValue.size() && index < inputDataColsName.size(); index++) {
+			List<String> temp = new ArrayList<>();
+			//Column header
+			temp.add(inputDataColsName.get(index));
+			//Iterate each row in a given column and store it into temp listString.
+			for (Object block : inputDataColsValue.get(index).getData()) {
+				temp.add(block.toString());
+			}
+			columns.add(temp);
+		}
+		
+		rows = transpose(columns);
+		saveCSVFile(rows);
+		
+		
+	}
+	
+	private static void saveCSVFile(List<List<String>> rows) {
+	    JFileChooser chooser = new JFileChooser();
+		//set it to be a save dialog
+		 chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+		//set a default filename
+		 chooser.setSelectedFile(new File("DataSet.csv"));
+		//Set an extension filter, so the user sees other XML files
+		 chooser.setFileFilter(new ExtensionFileFilter(
+					new String[] { ".CSV" },
+					"Comma Delimited File (*.CSV)"
+		));
+		 if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
+		 {
+		    String filename = chooser.getSelectedFile().toString();
+		    if (!filename .endsWith(".csv"))
+		         filename += ".csv";
+		    //Implementation needed: DO something to the file name please.
+		    try {
+				FileWriter fw = new FileWriter(chooser.getSelectedFile());
+				for (List<String> row : rows) {
+					writeLine(fw, row);
+				}
+		        fw.flush();
+		        fw.close();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		  }
+	}
+	
 	private static void handleCSVFile(File file) throws FileNotFoundException{
         Scanner scanner = new Scanner(file);
         //Two-dimensional ArrayList for storing .csv file
@@ -93,8 +158,6 @@ public class DataManager {
 		//Transpose to columns for further testing.
         List<List<String>> columns = transpose(rows);
 
-
-        
         
         //Special Case need: No Row. Empty CSV File   
         boolean containNumericalColumn = false;
@@ -231,31 +294,66 @@ public class DataManager {
         	int columnNo = 1;
         	for (String value: row) {
                 System.out.println("Line " + lineNo + " Column " + columnNo + ": " + value);
-                
-                // Regardless Text or Numerical, make it "" if missing value is found.
-                // if (value.isEmpty()) {value = "";}
                 columnNo++;
         	}
         	lineNo++;
         }
 	}
 	
-	private static void printRowbyRow(List<List<String>> columns) {
-        int columnNo = 1;
-        for (List<String> column: columns) {
-        	int lineNo = 1;
-        	for (String value: column) {
-                System.out.println("Line " + lineNo + " Column " + columnNo + ": " + value);
-                lineNo++;
-        	}
-        	columnNo++;
+    public static void writeLine(Writer w, List<String> values) throws IOException {
+        writeLine(w, values, DEFAULT_SEPARATOR, ' ');
+    }
+
+    public static void writeLine(Writer w, List<String> values, char separators) throws IOException {
+        writeLine(w, values, separators, ' ');
+    }
+
+    //https://tools.ietf.org/html/rfc4180
+    private static String followCVSformat(String value) {
+
+        String result = value;
+        if (result.contains("\"")) {
+            result = result.replace("\"", "\"\"");
         }
-	}
+        return result;
+
+    }
+
+    public static void writeLine(Writer w, List<String> values, char separators, char customQuote) throws IOException {
+
+        boolean first = true;
+
+        //default customQuote is empty
+
+        if (separators == ' ') {
+            separators = DEFAULT_SEPARATOR;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String value : values) {
+            if (!first) {
+                sb.append(separators);
+            }
+            if (customQuote == ' ') {
+                sb.append(followCVSformat(value));
+            } else {
+                sb.append(customQuote).append(followCVSformat(value)).append(customQuote);
+            }
+
+            first = false;
+        }
+        sb.append("\n");
+        w.append(sb.toString());
+    }
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		DataTable temp = DataManager.dataImport();
-		System.out.println(temp.getNumCol());
-		System.out.println(temp.getNumRow());
+//		DataTable temp = DataManager.dataImport();
+//		System.out.println(temp.getNumCol());
+//		System.out.println(temp.getNumRow());
+//		temp.getAllColValue();
+		
+		
+		DataManager.dataExport(SampleDataGenerator.generateSampleLineData());
 	}
 }
 
