@@ -74,8 +74,8 @@ public class Main extends Application {
 	// The following UI components are used to keep references after invoking
 	// createScene()
 	// Screen 1: paneMainScreen
-	private Button dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
-	private Label lbSampleDataTable, lbMainScreenTitle;
+	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
+	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel;
 	
 	//private ListView<DataTable> datasetListView;
 	
@@ -95,7 +95,7 @@ public class Main extends Application {
 	 */
 	private void initScenes() {
 		scenes = new Scene[SCENE_NUM];
-		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 1000, 500);
+		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 1000, 1000);
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
 
 		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
@@ -152,6 +152,35 @@ public class Main extends Application {
 		// click handler
 		dataFilterBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
+			
+			updateDatasetsListandChartList();
+		});
+		
+		dataFilterReplaceDatasetButton.setOnAction(e -> {
+			//TODO save the modify dataset to same dataset sampleDataTable
+			
+			
+			
+			
+			//dataTables.listIterator(datasetsSelectedIndex);
+			dataTables.remove(datasetsSelectedIndex);
+			dataTables.add(datasetsSelectedIndex, sampleDataTable);
+			updateDatasetsListandChartList();
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+
+		});
+		
+		dataFilterSaveAsNewDatasetButton.setOnAction(e -> {
+			
+			//TODO modify the sampleDataTable
+			
+			dataTables.add(sampleDataTable);
+			
+			updateDatasetsListandChartList();
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+
 		});
 	}
 
@@ -227,7 +256,7 @@ public class Main extends Application {
 					sampleDataTable.getNumCol()));
 
 			populateSampleDataTableValuesToChart("Sample 2");
-
+			
 		});
 
 		// click handler
@@ -290,15 +319,43 @@ public class Main extends Application {
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
 			System.out.println(datasetsSelectedIndex );
 			if (datasetsSelectedIndex==-1) {
-				System.out.println("Please select a dataset" );
+				showDataLabel.setText(String.format("Please select a dataset to do filtering and transformation."));
+				
 			}else {
 				sampleDataTable = dataTables.get(datasetsSelectedIndex);
-				putSceneOnStage(SCENE_DATA_FILTER);			
+				putSceneOnStage(SCENE_DATA_FILTER);	
+				showDataLabel.setText(String.format("Welcome!"));
+				
 			}
+			
 			
 
 			updateDatasetsListandChartList();
 		});
+		
+		dataSetPreviewButton.setOnAction(e -> {
+			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			
+			sampleDataTable = dataTables.get(datasetsSelectedIndex);
+			
+			if (datasetsSelectedIndex==-1||sampleDataTable==null) {
+				showDataLabel.setText(String.format("No dataset being selected to be preview"));
+				
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				showDataLabel.setText(String.format("Dataset %d : %d rows, %d columns",datasetsSelectedIndex+1, sampleDataTable.getNumRow(),
+						sampleDataTable.getNumCol()));
+
+		
+			}
+			
+			
+
+			updateDatasetsListandChartList();
+		});
+		
+		
 		
 		plotGraphButton.setOnAction(e -> {
 			
@@ -362,8 +419,22 @@ public class Main extends Application {
 	private Pane paneDataFilterScreen() {
 		
 		VBox container = new VBox(20);
+		
+		dataFilterReplaceDatasetButton = new Button("Replacing the current dataset");
+		
+		
+		
+		dataFilterSaveAsNewDatasetButton = new Button("Save as new dataset");
 		dataFilterBackMain = new Button("Back");
-		container.getChildren().addAll(dataFilterBackMain);
+		
+
+		HBox buttongroup = new HBox(20);
+		
+
+		buttongroup.setAlignment(Pos.CENTER);
+		buttongroup.getChildren().addAll(dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain);
+		
+		container.getChildren().addAll(buttongroup);
 		container.setAlignment(Pos.CENTER);
 		
 		BorderPane pane = new BorderPane();
@@ -389,7 +460,9 @@ public class Main extends Application {
 		plotGraphButton = new Button("Plot Graph with selected dataset");
 		
 		showChartButton = new Button("Show Chart");
-		
+		showDataLabel = new Label("Welcome!");
+
+		dataSetPreviewButton = new Button("Data set preview");
 		
 		datasetslist.setItems(datasetsname);
 
@@ -415,14 +488,14 @@ public class Main extends Application {
 		
 		HBox groupofChartandTrans = new HBox(20);
 		groupofChartandTrans.setAlignment(Pos.CENTER);
-		groupofChartandTrans.getChildren().addAll(dataFilteringAndTransformationButton, showChartButton, plotGraphButton);
+		groupofChartandTrans.getChildren().addAll(dataSetPreviewButton, dataFilteringAndTransformationButton, showChartButton, plotGraphButton);
 
 		HBox hc = new HBox(20);
 		hc.setAlignment(Pos.CENTER);
 		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
 
 		VBox container = new VBox(20);
-		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), groupofList, new Separator(), groupofChartandTrans);
+		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), showDataLabel, groupofList, new Separator(), groupofChartandTrans);
 		container.setAlignment(Pos.CENTER);
 
 		BorderPane pane = new BorderPane();
@@ -470,14 +543,6 @@ public class Main extends Application {
 			
 			
 			
-			//TODO delete this if import data
-			
-			
-			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
-			dataTables.add(SampleDataGenerator.generateSampleLineData());
-			dataTables.add(SampleDataGenerator.generateSampleLineData());
-			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
-			//
 			
 			//update List View
 			updateDatasetsListandChartList();
