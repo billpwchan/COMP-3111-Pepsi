@@ -21,14 +21,11 @@ import javafx.stage.Stage;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 
 /**
  * The Main class of this GUI application
@@ -49,8 +46,9 @@ public class Main extends Application {
 	private List<DataTable> dataTables = new ArrayList<DataTable>();
 	
 	private ListView<String> datasetslist = new ListView<String>();
-	private ObservableList<String> datasetsname =FXCollections.observableArrayList ("Dataset 1", "Dataset 2", "Dataset 3", "Dataset 4");
 	
+	private int datasetsSelectedIndex = 0;
+	private ObservableList<String> datasetsname = FXCollections.observableArrayList ();
 	
 	private ListView<String> chartslist = new ListView<String>();
 	private ObservableList<String> chartsname =FXCollections.observableArrayList ("Chart 1", "Chart 2", "Chart 3", "Chart 4");
@@ -109,6 +107,21 @@ public class Main extends Application {
 
 	}
 	
+	
+	private void updateDatasetsListandChartList() {
+		
+		
+		//TODO 
+		
+		
+		datasetsname.clear();
+		
+		for(int i=0;i<dataTables.size();i++) {
+
+			datasetsname.add("Dataset "+String.valueOf(i+1)); 
+		}
+
+	}
 
 	/**
 	 * This method will be invoked after createScenes(). In this stage, all UI
@@ -191,7 +204,6 @@ public class Main extends Application {
 		
 		
 		
-
 		// click handler
 		btSampleLineChartData.setOnAction(e -> {
 
@@ -220,6 +232,8 @@ public class Main extends Application {
 		btSampleLineChart.setOnAction(e -> {
 			
 			putSceneOnStage(SCENE_LINE_CHART);
+			
+			
 		});
 		
 		showChartButton.setOnAction(e -> {
@@ -228,39 +242,77 @@ public class Main extends Application {
 			//Log G will pass you the chart
 			//delete the line below if u need
 			putSceneOnStage(SCENE_LINE_CHART);
+			
+			
 		});
 		
 		
 		importButton.setOnAction(e -> {
 			//Bill Please add your function here
 			//dataSets.add(DataManager.dataImport()); 
+
+			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
 			
+			
+			updateDatasetsListandChartList();
 
 			
 		});
 		
 		exportButton.setOnAction(e -> {
 			//Bill Please add your function here
+			
+			
 		});
 		
 		savingButton.setOnAction(e -> {
 			//Bill Please add your function here
+			//save dataTables and TODO charts
+			
 		});
 		
 		loadingButton.setOnAction(e -> {
 			//Bill Please add your function here
+			
+			dataTables.add(SampleDataGenerator.generateSampleLineData());
+			
+
+			updateDatasetsListandChartList();
+			
 		});
 		
 		dataFilteringAndTransformationButton.setOnAction(e -> {
 			//Log G Please add your function here
-
-			putSceneOnStage(SCENE_DATA_FILTER);
 			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			System.out.println(datasetsSelectedIndex );
+			if (datasetsSelectedIndex==-1) {
+				System.out.println("Please select a dataset" );
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				putSceneOnStage(SCENE_DATA_FILTER);			
+			}
+			
+
+			updateDatasetsListandChartList();
 		});
 		
 		plotGraphButton.setOnAction(e -> {
-			//Won Please add your function here
-			//Log G will pass you the Dataset here
+			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			System.out.println(datasetsSelectedIndex );
+			if (datasetsSelectedIndex==-1) {
+				System.out.println("Please select a dataset" );
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				
+				//use the sampleDataTable variable to plot graph 
+
+				//Won Please add your function here
+			}
+			
+
+			updateDatasetsListandChartList();
 		});
 		
 		
@@ -390,6 +442,8 @@ public class Main extends Application {
 	 *            - The sceneID defined above (see SCENE_XXX)
 	 */
 	private void putSceneOnStage(int sceneID) {
+		
+		updateDatasetsListandChartList();
 
 		// ensure the sceneID is valid
 		if (sceneID < 0 || sceneID >= SCENE_NUM)
@@ -411,13 +465,20 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			
+			
+			
 			//TODO delete this if import data
+			
+			
+			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
 			dataTables.add(SampleDataGenerator.generateSampleLineData());
-
 			dataTables.add(SampleDataGenerator.generateSampleLineData());
-			System.out.println();
+			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
+			//
+			
+			//update List View
+			updateDatasetsListandChartList();
 
-			//TODO delete this if import data
 			
 			stage = primaryStage; // keep a stage reference as an attribute
 			initScenes(); // initialize the scenes
