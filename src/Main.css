@@ -3,14 +3,34 @@
  * @author cspeter
  */
 
-.menu-title {
-	-fx-font-size: 25;
+.menu-title {    
+	-fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 .menu-button {
 	 -fx-pref-width:200;
 	 -fx-pref-height:40;
+	 
 }
 
 .screen-background {
-	-fx-background-color: white;
+	-fx-background-color: Black;
+}
+.button {
+    -fx-padding: 8 15 15 15;
+    -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0;
+    -fx-background-color: #373837 ;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(#2A5058, #61a2b1);
+}
+
+.label {
+   -fx-text-fill: white;
+   
+   
 }
