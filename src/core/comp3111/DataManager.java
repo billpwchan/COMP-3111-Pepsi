@@ -44,6 +44,7 @@ public class DataManager {
 		fc.setDialogTitle("Please select .csv dataset for import");
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setApproveButtonText("OPEN...");
+		fc.setAcceptAllFileFilterUsed(false);  //Remove "All Files" filter. 
 		
 		//Use ExtensionFileFilter to display only .csv file & Directories
 		fc.setFileFilter(new ExtensionFileFilter(
@@ -74,6 +75,10 @@ public class DataManager {
 		return dataTable;
 	}
 	
+	public static void dataExport(DataTable dataTable) {
+		
+	}
+	
 	private static void handleCSVFile(File file) throws FileNotFoundException{
         Scanner scanner = new Scanner(file);
         //Two-dimensional ArrayList for storing .csv file
@@ -93,8 +98,6 @@ public class DataManager {
 		//Transpose to columns for further testing.
         List<List<String>> columns = transpose(rows);
 
-
-        
         
         //Special Case need: No Row. Empty CSV File   
         boolean containNumericalColumn = false;
@@ -231,24 +234,9 @@ public class DataManager {
         	int columnNo = 1;
         	for (String value: row) {
                 System.out.println("Line " + lineNo + " Column " + columnNo + ": " + value);
-                
-                // Regardless Text or Numerical, make it "" if missing value is found.
-                // if (value.isEmpty()) {value = "";}
                 columnNo++;
         	}
         	lineNo++;
-        }
-	}
-	
-	private static void printRowbyRow(List<List<String>> columns) {
-        int columnNo = 1;
-        for (List<String> column: columns) {
-        	int lineNo = 1;
-        	for (String value: column) {
-                System.out.println("Line " + lineNo + " Column " + columnNo + ": " + value);
-                lineNo++;
-        	}
-        	columnNo++;
         }
 	}
 	
@@ -256,6 +244,7 @@ public class DataManager {
 		DataTable temp = DataManager.dataImport();
 		System.out.println(temp.getNumCol());
 		System.out.println(temp.getNumRow());
+		temp.getAllColValue();
 	}
 }
 
