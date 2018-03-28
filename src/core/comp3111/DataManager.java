@@ -6,7 +6,10 @@ package core.comp3111;
 //For I/O
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.util.Scanner;
+import java.io.IOException;
+import java.io.Writer;
 //For File Chooser
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
@@ -16,6 +19,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * @author billpwchan
  *
@@ -24,6 +28,8 @@ public class DataManager {
 
 	//attributes
 	private static DataTable dataTable;
+    private static final char DEFAULT_SEPARATOR = ',';
+
 	
 	//Functions
 	
@@ -96,8 +102,41 @@ public class DataManager {
 			columns.add(temp);
 		}
 		
-		printColumnbyColumn(columns);
+		rows = transpose(columns);
+		saveCSVFile(rows);
 		
+		
+	}
+	
+	private static void saveCSVFile(List<List<String>> rows) {
+	    JFileChooser chooser = new JFileChooser();
+		//set it to be a save dialog
+		 chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+		//set a default filename
+		 chooser.setSelectedFile(new File("DataSet.csv"));
+		//Set an extension filter, so the user sees other XML files
+		 chooser.setFileFilter(new ExtensionFileFilter(
+					new String[] { ".CSV" },
+					"Comma Delimited File (*.CSV)"
+		));
+		 if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
+		 {
+		    String filename = chooser.getSelectedFile().toString();
+		    if (!filename .endsWith(".csv"))
+		         filename += ".csv";
+		    //Implementation needed: DO something to the file name please.
+		    try {
+				FileWriter fw = new FileWriter(chooser.getSelectedFile());
+				for (List<String> row : rows) {
+					writeLine(fw, row);
+				}
+		        fw.flush();
+		        fw.close();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		  }
 	}
 	
 	private static void handleCSVFile(File file) throws FileNotFoundException{
@@ -260,6 +299,52 @@ public class DataManager {
         	lineNo++;
         }
 	}
+	
+    public static void writeLine(Writer w, List<String> values) throws IOException {
+        writeLine(w, values, DEFAULT_SEPARATOR, ' ');
+    }
+
+    public static void writeLine(Writer w, List<String> values, char separators) throws IOException {
+        writeLine(w, values, separators, ' ');
+    }
+
+    //https://tools.ietf.org/html/rfc4180
+    private static String followCVSformat(String value) {
+
+        String result = value;
+        if (result.contains("\"")) {
+            result = result.replace("\"", "\"\"");
+        }
+        return result;
+
+    }
+
+    public static void writeLine(Writer w, List<String> values, char separators, char customQuote) throws IOException {
+
+        boolean first = true;
+
+        //default customQuote is empty
+
+        if (separators == ' ') {
+            separators = DEFAULT_SEPARATOR;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String value : values) {
+            if (!first) {
+                sb.append(separators);
+            }
+            if (customQuote == ' ') {
+                sb.append(followCVSformat(value));
+            } else {
+                sb.append(customQuote).append(followCVSformat(value)).append(customQuote);
+            }
+
+            first = false;
+        }
+        sb.append("\n");
+        w.append(sb.toString());
+    }
 	
 	public static void main(String[] args) throws FileNotFoundException {
 //		DataTable temp = DataManager.dataImport();
