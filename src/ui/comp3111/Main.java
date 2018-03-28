@@ -72,7 +72,7 @@ public class Main extends Application {
 	// The following UI components are used to keep references after invoking
 	// createScene()
 	// Screen 1: paneMainScreen
-	private Button dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
+	private Button dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
 	private Label lbSampleDataTable, lbMainScreenTitle;
 	
 	//private ListView<DataTable> datasetListView;
@@ -150,6 +150,28 @@ public class Main extends Application {
 		// click handler
 		dataFilterBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
+			
+			updateDatasetsListandChartList();
+		});
+		
+		dataFilterReplaceDatasetButton.setOnAction(e -> {
+			//
+			
+			
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+
+			updateDatasetsListandChartList();
+		});
+		
+		dataFilterSaveAsNewDatasetButton.setOnAction(e -> {
+			
+			//TODO save the modified sampledataset to new set dataTables.add()
+			
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+
+			updateDatasetsListandChartList();
 		});
 	}
 
@@ -359,8 +381,21 @@ public class Main extends Application {
 	private Pane paneDataFilterScreen() {
 		
 		VBox container = new VBox(20);
+		
+		dataFilterReplaceDatasetButton = new Button("Replacing the current dataset");
+		
+		
+		
+		dataFilterSaveAsNewDatasetButton = new Button("Save as new dataset");
 		dataFilterBackMain = new Button("Back");
-		container.getChildren().addAll(dataFilterBackMain);
+		
+
+		HBox buttongroup = new HBox(20);
+
+		buttongroup.setAlignment(Pos.CENTER);
+		buttongroup.getChildren().addAll(dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain);
+		
+		container.getChildren().addAll(buttongroup);
 		container.setAlignment(Pos.CENTER);
 		
 		BorderPane pane = new BorderPane();
@@ -467,14 +502,6 @@ public class Main extends Application {
 			
 			
 			
-			//TODO delete this if import data
-			
-			
-			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
-			dataTables.add(SampleDataGenerator.generateSampleLineData());
-			dataTables.add(SampleDataGenerator.generateSampleLineData());
-			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
-			//
 			
 			//update List View
 			updateDatasetsListandChartList();
