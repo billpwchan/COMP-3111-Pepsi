@@ -34,3 +34,37 @@
    
    
 }
+.choice-box {
+  -fx-background-color: grey;
+  -fx-mark-color: orange;
+}
+.choice-box > .label { -fx-text-fill: white; }
+
+.choice-box .context-menu { -fx-background-color: grey; }
+.choice-box .menu-item:focused { -fx-background-color: orange; }
+.choice-box .menu-item > .label { -fx-text-fill: white; }
+.choice-box .menu-item:focused > .label { -fx-text-fill: black; }
+
+.check-box .box {
+
+-fx-background-color: white;
+-fx-border-color:grey;
+-fx-border-radius:3px; 
+
+}
+.check-box {
+
+   -fx-text-fill: white;
+
+}
+
+.check-box:selected .mark {
+
+-fx-background-color: white;
+
+}
+
+.check-box:selected .box {
+
+-fx-background-color: #28a3f4;
+}
