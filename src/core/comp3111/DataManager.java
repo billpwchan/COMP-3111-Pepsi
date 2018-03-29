@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 /**
  * @author billpwchan
  *
@@ -45,45 +48,39 @@ public class DataManager {
      * @param None
      * @return Void
      */
-	public static DataTable dataImport() throws FileNotFoundException {	
+	public static DataTable dataImport(Stage stage) throws FileNotFoundException {	
 		dataTable = new DataTable();
 		
 		//Basic Settings for FileChooser (Open Version)
-		JFileChooser fc = new JFileChooser(
-				FileSystemView.getFileSystemView().getHomeDirectory()
-		);
-		fc.setDialogTitle("Please select .csv dataset for import");
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fc.setApproveButtonText("OPEN...");
-		fc.setAcceptAllFileFilterUsed(false);  //Remove "All Files" filter. 
+		FileChooser fc = new FileChooser();
+		fc.setTitle("Please select .csv dataset for import");
+//		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+//		fc.setApproveButtonText("OPEN...");
+//		fc.setAcceptAllFileFilterUsed(false);  //Remove "All Files" filter. 
 		
 		//Use ExtensionFileFilter to display only .csv file & Directories
-		fc.setFileFilter(new ExtensionFileFilter(
-				new String[] { ".CSV" },
-				"Comma Delimited File (*.CSV)"
-		));
+		fc.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("Comma Delimited File (*.CSV)", "*.csv")
+		);
 		
-		int returnVal = fc.showOpenDialog(null);
+		fc.setInitialDirectory(new File(System.getProperty("user.home")));
 		
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
+		File file = fc.showOpenDialog(stage);
+		//Perform CSV File Handle for the selected .csv
+		if (file != null) {
+			System.out.println(file.getName());
 			
-			//Perform CSV File Handle for the selected .csv
-			if (file.isFile()) {
-				System.out.println(file.getName());
-				
-				//ToDo Save file name to DataTable Object. Maybe use .csv file name ??? 
-				dataTable.setDataTableName(file.getName());
-				try {
-					handleCSVFile(file);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
+			//ToDo Save file name to DataTable Object. Maybe use .csv file name ??? 
+			dataTable.setDataTableName(file.getName());
+			try {
+				handleCSVFile(file);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}
-
 		}
+
 		
-		return returnVal == JFileChooser.APPROVE_OPTION ? dataTable : null;
+		return file != null ? dataTable : null;
 	}
 	
     /**
@@ -390,11 +387,11 @@ public class DataManager {
     }
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		DataTable temp = DataManager.dataImport();
-		System.out.println(temp.getNumCol());
-		System.out.println(temp.getNumRow());
-		temp.getAllColValue();
-		
+//		DataTable temp = DataManager.dataImport();
+//		System.out.println(temp.getNumCol());
+//		System.out.println(temp.getNumRow());
+//		temp.getAllColValue();
+//		
 		
 //		DataManager.dataExport(SampleDataGenerator.generateSampleLineData());
 	}
