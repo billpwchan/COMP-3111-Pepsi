@@ -46,7 +46,8 @@ public class Main extends Application {
 	private ListView<String> dataTablesName = new ListView<String>();
 
 	private List<DataTable> dataTables = new ArrayList<DataTable>();
-	
+
+	private boolean focusOnDataset = false;
 	private ListView<String> datasetslist = new ListView<String>();
 	
 	private int datasetsSelectedIndex = 0;
@@ -54,6 +55,8 @@ public class Main extends Application {
 	
 	private ListView<String> chartslist = new ListView<String>();
 	private ObservableList<String> chartsname =FXCollections.observableArrayList ("Chart 1", "Chart 2", "Chart 3", "Chart 4");
+	
+	private ChoiceBox dataFilterChoiceBox = new ChoiceBox(FXCollections.observableArrayList("=", "<", "<=",">",">="));
 	
 	//Just for testing puropose
 	
@@ -296,7 +299,7 @@ public class Main extends Application {
 		exportButton.setOnAction(e -> {
 			//Log G: If a chart is selected, should not allow the user to use it! 
 			
-			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			datasetsSelectedIndex = datasetslist.getSelectionModel().getSelectedIndex();
 			System.out.println(datasetsSelectedIndex );
 			if (datasetsSelectedIndex==-1) {
 				showDataLabel.setText(String.format("Please select a dataset to export to .csv"));
@@ -442,14 +445,33 @@ public class Main extends Application {
 		dataFilterSaveAsNewDatasetButton = new Button("Save as new dataset");
 		dataFilterBackMain = new Button("Back");
 		
+		
+		
+		HBox filterNumData = new HBox(20);
+		filterNumData.setAlignment(Pos.CENTER);
+		filterNumData.getChildren().addAll(dataFilterChoiceBox);
+		
+		
+		//A checkbox without a caption
+		CheckBox cb1 = new CheckBox();
+		//A checkbox with a string caption
+		CheckBox cb2 = new CheckBox("Second");
 
+		cb1.setText("First");
+		cb1.setSelected(true);
+		
+		HBox filterTextData = new HBox(20);
+		filterTextData.setAlignment(Pos.CENTER);
+		filterTextData.getChildren().addAll(cb1,cb2);
+		
+		
 		HBox buttongroup = new HBox(20);
 		
 
 		buttongroup.setAlignment(Pos.CENTER);
 		buttongroup.getChildren().addAll(dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain);
 		
-		container.getChildren().addAll(buttongroup);
+		container.getChildren().addAll(filterNumData,new Separator(),filterTextData,new Separator(),buttongroup);
 		container.setAlignment(Pos.CENTER);
 		
 		BorderPane pane = new BorderPane();
