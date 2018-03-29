@@ -54,9 +54,6 @@ public class DataManager {
 		//Basic Settings for FileChooser (Open Version)
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Please select .csv dataset for import");
-//		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//		fc.setApproveButtonText("OPEN...");
-//		fc.setAcceptAllFileFilterUsed(false);  //Remove "All Files" filter. 
 		
 		//Use ExtensionFileFilter to display only .csv file & Directories
 		fc.getExtensionFilters().addAll(
@@ -90,7 +87,7 @@ public class DataManager {
      * 			- defined in DataTable class. Should not be a null object.
      * @return Void
      */
-	public static void dataExport(DataTable dataTable) {
+	public static void dataExport(DataTable dataTable, Stage stage) {
 		if (dataTable == null) {return;}
 		
 		List<List<String>> columns = new ArrayList<>();
@@ -116,28 +113,24 @@ public class DataManager {
 		}
 		
 		rows = transpose(columns);
-		saveCSVFile(rows);
+		saveCSVFile(rows, stage);
 	}
 	
-	private static void saveCSVFile(List<List<String>> rows) {
-	    JFileChooser chooser = new JFileChooser();
+	private static void saveCSVFile(List<List<String>> rows, Stage stage) {
+	    FileChooser chooser = new FileChooser();
 		//set it to be a save dialog
-		 chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-		//set a default filename
-		 chooser.setSelectedFile(new File("DataSet.csv"));
+		chooser.setTitle("Save .csv file");
 		//Set an extension filter, so the user sees other XML files
-		 chooser.setFileFilter(new ExtensionFileFilter(
-					new String[] { ".CSV" },
-					"Comma Delimited File (*.CSV)"
-		));
-		 if(chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
-		 {
-		    String filename = chooser.getSelectedFile().toString();
-		    if (!filename .endsWith(".csv"))
-		         filename += ".csv";
-		    //Implementation needed: DO something to the file name please.
+		chooser.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("Comma Delimited File (*.CSV)", "*.csv")
+		);
+		chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		chooser.setInitialFileName("DataSet.csv");
+
+		File file = chooser.showSaveDialog(stage);
+		if (file != null) {
 		    try {
-				FileWriter fw = new FileWriter(chooser.getSelectedFile());
+				FileWriter fw = new FileWriter(file);
 				for (List<String> row : rows) {
 					writeLine(fw, row);
 				}
@@ -147,7 +140,7 @@ public class DataManager {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		  }
+		}
 	}
 	
 	private static void handleCSVFile(File file) throws FileNotFoundException{
@@ -177,7 +170,7 @@ public class DataManager {
 		for (int column_index = 0; column_index < totalColumnNum; column_index++) {
 			if (checkNumericalColumn(column_index, columns)) {
 				int option = 0;
-				if (!containNumericalColumn) { option = getUserReplacementOption();}//Need to open GUI for selection!!!! }
+				if (!containNumericalColumn) { option = getUserReplacementOption();}
 				containNumericalColumn = true;
 				
 				//If it is a numerical column, then need to provide function for replacing!! For all columns. 
@@ -239,12 +232,10 @@ public class DataManager {
 		
 	    
 	    Object[] possibilities = {"Replace with Mean", "Replace with Median", "Replace with Zero"};  
-        Integer selection = (Integer) JOptionPane.showOptionDialog(frame,   
+		
+		return (Integer) JOptionPane.showOptionDialog(frame,   
         		"Please preferred way for replacing missing numerical values",  "Please select...",   
                 JOptionPane.INFORMATION_MESSAGE, 1,  icon, possibilities, 0);
-        
-		
-		return selection;
 	}
 	
 	//Responsible for handling numerical column only. Will assume all is numerical value.
@@ -386,15 +377,7 @@ public class DataManager {
         w.append(sb.toString());
     }
 	
-	public static void main(String[] args) throws FileNotFoundException {
-//		DataTable temp = DataManager.dataImport();
-//		System.out.println(temp.getNumCol());
-//		System.out.println(temp.getNumRow());
-//		temp.getAllColValue();
-//		
-		
-//		DataManager.dataExport(SampleDataGenerator.generateSampleLineData());
-	}
+
 }
 
 

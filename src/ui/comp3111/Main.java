@@ -294,6 +294,8 @@ public class Main extends Application {
 		});
 		
 		exportButton.setOnAction(e -> {
+			//Log G: If a chart is selected, should not allow the user to use it! 
+			
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
 			System.out.println(datasetsSelectedIndex );
 			if (datasetsSelectedIndex==-1) {
@@ -301,7 +303,7 @@ public class Main extends Application {
 				
 			}else {
 				sampleDataTable = dataTables.get(datasetsSelectedIndex);
-				DataManager.dataExport(sampleDataTable);
+				DataManager.dataExport(sampleDataTable, stage);
 				
 				
 				showDataLabel.setText(String.format("Welcome!"));
