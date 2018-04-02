@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.List;
 
 import javafx.scene.chart.Chart;
@@ -22,9 +23,9 @@ public class IOManager {
 	private static List<Chart> charts;
 	private static PepsiObject storePepsi;
 	
-	public class PepsiObject {
-		private List<DataTable> dataTables;
-		private List<Chart> charts;
+	public static class PepsiObject implements Serializable{
+		private static List<DataTable> dataTables;
+		private static List<Chart> charts;
 		
 		
 		public PepsiObject() {
@@ -37,21 +38,22 @@ public class IOManager {
 			this.charts = inputCharts;
 		}
 		
-		public List<DataTable> getDataTables() {
+		public static List<DataTable> getDataTables() {
 			return dataTables;
 		}
-		public void setDataTables(List<DataTable> dataTables) {
-			this.dataTables = dataTables;
+		public static void setDataTables(List<DataTable> dataTables) {
+			PepsiObject.dataTables = dataTables;
 		}
-		public List<Chart> getCharts() {
+		public static List<Chart> getCharts() {
 			return charts;
 		}
-		public void setCharts(List<Chart> charts) {
-			this.charts = charts;
+		public static void setCharts(List<Chart> charts) {
+			PepsiObject.charts = charts;
 		}
 	}
 	
 	public static void fileExport(List<DataTable> inputDataTables, List<Chart> inputCharts, Stage stage){	
+		if (inputDataTables == null && inputCharts == null) { return; }
 		ObjectOutputStream oos = null;
 		FileOutputStream fout = null;
 		
@@ -70,7 +72,7 @@ public class IOManager {
 		File file = chooser.showSaveDialog(stage);
 		if (file != null) {
 		    try {
-				IOManager.storePepsi = new IOManager().new PepsiObject(inputDataTables, inputCharts);
+				IOManager.storePepsi = new PepsiObject(inputDataTables, inputCharts);
 				fout = new FileOutputStream(file, true);
 				oos = new ObjectOutputStream(fout);
 				oos.writeObject(storePepsi);
@@ -103,8 +105,8 @@ public class IOManager {
 				PepsiObject storePepsi = null;
 				storePepsi = (PepsiObject) ois.readObject();
 				if (storePepsi != null) {
-					IOManager.setDataTables(storePepsi.getDataTables());
-					IOManager.setCharts(storePepsi.getCharts());
+					IOManager.setDataTables(PepsiObject.getDataTables());
+					IOManager.setCharts(PepsiObject.getCharts());
 					ois.close();
 				}
 			} catch (Exception e) {
