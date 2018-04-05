@@ -1,6 +1,7 @@
 package ui.comp3111;
 
 import core.comp3111.DataColumn;
+import core.comp3111.DataManager;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
@@ -18,6 +19,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.util.Arrays;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.layout.StackPane;
 
 /**
  * The Main class of this GUI application
@@ -33,41 +43,86 @@ public class Main extends Application {
 	// Hint: Use java.util.List interface and its implementation classes (e.g.
 	// java.util.ArrayList)
 	private DataTable sampleDataTable = null;
+	private ListView<String> dataTablesName = new ListView<String>();
 
+	private List<DataTable> dataTables = new ArrayList<DataTable>();
+	
+	private ListView<String> datasetslist = new ListView<String>();
+	
+	private int datasetsSelectedIndex = 0;
+	private ObservableList<String> datasetsname = FXCollections.observableArrayList ();
+	
+	private ListView<String> chartslist = new ListView<String>();
+	private ObservableList<String> chartsname =FXCollections.observableArrayList ("Chart 1", "Chart 2", "Chart 3", "Chart 4");
+	
+	//Just for testing puropose
+	
+	//ObservableList<String> items =FXCollections.observableArrayList ("Single", "Double", "Suite", "Family App");
+	//list.setItems(items);
 	// Attributes: Scene and Stage
-	private static final int SCENE_NUM = 2;
+	
+	
+	private static final int SCENE_NUM = 3;
 	private static final int SCENE_MAIN_SCREEN = 0;
-	private static final int SCENE_LINE_CHART = 1;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - [Team Name]", "Sample Line Chart Screen" };
+	private static final int SCENE_LINE_CHART = 1;;
+	private static final int SCENE_DATA_FILTER = 2;
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
 	// To keep this application more structural,
 	// The following UI components are used to keep references after invoking
 	// createScene()
-
 	// Screen 1: paneMainScreen
-	private Button btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart;
-	private Label lbSampleDataTable, lbMainScreenTitle;
+	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
+	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel;
+	
+	//private ListView<DataTable> datasetListView;
+	
+	       
+	
+	//private ListView<> ChartListView;
 
 	// Screen 2: paneSampleLineChartScreen
 	private LineChart<Number, Number> lineChart = null;
 	private NumberAxis xAxis = null;
 	private NumberAxis yAxis = null;
 	private Button btLineChartBackMain = null;
+	
 
 	/**
 	 * create all scenes in this application
 	 */
 	private void initScenes() {
 		scenes = new Scene[SCENE_NUM];
-		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 400, 500);
+		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 1000, 1000);
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
+
+		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
+
+		//scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 700, 600);
 		for (Scene s : scenes) {
 			if (s != null)
 				// Assumption: all scenes share the same stylesheet
 				s.getStylesheets().add("Main.css");
 		}
+
+	}
+	
+	
+	private void updateDatasetsListandChartList() {
+		
+		
+		//TODO 
+		
+		
+		datasetsname.clear();
+		
+		for(int i=0;i<dataTables.size();i++) {
+
+			datasetsname.add("Dataset "+String.valueOf(i+1)); 
+		}
+
 	}
 
 	/**
@@ -78,6 +133,7 @@ public class Main extends Application {
 	private void initEventHandlers() {
 		initMainScreenHandlers();
 		initLineChartScreenHandlers();
+		initDataFilterScreenHandlers();
 	}
 
 	/**
@@ -88,6 +144,43 @@ public class Main extends Application {
 		// click handler
 		btLineChartBackMain.setOnAction(e -> {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
+		});
+	}
+	
+	private void initDataFilterScreenHandlers() {
+
+		// click handler
+		dataFilterBackMain.setOnAction(e -> {
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+			
+			updateDatasetsListandChartList();
+		});
+		
+		dataFilterReplaceDatasetButton.setOnAction(e -> {
+			//TODO save the modify dataset to same dataset sampleDataTable
+			
+			
+			
+			
+			//dataTables.listIterator(datasetsSelectedIndex);
+			dataTables.remove(datasetsSelectedIndex);
+			dataTables.add(datasetsSelectedIndex, sampleDataTable);
+			updateDatasetsListandChartList();
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+
+		});
+		
+		dataFilterSaveAsNewDatasetButton.setOnAction(e -> {
+			
+			//TODO modify the sampleDataTable
+			
+			dataTables.add(sampleDataTable);
+			
+			updateDatasetsListandChartList();
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+
 		});
 	}
 
@@ -139,7 +232,9 @@ public class Main extends Application {
 	 * Initialize event handlers of the main screen
 	 */
 	private void initMainScreenHandlers() {
-
+		
+		
+		
 		// click handler
 		btSampleLineChartData.setOnAction(e -> {
 
@@ -148,7 +243,7 @@ public class Main extends Application {
 			lbSampleDataTable.setText(String.format("SampleDataTable: %d rows, %d columns", sampleDataTable.getNumRow(),
 					sampleDataTable.getNumCol()));
 
-			populateSampleDataTableValuesToChart("Sample 1");
+			populateSampleDataTableValuesToChart("Sample 10");
 
 		});
 
@@ -161,13 +256,141 @@ public class Main extends Application {
 					sampleDataTable.getNumCol()));
 
 			populateSampleDataTableValuesToChart("Sample 2");
-
+			
 		});
 
 		// click handler
 		btSampleLineChart.setOnAction(e -> {
+			
 			putSceneOnStage(SCENE_LINE_CHART);
+			
+			
 		});
+		
+		showChartButton.setOnAction(e -> {
+			
+			//Won your show chart function here
+			//Log G will pass you the chart
+			//delete the line below if u need
+			putSceneOnStage(SCENE_LINE_CHART);
+			
+			
+		});
+		
+		
+		importButton.setOnAction(e -> {
+			//Will provide a file chooser, return with a dataTable object.
+			try {
+				//temp will return null if user cancel action in the middle.
+				DataTable temp = DataManager.dataImport(stage);
+				if (temp != null) { dataTables.add(temp); }
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} 			
+			
+			updateDatasetsListandChartList();
+
+			
+		});
+		
+		exportButton.setOnAction(e -> {
+			//Log G: If a chart is selected, should not allow the user to use it! 
+			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			System.out.println(datasetsSelectedIndex );
+			if (datasetsSelectedIndex==-1) {
+				showDataLabel.setText(String.format("Please select a dataset to export to .csv"));
+				
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				DataManager.dataExport(sampleDataTable, stage);
+				
+				
+				showDataLabel.setText(String.format("Welcome!"));
+				
+			}
+		});
+		
+		savingButton.setOnAction(e -> {
+			//Bill Please add your function here
+			//save dataTables and TODO charts
+			
+			
+		});
+		
+		loadingButton.setOnAction(e -> {
+			//Bill Please add your function here
+			
+			dataTables.add(SampleDataGenerator.generateSampleLineData());
+			
+
+			updateDatasetsListandChartList();
+			
+		});
+		
+		dataFilteringAndTransformationButton.setOnAction(e -> {
+			//Log G Please add your function here
+			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			System.out.println(datasetsSelectedIndex );
+			if (datasetsSelectedIndex==-1) {
+				showDataLabel.setText(String.format("Please select a dataset to do filtering and transformation."));
+				
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				putSceneOnStage(SCENE_DATA_FILTER);	
+				showDataLabel.setText(String.format("Welcome!"));
+				
+			}
+			
+			
+
+			updateDatasetsListandChartList();
+		});
+		
+		dataSetPreviewButton.setOnAction(e -> {
+			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			
+			sampleDataTable = dataTables.get(datasetsSelectedIndex);
+			
+			if (datasetsSelectedIndex==-1||sampleDataTable==null) {
+				showDataLabel.setText(String.format("No dataset being selected to be preview"));
+				
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				showDataLabel.setText(String.format("Dataset %d : %d rows, %d columns",datasetsSelectedIndex+1, sampleDataTable.getNumRow(),
+						sampleDataTable.getNumCol()));
+
+		
+			}
+			
+			
+
+			updateDatasetsListandChartList();
+		});
+		
+		
+		
+		plotGraphButton.setOnAction(e -> {
+			
+			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
+			System.out.println(datasetsSelectedIndex );
+			if (datasetsSelectedIndex==-1) {
+				System.out.println("Please select a dataset" );
+			}else {
+				sampleDataTable = dataTables.get(datasetsSelectedIndex);
+				
+				//use the sampleDataTable variable to plot graph 
+
+				//Won Please add your function here
+			}
+			
+
+			updateDatasetsListandChartList();
+		});
+		
+		
 
 	}
 
@@ -207,22 +430,87 @@ public class Main extends Application {
 	 * 
 	 * @return a Pane component to be displayed on a scene
 	 */
+	
+	private Pane paneDataFilterScreen() {
+		
+		VBox container = new VBox(20);
+		
+		dataFilterReplaceDatasetButton = new Button("Replacing the current dataset");
+		
+		
+		
+		dataFilterSaveAsNewDatasetButton = new Button("Save as new dataset");
+		dataFilterBackMain = new Button("Back");
+		
+
+		HBox buttongroup = new HBox(20);
+		
+
+		buttongroup.setAlignment(Pos.CENTER);
+		buttongroup.getChildren().addAll(dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain);
+		
+		container.getChildren().addAll(buttongroup);
+		container.setAlignment(Pos.CENTER);
+		
+		BorderPane pane = new BorderPane();
+		pane.setCenter(container);
+		pane.getStyleClass().add("screen-background");
+
+		return pane;
+		
+	}
 	private Pane paneMainScreen() {
 
 		lbMainScreenTitle = new Label("COMP3111 Chart");
 		btSampleLineChartData = new Button("Sample 1");
 		btSampleLineChartDataV2 = new Button("Sample 2");
-		btSampleLineChart = new Button("Sample Line Chart");
+		btSampleLineChart = new Button("Demo Plot Chart with random data");
 		lbSampleDataTable = new Label("DataTable: empty");
+		
+		importButton = new Button("Import .csv");
+		exportButton = new Button("Export .csv");
+		savingButton = new Button("Save as .comp3111");
+		loadingButton = new Button("Load .comp3111 to our program");
+		dataFilteringAndTransformationButton = new Button("Data Filtering and Transformation");
+		plotGraphButton = new Button("Plot Graph with selected dataset");
+		
+		showChartButton = new Button("Show Chart");
+		showDataLabel = new Label("Welcome!");
 
+		dataSetPreviewButton = new Button("Data set preview");
+		
+		datasetslist.setItems(datasetsname);
+
+		chartslist.setItems(chartsname);
+		
+		datasetslist.setPrefWidth(400);
+		datasetslist.setPrefHeight(300);
+		
+		chartslist.setPrefWidth(400);
+		chartslist.setPrefHeight(300);
 		// Layout the UI components
+
+		HBox groupofList = new HBox(20);
+		
+		groupofList.getChildren().addAll(datasetslist, chartslist );
+
+		groupofList.setAlignment(Pos.CENTER);
+		HBox groupofBill = new HBox(20);
+
+		groupofBill.setAlignment(Pos.CENTER);
+		groupofBill.getChildren().addAll(importButton, exportButton , savingButton ,loadingButton);
+
+		
+		HBox groupofChartandTrans = new HBox(20);
+		groupofChartandTrans.setAlignment(Pos.CENTER);
+		groupofChartandTrans.getChildren().addAll(dataSetPreviewButton, dataFilteringAndTransformationButton, showChartButton, plotGraphButton);
 
 		HBox hc = new HBox(20);
 		hc.setAlignment(Pos.CENTER);
 		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
 
 		VBox container = new VBox(20);
-		container.getChildren().addAll(lbMainScreenTitle, hc, lbSampleDataTable, new Separator(), btSampleLineChart);
+		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), showDataLabel, groupofList, new Separator(), groupofChartandTrans);
 		container.setAlignment(Pos.CENTER);
 
 		BorderPane pane = new BorderPane();
@@ -245,6 +533,8 @@ public class Main extends Application {
 	 *            - The sceneID defined above (see SCENE_XXX)
 	 */
 	private void putSceneOnStage(int sceneID) {
+		
+		updateDatasetsListandChartList();
 
 		// ensure the sceneID is valid
 		if (sceneID < 0 || sceneID >= SCENE_NUM)
@@ -258,13 +548,21 @@ public class Main extends Application {
 	}
 
 	/**
+	 * 
 	 * All JavaFx GUI application needs to override the start method You can treat
 	 * it as the main method (i.e. the entry point) of the GUI application
 	 */
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			
+			
+			
+			
+			//update List View
+			updateDatasetsListandChartList();
 
+			
 			stage = primaryStage; // keep a stage reference as an attribute
 			initScenes(); // initialize the scenes
 			initEventHandlers(); // link up the event handlers
@@ -283,5 +581,6 @@ public class Main extends Application {
 	 */
 	public static void main(String[] args) {
 		launch(args);
+
 	}
 }
