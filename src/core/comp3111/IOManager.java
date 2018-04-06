@@ -24,6 +24,10 @@ public class IOManager {
 	private static PepsiObject storePepsi;
 	
 	public static class PepsiObject implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private static List<DataTable> dataTables;
 		private static List<Chart> charts;
 		
@@ -104,6 +108,8 @@ public class IOManager {
 				ObjectInputStream ois= new ObjectInputStream(streamIn);
 				PepsiObject storePepsi = null;
 				storePepsi = (PepsiObject) ois.readObject();
+				//System.out.println(storePepsi.getDataTables().get(1));
+				//System.out.println(storePepsi.getDataTables().get(2));
 				if (storePepsi != null) {
 					IOManager.setDataTables(PepsiObject.getDataTables());
 					IOManager.setCharts(PepsiObject.getCharts());

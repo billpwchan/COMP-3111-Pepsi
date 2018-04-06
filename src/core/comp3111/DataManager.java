@@ -89,6 +89,7 @@ public class DataManager {
      */
 	public static void dataExport(DataTable dataTable, Stage stage) {
 		if (dataTable == null) {return;}
+		if (!(dataTable instanceof DataTable)) {return;}
 		
 		List<List<String>> columns = new ArrayList<>();
 		List<List<String>> rows = new ArrayList<>();  //Use transpose function to convert.

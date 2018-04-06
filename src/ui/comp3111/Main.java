@@ -322,7 +322,7 @@ public class Main extends Application {
 		loadingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			
-			dataTables.add(SampleDataGenerator.generateSampleLineData());
+			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
 			IOManager.fileImport(stage);
 			
 			//Please put corresponding datatables and charts ArrayList into attribute in this class.
