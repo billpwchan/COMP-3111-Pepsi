@@ -95,7 +95,7 @@ public class Main extends Application {
 	 */
 	private void initScenes() {
 		scenes = new Scene[SCENE_NUM];
-		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 1000, 1000);
+		scenes[SCENE_MAIN_SCREEN] = new Scene(paneMainScreen(), 850, 850);
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
 
 		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
