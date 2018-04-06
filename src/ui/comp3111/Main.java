@@ -4,6 +4,7 @@ import core.comp3111.DataColumn;
 import core.comp3111.DataManager;
 import core.comp3111.DataTable;
 import core.comp3111.DataType;
+import core.comp3111.IOManager;
 import core.comp3111.SampleDataGenerator;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -314,14 +315,19 @@ public class Main extends Application {
 		savingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			//save dataTables and TODO charts
-			
+			IOManager.fileExport(dataTables, null, stage);
 			
 		});
 		
 		loadingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			
-			dataTables.add(SampleDataGenerator.generateSampleLineData());
+			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
+			IOManager.fileImport(stage);
+			
+			//Please put corresponding datatables and charts ArrayList into attribute in this class.
+			IOManager.getDataTables();
+			IOManager.getCharts();
 			
 
 			updateDatasetsListandChartList();
