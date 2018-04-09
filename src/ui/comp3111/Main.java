@@ -208,10 +208,22 @@ public class Main extends Application {
 		selectChartTypeBtn.setOnAction(e -> {
 			graphSelectedIndex = plotChartTypeList.getFocusModel().getFocusedIndex();
 			System.out.println(graphSelectedIndex);
-			if (graphSelectedIndex==-1) {
-				chartSelectionDataLabel.setText(String.format("Please select a chart type to plot"));
+			switch(graphSelectedIndex)
+			{
+			case 0: 
+				//Line Chart Implementation
+				break;
 				
+			case 1:
+				//Bar Chart Implementation				
+				break;
+				
+			case 2:
+				//Animated Line Chart Implementation				
+				break;
+			
 			}
+			
 		});
 	}
 	
@@ -416,7 +428,10 @@ public class Main extends Application {
 				//use the sampleDataTable variable to plot graph 
 
 				//Won Please add your function here
-				putSceneOnStage(PLOT_GRAPH);	
+				//select Line Chart option by default and put the chart selection scene on
+				plotChartTypeList.getSelectionModel().select(0);
+				putSceneOnStage(PLOT_GRAPH);
+				
 			}
 			
 
@@ -565,7 +580,7 @@ public class Main extends Application {
 	 */
 	
 	private Pane panePlotGraphScreen() {
-		chartSelectionDataLabel = new Label("Please select chart type ");
+		chartSelectionDataLabel = new Label("Please select a chart type ");
 		plotChartBackMainBtn = new Button("Back");
 		selectChartTypeBtn = new Button("Select Chart Type");
 		plotChartTypeList.setItems(chartTypesName);
