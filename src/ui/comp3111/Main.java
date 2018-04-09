@@ -128,6 +128,8 @@ public class Main extends Application {
 
 			datasetsname.add("Dataset "+String.valueOf(i+1)); 
 		}
+		//highlight and select the newly added dataset by default
+		datasetslist.getSelectionModel().select(dataTables.size()-1);
 
 	}
 
@@ -313,7 +315,7 @@ public class Main extends Application {
 			try {
 				//temp will return null if user cancel action in the middle.
 				DataTable temp = DataManager.dataImport(stage);
-				if (temp != null) { dataTables.add(temp); }
+				if (temp != null) { dataTables.add(temp);  }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} 			
