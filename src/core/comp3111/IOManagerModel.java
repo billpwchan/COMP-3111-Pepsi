@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+
+import ui.comp3111.IOManager;
+
 import java.util.ArrayList;
 
  
@@ -23,7 +26,7 @@ public class IOManagerModel {
 	 * @throws IOException 
 	 */
 	public static void loadPepsiFile(File file) throws IOException {
-		if (file == null) {return;}
+		if (file == null) {return;} 
 		
 		ObjectInputStream ois = null;
 		//PepsiObject storePepsi = null;
@@ -66,6 +69,9 @@ public class IOManagerModel {
 		
 		List<Object> storePepsi = new ArrayList<Object>();
 		for (DataTable eachOne : inputDataTables) {
+			storePepsi.add(eachOne);
+		}
+		for (Chart eachOne : inputCharts) {
 			storePepsi.add(eachOne);
 		}
 
