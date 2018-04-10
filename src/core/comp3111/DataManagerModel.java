@@ -128,9 +128,7 @@ public class DataManagerModel {
 		List<DataColumn> inputDataColsValue = dataTable.getAllColValue();
 		List<String> inputDataColsName = dataTable.getAllColName();
 
-		if (inputDataColsValue.size() != inputDataColsName.size()) {
-			System.out.println("BUGGGG> NOT EQUAL> NEED HANDLE.");
-		}
+		if (inputDataColsValue.size() != inputDataColsName.size()) { return; }
 
 		for (int index = 0; index < inputDataColsValue.size() && index < inputDataColsName.size(); index++) {
 			List<String> temp = new ArrayList<>();
@@ -144,8 +142,6 @@ public class DataManagerModel {
 		}
 
 		rows = transpose(columns);
-		
-		
 		
 		if (file != null) {
 			try {

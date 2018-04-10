@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.Arrays;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -315,18 +316,29 @@ public class Main extends Application {
 		savingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			//save dataTables and TODO charts
-			IOManager.fileExport(dataTables, null, stage);
+			try {
+				IOManager.fileExport(dataTables, null, stage);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 		});
 		
 		loadingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			
-			dataTables.add(SampleDataGenerator.generateSampleLineDataV2());
-			IOManager.fileImport(stage);
+			try {
+				IOManager.fileImport(stage);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			
 			//Please put corresponding datatables and charts ArrayList into attribute in this class.
-			IOManager.getDataTables();
+			List<DataTable> inputDataTable = IOManager.getDataTables();
+			for (DataTable DataTableObj : inputDataTable) {
+				dataTables.add(DataTableObj);
+			}
 			IOManager.getCharts();
 			
 
