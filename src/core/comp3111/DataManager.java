@@ -7,27 +7,19 @@ import java.awt.Image;
 //For I/O
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-//Arrays related
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ui.comp3111.CustomFileChooser;
 
 /**
  * @author billpwchan
- *
+ * 
  */
+
 public class DataManager {
 
 	// attributes
@@ -87,7 +79,7 @@ public class DataManager {
 	}
 
 	
-
+	
 	/**
 	 * @return the dataTable
 	 */

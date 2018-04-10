@@ -11,134 +11,143 @@ import java.util.List;
 import javafx.scene.chart.Chart;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ui.comp3111.CustomFileChooser;
 
+
+/**
+ * @author billpwchan
+ *
+ */
 public class IOManager {
 	
 	//Attributes
 	
 	private static List<DataTable> dataTables;
 	private static List<Chart> charts;
-	private static PepsiObject storePepsi;
+	static PepsiObject storePepsi;
 	
 	public static class PepsiObject implements Serializable{
-		/**
-		 * 
-		 */
+
 		private static final long serialVersionUID = 1L;
 		private static List<DataTable> dataTables;
 		private static List<Chart> charts;
 		
 		
+		/**
+		 * Default Constructor
+		 */
 		public PepsiObject() {
 			dataTables = null;
 			charts = null;
 		}
 		
+		/**
+		 * For storing DataTable Object and Chart Object as a same object.
+		 * 
+		 * @param inputDataTables
+		 * @param inputCharts
+		 */
 		public PepsiObject(List<DataTable> inputDataTables, List<Chart> inputCharts) {
 			PepsiObject.dataTables = inputDataTables;
 			PepsiObject.charts = inputCharts;
 		}
-		
+
+		/**
+		 * @return the dataTables
+		 */
 		public static List<DataTable> getDataTables() {
 			return dataTables;
 		}
+
+		/**
+		 * @param DataTables to set
+		 */
 		public static void setDataTables(List<DataTable> dataTables) {
 			PepsiObject.dataTables = dataTables;
 		}
+
+		/**
+		 * @return the charts
+		 */
 		public static List<Chart> getCharts() {
 			return charts;
 		}
+
+		/**
+		 * @param Charts the charts to set
+		 */
 		public static void setCharts(List<Chart> charts) {
 			PepsiObject.charts = charts;
 		}
+		
+
 	}
 	
+	/**
+	 * Input DataTable Object, Chart Object and stage. Then export to user specified path as a .pepsi file.
+	 * 
+	 * @param inputDataTables
+	 * @param inputCharts
+	 * @param stage
+	 */
 	public static void fileExport(List<DataTable> inputDataTables, List<Chart> inputCharts, Stage stage){	
 		if (inputDataTables == null && inputCharts == null) { return; }
 
-		FileChooser chooser = new FileChooser();
-		//set it to be a save dialog
-		chooser.setTitle("Save .pepsi file");
-		//Set an extension filter, so the user sees other XML files
-		chooser.getExtensionFilters().addAll(
-				new FileChooser.ExtensionFilter("Customized Pepsi File (*.PEPSI)", "*.pepsi")
-		);
-		chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-		chooser.setInitialFileName("Data.pepsi");
-
-		File file = chooser.showSaveDialog(stage);
+		CustomFileChooser chooser = new CustomFileChooser();
+		chooser.saveFileChooser(stage, "Store .pepsi file", "Customized Pepsi File (*.PEPSI)", "*.pepsi", "user.home", "Data.pepsi");
+		File file = chooser.getFile();
 		if (file != null) {
-			storeFile(inputDataTables, inputCharts, file);
+			IOManagerModel.storeFile(inputDataTables, inputCharts, file);
 		}	
 		
 	}
 	
 	
-	public static void storeFile(List<DataTable> inputDataTables, List<Chart> inputCharts, File file) {
-		ObjectOutputStream oos = null;
-		FileOutputStream fout = null;
-	    try {
-			IOManager.storePepsi = new PepsiObject(inputDataTables, inputCharts);
-			fout = new FileOutputStream(file, true);
-			oos = new ObjectOutputStream(fout);
-			oos.writeObject(storePepsi);
-			oos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
-		
-	}
+
 	
+	/**
+	 * Import Pepsi File and save as Pepsi Object
+	 * 
+	 * @param stage
+	 */
 	public static void fileImport(Stage stage) {		
 		//Basic Settings for FileChooser (Open Version)
-		FileChooser fc = new FileChooser();
-		fc.setTitle("Please select .pepsi dataset for import");
+		CustomFileChooser fc = new CustomFileChooser();
+		fc.LoadFileChooser(stage, "Please select .pepsi dataset for import", "Customized Pepsi File (*.PEPSI)", "*.pepsi", "user.home");
+		File file = fc.getFile();
 		
-		//Use ExtensionFileFilter to display only .csv file & Directories
-		fc.getExtensionFilters().addAll(
-				new FileChooser.ExtensionFilter("Customized Pepsi File (*.PEPSI)", "*.pepsi")
-		);
-		
-		fc.setInitialDirectory(new File(System.getProperty("user.home")));
-		
-		File file = fc.showOpenDialog(stage);
 		//Perform CSV File Handle for the selected .csv
 		if (file != null) {			
-			try {
-				FileInputStream streamIn = new FileInputStream(file);
-				ObjectInputStream ois= new ObjectInputStream(streamIn);
-				PepsiObject storePepsi = null;
-				storePepsi = (PepsiObject) ois.readObject();
-				//System.out.println(storePepsi.getDataTables().get(1));
-				//System.out.println(storePepsi.getDataTables().get(2));
-				if (storePepsi != null) {
-					IOManager.setDataTables(PepsiObject.getDataTables());
-					IOManager.setCharts(PepsiObject.getCharts());
-					ois.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			IOManagerModel.loadPepsiFile(file);
 		}
 	}
 
-	
+	/**
+	 * @return the dataTables
+	 */
 	public static List<DataTable> getDataTables() {
 		return dataTables;
 	}
 
+	/**
+	 * @param dataTables the dataTables to set
+	 */
 	public static void setDataTables(List<DataTable> dataTables) {
 		IOManager.dataTables = dataTables;
 	}
 
+	/**
+	 * @return the charts
+	 */
 	public static List<Chart> getCharts() {
 		return charts;
 	}
 
+
+	/**
+	 * @param charts the charts to set
+	 */
 	public static void setCharts(List<Chart> charts) {
 		IOManager.charts = charts;
 	}
-
-
-
 }

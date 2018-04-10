@@ -1,5 +1,6 @@
-package core.comp3111;
+package ui.comp3111;
 
+import java.awt.Image;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -55,6 +56,33 @@ public class CustomFileChooser {
 		
 		if (Option == 1) {this.file = fc.showOpenDialog(stage);}
 		if (Option == 2) {this.file = fc.showSaveDialog(stage);}
+	}
+	
+	/**
+	 * @return
+	 */
+	public static int getUserReplacementOption() {
+		// Set up JOptionPane Picture.
+		ImageIcon icon = new ImageIcon("src/images/selection.jpg");
+
+		Image image = icon.getImage(); // transform it
+		Image newimg = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // scale it the smooth way
+		icon = new ImageIcon(newimg); // transform it back
+
+		// create a jframe
+		JFrame frame = new JFrame("JOptionPane showMessageDialog example");
+
+		// show a JOptionPane dialog using showMessageDialog
+		// JOptionPane.showMessageDialog(frame,
+		// "Please select methods",
+		// "Please preferred way for replacing missing numerical values",
+		// JOptionPane.INFORMATION_MESSAGE);
+
+		Object[] possibilities = { "Replace with Mean", "Replace with Median", "Replace with Zero" };
+
+		return JOptionPane.showOptionDialog(frame,
+				"Please preferred way for replacing missing numerical values", "Please select...",
+				JOptionPane.INFORMATION_MESSAGE, 1, icon, possibilities, 0);
 	}
 
 
