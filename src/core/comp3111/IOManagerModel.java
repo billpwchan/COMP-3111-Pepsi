@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.ArrayList;
 
-import javafx.scene.chart.Chart;
-
+ 
 /**
  * @author billpwchan
  *
@@ -27,17 +27,15 @@ public class IOManagerModel {
 		if (file == null) {return;}
 		
 		ObjectInputStream ois = null;
+		PepsiObject storePepsi = null;
 		try {
-			System.out.println(file.getName() + file.getAbsolutePath());
 			FileInputStream streamIn = new FileInputStream(file);
 			ois = new ObjectInputStream(streamIn);
-			PepsiObject tempPepsi = null;
-			
-			tempPepsi = (PepsiObject) ois.readObject();
-			if (tempPepsi != null) {
-				IOManager.setDataTables(tempPepsi.getDataTables());
-				IOManager.setCharts(tempPepsi.getCharts());
+			storePepsi = (PepsiObject) ois.readObject();
+			if (storePepsi!=null) {
+				System.out.println("Success");
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -55,12 +53,13 @@ public class IOManagerModel {
 	public static void storeFile(List<DataTable> inputDataTables, List<Chart> inputCharts, File file) throws IOException {
 		ObjectOutputStream oos = null;
 		FileOutputStream fout = null;
+		PepsiObject storePepsi = new PepsiObject(inputDataTables, inputCharts);
+
 	    try {
-			PepsiObject tempPepsi = new PepsiObject(inputDataTables, inputCharts);
-			fout = new FileOutputStream(file, true);
+			//PepsiObject tempPepsi = new PepsiObject(inputDataTables, inputCharts);
+			fout = new FileOutputStream(file);
 			oos = new ObjectOutputStream(fout);
-			System.out.println(tempPepsi.getDataTables());
-			oos.writeObject(tempPepsi);
+			oos.writeObject(storePepsi);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

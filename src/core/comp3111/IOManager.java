@@ -1,16 +1,9 @@
 package core.comp3111;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.List;
 
-import javafx.scene.chart.Chart;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import ui.comp3111.CustomFileChooser;
 
@@ -25,7 +18,6 @@ public class IOManager {
 	
 	private static List<DataTable> dataTables;
 	private static List<Chart> charts;
-	PepsiObject storePepsi;
 
 	
 	/**

@@ -6,14 +6,14 @@ package core.comp3111;
 import java.io.Serializable;
 import java.util.List;
 
-import javafx.scene.chart.Chart;
 
 /**
  * @author billpwchan
  *
  */
-public class PepsiObject implements Serializable {
+public class PepsiObject implements Serializable{
 
+	private static final long serialVersionUID = 19L;
 	private List<DataTable> dataTables;
 	private List<Chart> charts;
 	
@@ -41,7 +41,7 @@ public class PepsiObject implements Serializable {
 	 * @return the dataTables
 	 */
 	public List<DataTable> getDataTables() {
-		return this.dataTables;
+		return dataTables;
 	}
 
 	/**
@@ -64,4 +64,6 @@ public class PepsiObject implements Serializable {
 	public void setCharts(List<Chart> charts) {
 		this.charts = charts;
 	}
+	
+
 }
