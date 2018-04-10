@@ -35,8 +35,8 @@ public class IOManager {
 		}
 		
 		public PepsiObject(List<DataTable> inputDataTables, List<Chart> inputCharts) {
-			this.dataTables = inputDataTables;
-			this.charts = inputCharts;
+			PepsiObject.dataTables = inputDataTables;
+			PepsiObject.charts = inputCharts;
 		}
 		
 		public static List<DataTable> getDataTables() {
@@ -55,11 +55,7 @@ public class IOManager {
 	
 	public static void fileExport(List<DataTable> inputDataTables, List<Chart> inputCharts, Stage stage){	
 		if (inputDataTables == null && inputCharts == null) { return; }
-		ObjectOutputStream oos = null;
-		FileOutputStream fout = null;
-		
-		
-		
+
 		FileChooser chooser = new FileChooser();
 		//set it to be a save dialog
 		chooser.setTitle("Save .pepsi file");
@@ -72,16 +68,24 @@ public class IOManager {
 
 		File file = chooser.showSaveDialog(stage);
 		if (file != null) {
-		    try {
-				IOManager.storePepsi = new PepsiObject(inputDataTables, inputCharts);
-				fout = new FileOutputStream(file, true);
-				oos = new ObjectOutputStream(fout);
-				oos.writeObject(storePepsi);
-				oos.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			storeFile(inputDataTables, inputCharts, file);
 		}	
+		
+	}
+	
+	
+	public static void storeFile(List<DataTable> inputDataTables, List<Chart> inputCharts, File file) {
+		ObjectOutputStream oos = null;
+		FileOutputStream fout = null;
+	    try {
+			IOManager.storePepsi = new PepsiObject(inputDataTables, inputCharts);
+			fout = new FileOutputStream(file, true);
+			oos = new ObjectOutputStream(fout);
+			oos.writeObject(storePepsi);
+			oos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 		
 	}
 	

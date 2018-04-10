@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import core.comp3111.DataManager;
+import core.comp3111.DataManagerModel;
 import core.comp3111.DataTable;
 
 /**
@@ -58,7 +58,6 @@ class DataManagerTest {
 	void DataImportTest_MissingValue() {
 		// Aim in here is to write a test file in a specific path
 		// Then use DataManager.dataImport to test the .csv file.
-		DataManager.setDataTable(new DataTable());
 		File file = new File("DataManagerTest.csv");
 
 		String[] titles = new String[] { "PureNum","PureString","MissingNum","MissingString","Empty","NewPure","Diagnol"};
@@ -70,13 +69,13 @@ class DataManagerTest {
 		String[] row6 = new String[] {"","","","","","","6"};
 		try {
 			FileWriter fw = new FileWriter(file);
-			DataManager.writeLine(fw, Arrays.asList(titles));
-			DataManager.writeLine(fw, Arrays.asList(row1));
-			DataManager.writeLine(fw, Arrays.asList(row2));
-			DataManager.writeLine(fw, Arrays.asList(row3));
-			DataManager.writeLine(fw, Arrays.asList(row4));
-			DataManager.writeLine(fw, Arrays.asList(row5));
-			DataManager.writeLine(fw, Arrays.asList(row6));
+			DataManagerModel.writeLine(fw, Arrays.asList(titles));
+			DataManagerModel.writeLine(fw, Arrays.asList(row1));
+			DataManagerModel.writeLine(fw, Arrays.asList(row2));
+			DataManagerModel.writeLine(fw, Arrays.asList(row3));
+			DataManagerModel.writeLine(fw, Arrays.asList(row4));
+			DataManagerModel.writeLine(fw, Arrays.asList(row5));
+			DataManagerModel.writeLine(fw, Arrays.asList(row6));
 
 			fw.flush();
 			fw.close();
@@ -86,7 +85,7 @@ class DataManagerTest {
 		
 		file = new File("DataManagerTest.csv");
 		try {
-			DataManager.handleCSVFile(file);
+			DataManagerModel.handleCSVFile(file);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
