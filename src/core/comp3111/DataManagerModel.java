@@ -271,7 +271,12 @@ public class DataManagerModel {
 		return flag && avoidAllEmptyFlag;
 	}
 
-	// Assumption: Not ""
+	/**
+	 * Assume not ""
+	 * 
+	 * @param string for check
+	 * @return whether it is composed entirely via number or not
+	 */
 	private static boolean stringIsNumeric(String str) {
 		for (char c : str.toCharArray()) {
 			if (!Character.isDigit(c))
@@ -292,14 +297,29 @@ public class DataManagerModel {
 		}
 	}
 
-	private static void writeLine(Writer w, List<String> values) throws IOException {
+	/**
+	 * @param Writer Object
+	 * @param ArrayList Object
+	 * @throws IOException
+	 */
+	public static void writeLine(Writer w, List<String> values) throws IOException {
 		writeLine(w, values, DEFAULT_SEPARATOR, ' ');
 	}
 
-	private static void writeLine(Writer w, List<String> values, char separators) throws IOException {
+	/**
+	 * @param Writer Object
+	 * @param ArrayList Object
+	 * @param Char Separators
+	 * @throws IOException
+	 */
+	public static void writeLine(Writer w, List<String> values, char separators) throws IOException {
 		writeLine(w, values, separators, ' ');
 	}
 
+	/**
+	 * @param CSV Format String
+	 * @return 
+	 */
 	private static String followCVSformat(String value) {
 
 		String result = value;
@@ -310,7 +330,14 @@ public class DataManagerModel {
 
 	}
 
-	private static void writeLine(Writer w, List<String> values, char separators, char customQuote) throws IOException {
+	/**
+	 * @param Writer Object
+	 * @param Arraylist Values
+	 * @param separators
+	 * @param customQuote
+	 * @throws IOException
+	 */
+	public static void writeLine(Writer w, List<String> values, char separators, char customQuote) throws IOException {
 
 		boolean first = true;
 
