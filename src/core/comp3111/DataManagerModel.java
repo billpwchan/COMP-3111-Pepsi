@@ -42,9 +42,10 @@ public class DataManagerModel {
 	 * @param Input File Object
 	 * @return DataTable Object
 	 * @throws FileNotFoundException
+	 * @throws DataTableException 
 	 */
-	public static DataTable handleCSVFile(File file) throws FileNotFoundException {
-		if (file == null) { return null; }
+	public static DataTable handleCSVFile(File file) throws FileNotFoundException, DataTableException {
+		if (file == null) { throw new FileNotFoundException(); }
 		
 		DataTable dataTable = new DataTable();
 		
@@ -92,11 +93,7 @@ public class DataManagerModel {
 				}
 				DataColumn numValuesCol = new DataColumn(DataType.TYPE_NUMBER, numValues);
 				// Add to DataTable
-				try {
-					dataTable.addCol(columns.get(column_index).get(0), numValuesCol);
-				} catch (DataTableException e) {
-					e.printStackTrace();
-				}
+				dataTable.addCol(columns.get(column_index).get(0), numValuesCol);
 
 			} else {
 				System.out.println("This is a string column");
@@ -104,11 +101,7 @@ public class DataManagerModel {
 				String[] stringValues = columns.get(column_index).toArray(new String[columns.get(column_index).size()]);
 				DataColumn stringValuesCol = new DataColumn(DataType.TYPE_STRING, stringValues);
 				// Add to DataTable
-				try {
-					dataTable.addCol(columns.get(column_index).get(0), stringValuesCol);
-				} catch (DataTableException e) {
-					e.printStackTrace();
-				}
+				dataTable.addCol(columns.get(column_index).get(0), stringValuesCol);
 			}
 		}
 		printColumnbyColumn(columns);
@@ -118,8 +111,9 @@ public class DataManagerModel {
 	/**
 	 * @param Two-dimensional ArrayList
 	 * @param Stage Object
+	 * @throws IOException 
 	 */
-	public static void saveCSVFile(DataTable dataTable, File file) {
+	public static void saveCSVFile(DataTable dataTable, File file) throws IOException {
 
 		List<List<String>> columns = new ArrayList<>();
 		List<List<String>> rows = new ArrayList<>(); // Use transpose function to convert.
@@ -128,7 +122,7 @@ public class DataManagerModel {
 		List<DataColumn> inputDataColsValue = dataTable.getAllColValue();
 		List<String> inputDataColsName = dataTable.getAllColName();
 
-		if (inputDataColsValue.size() != inputDataColsName.size()) { return; }
+		//if (inputDataColsValue.size() != inputDataColsName.size()) { return; }
 
 		for (int index = 0; index < inputDataColsValue.size() && index < inputDataColsName.size(); index++) {
 			List<String> temp = new ArrayList<>();
@@ -144,16 +138,11 @@ public class DataManagerModel {
 		rows = transpose(columns);
 		
 		if (file != null) {
-			try {
-				FileWriter fw = new FileWriter(file);
-				for (List<String> row : rows) {
-					writeLine(fw, row);
-				}
-				fw.flush();
-				fw.close();
-	
-			} catch (IOException e) {
-				e.printStackTrace();
+			FileWriter fw = new FileWriter(file);
+			for (List<String> row : rows) {
+				writeLine(fw, row);
+			fw.flush();
+			fw.close();
 			}
 		}
 	}
@@ -240,12 +229,9 @@ public class DataManagerModel {
 			ret.add(col);
 		}
 		return ret;
-	}
+	} 
 
 	private static boolean checkNumericalColumn(int columnNum, List<List<String>> columns) {
-		if (columnNum < 0) {
-			return false;
-		}
 
 		boolean flag = true;
 		boolean avoidAllEmptyFlag = false;
@@ -307,15 +293,6 @@ public class DataManagerModel {
 		writeLine(w, values, DEFAULT_SEPARATOR, ' ');
 	}
 
-	/**
-	 * @param Writer Object
-	 * @param ArrayList Object
-	 * @param Char Separators
-	 * @throws IOException
-	 */
-	public static void writeLine(Writer w, List<String> values, char separators) throws IOException {
-		writeLine(w, values, separators, ' ');
-	}
 
 	/**
 	 * @param CSV Format String
@@ -342,11 +319,6 @@ public class DataManagerModel {
 
 		boolean first = true;
 
-		// default customQuote is empty
-
-		if (separators == ' ') {
-			separators = DEFAULT_SEPARATOR;
-		}
 
 		StringBuilder sb = new StringBuilder();
 		for (String value : values) {
@@ -355,8 +327,6 @@ public class DataManagerModel {
 			}
 			if (customQuote == ' ') {
 				sb.append(followCVSformat(value));
-			} else {
-				sb.append(customQuote).append(followCVSformat(value)).append(customQuote);
 			}
 
 			first = false;

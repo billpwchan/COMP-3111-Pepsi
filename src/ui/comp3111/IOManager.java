@@ -1,11 +1,13 @@
-package core.comp3111;
+package ui.comp3111;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import core.comp3111.Chart;
+import core.comp3111.DataTable;
+import core.comp3111.IOManagerModel;
 import javafx.stage.Stage;
-import ui.comp3111.CustomFileChooser;
 
 
 /**

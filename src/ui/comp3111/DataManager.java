@@ -1,19 +1,22 @@
 /**
  * 
  */
-package core.comp3111;
+package ui.comp3111;
 
 import java.awt.Image;
 //For I/O
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import core.comp3111.DataManagerModel;
+import core.comp3111.DataTable;
+import core.comp3111.DataTableException;
 import javafx.stage.Stage;
-import ui.comp3111.CustomFileChooser;
 
 /**
  * @author billpwchan
@@ -35,9 +38,10 @@ public class DataManager {
 	 * @param Stage Object
 	 * @return Void
 	 * @throws FileNotFoundException
+	 * @throws DataTableException 
 	 */
 
-	public static DataTable dataImport(Stage stage) throws FileNotFoundException {
+	public static DataTable dataImport(Stage stage) throws FileNotFoundException, DataTableException {
 		dataTable = new DataTable();
 
 		CustomFileChooser fileChooser = new CustomFileChooser();
@@ -62,8 +66,9 @@ public class DataManager {
 	 * @param dataTable
 	 *            - defined in DataTable class. Should not be a null object.
 	 * @return Void
+	 * @throws IOException 
 	 */
-	public static void dataExport(DataTable dataTable, Stage stage) {
+	public static void dataExport(DataTable dataTable, Stage stage) throws IOException {
 		if (dataTable == null) {
 			return;
 		}
