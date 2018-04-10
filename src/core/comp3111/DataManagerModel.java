@@ -3,7 +3,6 @@
  */
 package core.comp3111;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -15,16 +14,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import javafx.stage.Stage;
+import ui.comp3111.CustomFileChooser;
 
 /**
  * @author billpwchan
  *
  */
+
+//
+//Copyright (c) .NET Foundation. All rights reserved.  
+//Licensed under the MIT License. See LICENSE file in the project root for full license information.  
+//
 public class DataManagerModel {
 	
 	//Attributes
@@ -34,7 +34,18 @@ public class DataManagerModel {
 	
 	//Functions
 
+	/**
+	 * Input a .csv file and convert content into a DataTable Object.
+	 * 	- Assume each column has same number of rows. 
+	 * 	- Missing value is allowed
+	 * 
+	 * @param Input File Object
+	 * @return DataTable Object
+	 * @throws FileNotFoundException
+	 */
 	public static DataTable handleCSVFile(File file) throws FileNotFoundException {
+		if (file == null) { return null; }
+		
 		DataTable dataTable = new DataTable();
 		
 		Scanner scanner = new Scanner(file);
@@ -62,7 +73,7 @@ public class DataManagerModel {
 				if (!containNumericalColumn) {
 					//For testing purpose, implement different options with testFlag (Int value)
 					if (testFlag != DEFAULT_TESTFLAG) { option = testFlag; }
-					else { option = DataManager.getUserReplacementOption();}
+					else { option = CustomFileChooser.getUserReplacementOption();}
 				}
 				containNumericalColumn = true;
 
@@ -220,7 +231,7 @@ public class DataManagerModel {
 	 * Transpose a two-dimensional array list
 	 * 
 	 * @param table
-	 * @return
+	 * @return List<List<T>> Object. 2-dimensional
 	 */
 	private static <T> List<List<T>> transpose(List<List<T>> table) {
 		List<List<T>> ret = new ArrayList<List<T>>();
@@ -261,10 +272,10 @@ public class DataManagerModel {
 	}
 
 	/**
-	 * Assume not ""
+	 * Check a certain string is composed entirely via nummerical value or not  (Assume not "")
 	 * 
 	 * @param string for check
-	 * @return whether it is composed entirely via number or not
+	 * @return boolean value
 	 */
 	private static boolean stringIsNumeric(String str) {
 		for (char c : str.toCharArray()) {
@@ -274,6 +285,11 @@ public class DataManagerModel {
 		return true;
 	}
 
+	/**
+	 * Print DataTable Object column by column
+	 * 
+	 * @param 2-dimensional ArrayList Object 
+	 */
 	private static void printColumnbyColumn(List<List<String>> rows) {
 		int lineNo = 1;
 		for (List<String> row : rows) {
