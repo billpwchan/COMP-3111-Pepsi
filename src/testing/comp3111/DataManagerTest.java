@@ -70,13 +70,13 @@ class DataManagerTest {
 		String[] row6 = new String[] {"","","","","","","6"};
 		try {
 			FileWriter fw = new FileWriter(file);
-			DataManager.writeLine(fw, Arrays.asList(titles));
-			DataManager.writeLine(fw, Arrays.asList(row1));
-			DataManager.writeLine(fw, Arrays.asList(row2));
-			DataManager.writeLine(fw, Arrays.asList(row3));
-			DataManager.writeLine(fw, Arrays.asList(row4));
-			DataManager.writeLine(fw, Arrays.asList(row5));
-			DataManager.writeLine(fw, Arrays.asList(row6));
+//			DataManager.writeLine(fw, Arrays.asList(titles));
+//			DataManager.writeLine(fw, Arrays.asList(row1));
+//			DataManager.writeLine(fw, Arrays.asList(row2));
+//			DataManager.writeLine(fw, Arrays.asList(row3));
+//			DataManager.writeLine(fw, Arrays.asList(row4));
+//			DataManager.writeLine(fw, Arrays.asList(row5));
+//			DataManager.writeLine(fw, Arrays.asList(row6));
 
 			fw.flush();
 			fw.close();
@@ -85,11 +85,11 @@ class DataManagerTest {
 		}
 		
 		file = new File("DataManagerTest.csv");
-		try {
-			DataManager.handleCSVFile(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		try {
+////			DataManager.handleCSVFile(file);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 
 	}
 
