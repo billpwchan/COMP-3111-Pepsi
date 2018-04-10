@@ -18,7 +18,6 @@ import java.util.ArrayList;
  *
  */
 public class IOManagerModel {
-	
 	/**
 	 * @param file
 	 * @throws IOException 
@@ -27,15 +26,27 @@ public class IOManagerModel {
 		if (file == null) {return;}
 		
 		ObjectInputStream ois = null;
-		PepsiObject storePepsi = null;
+		//PepsiObject storePepsi = null;
+		List<Object> storePepsi = new ArrayList<Object>();
+		List<DataTable> tempDataTableSets = new ArrayList<DataTable>();
+		List<Chart> tempChartSets = new ArrayList<Chart>();
 		try {
 			FileInputStream streamIn = new FileInputStream(file);
 			ois = new ObjectInputStream(streamIn);
-			storePepsi = (PepsiObject) ois.readObject();
+			storePepsi = (ArrayList<Object>) ois.readObject();
 			if (storePepsi!=null) {
 				System.out.println("Success");
 			}
-
+			for (Object eachOne : storePepsi) {
+				if (eachOne instanceof DataTable) {
+					tempDataTableSets.add((DataTable) eachOne);
+				}
+				if (eachOne instanceof Chart) {
+					tempChartSets.add((Chart) eachOne);
+				}
+			}
+			IOManager.setDataTables(tempDataTableSets);
+			IOManager.setCharts(tempChartSets);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -53,13 +64,18 @@ public class IOManagerModel {
 	public static void storeFile(List<DataTable> inputDataTables, List<Chart> inputCharts, File file) throws IOException {
 		ObjectOutputStream oos = null;
 		FileOutputStream fout = null;
-		PepsiObject storePepsi = new PepsiObject(inputDataTables, inputCharts);
+		//PepsiObject storePepsi = new PepsiObject(inputDataTables, inputCharts);
+		
+		List<Object> storePepsi = new ArrayList<Object>();
+		for (DataTable eachOne : inputDataTables) {
+			storePepsi.add(eachOne);
+		}
 
 	    try {
 			//PepsiObject tempPepsi = new PepsiObject(inputDataTables, inputCharts);
 			fout = new FileOutputStream(file);
 			oos = new ObjectOutputStream(fout);
-			oos.writeObject(storePepsi);
+			oos.writeObject((ArrayList<Object>)storePepsi);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
