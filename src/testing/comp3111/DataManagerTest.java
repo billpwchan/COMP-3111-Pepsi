@@ -23,6 +23,8 @@ import core.comp3111.DataTable;
 import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * @author billpwchan
  *
@@ -70,6 +72,11 @@ class DataManagerTest {
 		DataManagerModel.setTestFlag(-1);
 	}
 
+	@Test
+	void DataImportTest_NullFile() {
+		assertThrows(FileNotFoundException.class, () -> DataManagerModel.handleCSVFile(null));
+	}
+	
 	@Test
 	void DataImportTest_MissingValue() {
 		// Aim in here is to write a test file in a specific path
@@ -160,7 +167,11 @@ class DataManagerTest {
 
 		}
 		
-		DataManagerModel.saveCSVFile(t, file);
+		try {
+			DataManagerModel.saveCSVFile(t, file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 
 	/**

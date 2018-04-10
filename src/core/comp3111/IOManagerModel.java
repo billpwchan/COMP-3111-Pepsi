@@ -34,24 +34,22 @@ public class IOManagerModel {
 			FileInputStream streamIn = new FileInputStream(file);
 			ois = new ObjectInputStream(streamIn);
 			storePepsi = (ArrayList<Object>) ois.readObject();
-			if (storePepsi!=null) {
-				System.out.println("Success");
-			}
-			for (Object eachOne : storePepsi) {
-				if (eachOne instanceof DataTable) {
-					tempDataTableSets.add((DataTable) eachOne);
-				}
-				if (eachOne instanceof Chart) {
-					tempChartSets.add((Chart) eachOne);
-				}
-			}
-			IOManager.setDataTables(tempDataTableSets);
-			IOManager.setCharts(tempChartSets);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			if (ois != null) { ois.close(); }
 		}
+		
+		for (Object eachOne : storePepsi) {
+			if (eachOne instanceof DataTable) {
+				tempDataTableSets.add((DataTable) eachOne);
+			}
+			if (eachOne instanceof Chart) {
+				tempChartSets.add((Chart) eachOne);
+			}
+		}
+		IOManager.setDataTables(tempDataTableSets);
+		IOManager.setCharts(tempChartSets);
 	}
 	
 	/**

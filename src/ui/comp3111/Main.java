@@ -1,8 +1,8 @@
 package ui.comp3111;
 
 import core.comp3111.DataColumn;
-import core.comp3111.DataManager;
 import core.comp3111.DataTable;
+import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 import core.comp3111.IOManager;
 import core.comp3111.SampleDataGenerator;
@@ -285,8 +285,8 @@ public class Main extends Application {
 			try {
 				//temp will return null if user cancel action in the middle.
 				DataTable temp = DataManager.dataImport(stage);
-				if (temp != null) { dataTables.add(temp); }
-			} catch (FileNotFoundException e1) {
+				if (temp != null) { dataTables.add(temp); } 
+			} catch (FileNotFoundException | DataTableException e1) {
 				e1.printStackTrace();
 			} 			
 			
@@ -305,7 +305,12 @@ public class Main extends Application {
 				
 			}else {
 				sampleDataTable = dataTables.get(datasetsSelectedIndex);
-				DataManager.dataExport(sampleDataTable, stage);
+				
+				try {
+					DataManager.dataExport(sampleDataTable, stage);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				
 				
 				showDataLabel.setText(String.format("Welcome!"));
