@@ -1,12 +1,10 @@
 package core.comp3111;
 
-import java.util.HashMap;
-import java.util.Map;
-//Arrays related
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -19,8 +17,10 @@ import java.util.List;
  * @author cspeter
  *
  */
-public class DataTable {
+public class DataTable implements Serializable{
 
+
+	private static final long serialVersionUID = -274838538823903772L;
 	/**
 	 * Construct - Create an empty DataTable
 	 */

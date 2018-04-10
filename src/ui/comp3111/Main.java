@@ -1,8 +1,8 @@
 package ui.comp3111;
 
 import core.comp3111.DataColumn;
-import core.comp3111.DataManager;
 import core.comp3111.DataTable;
+import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
 import javafx.application.Application;
@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.Arrays;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -327,8 +328,8 @@ public class Main extends Application {
 			try {
 				//temp will return null if user cancel action in the middle.
 				DataTable temp = DataManager.dataImport(stage);
-				if (temp != null) { dataTables.add(temp);  }
-			} catch (FileNotFoundException e1) {
+				if (temp != null) { dataTables.add(temp); } 
+			} catch (FileNotFoundException | DataTableException e1) {
 				e1.printStackTrace();
 			} 			
 			
@@ -347,7 +348,12 @@ public class Main extends Application {
 				
 			}else {
 				sampleDataTable = dataTables.get(datasetsSelectedIndex);
-				DataManager.dataExport(sampleDataTable, stage);
+				
+				try {
+					DataManager.dataExport(sampleDataTable, stage);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				
 				
 				showDataLabel.setText(String.format("Welcome!"));
@@ -358,14 +364,30 @@ public class Main extends Application {
 		savingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			//save dataTables and TODO charts
-			
+			try {
+				IOManager.fileExport(dataTables, null, stage);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 		});
 		
 		loadingButton.setOnAction(e -> {
 			//Bill Please add your function here
 			
-			dataTables.add(SampleDataGenerator.generateSampleLineData());
+			try {
+				IOManager.fileImport(stage);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			//Please put corresponding datatables and charts ArrayList into attribute in this class.
+			List<DataTable> inputDataTable = IOManager.getDataTables();
+			for (DataTable DataTableObj : inputDataTable) {
+				dataTables.add(DataTableObj);
+			}
+			IOManager.getCharts();
 			
 
 			updateDatasetsListandChartList();
