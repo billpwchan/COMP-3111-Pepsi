@@ -1,15 +1,9 @@
 package core.comp3111;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.IOException;
 import java.util.List;
 
-import javafx.scene.chart.Chart;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import ui.comp3111.CustomFileChooser;
 
@@ -24,64 +18,7 @@ public class IOManager {
 	
 	private static List<DataTable> dataTables;
 	private static List<Chart> charts;
-	static PepsiObject storePepsi;
-	
-	public static class PepsiObject implements Serializable{
 
-		private static final long serialVersionUID = 1L;
-		private static List<DataTable> dataTables;
-		private static List<Chart> charts;
-		
-		
-		/**
-		 * Default Constructor
-		 */
-		public PepsiObject() {
-			dataTables = null;
-			charts = null;
-		}
-		
-		/**
-		 * For storing DataTable Object and Chart Object as a same object.
-		 * 
-		 * @param inputDataTables
-		 * @param inputCharts
-		 */
-		public PepsiObject(List<DataTable> inputDataTables, List<Chart> inputCharts) {
-			PepsiObject.dataTables = inputDataTables;
-			PepsiObject.charts = inputCharts;
-		}
-
-		/**
-		 * @return the dataTables
-		 */
-		public static List<DataTable> getDataTables() {
-			return dataTables;
-		}
-
-		/**
-		 * @param DataTables to set
-		 */
-		public static void setDataTables(List<DataTable> dataTables) {
-			PepsiObject.dataTables = dataTables;
-		}
-
-		/**
-		 * @return the charts
-		 */
-		public static List<Chart> getCharts() {
-			return charts;
-		}
-
-		/**
-		 * @param Charts the charts to set
-		 */
-		public static void setCharts(List<Chart> charts) {
-			PepsiObject.charts = charts;
-		}
-		
-
-	}
 	
 	/**
 	 * Input DataTable Object, Chart Object and stage. Then export to user specified path as a .pepsi file.
@@ -89,8 +26,9 @@ public class IOManager {
 	 * @param inputDataTables
 	 * @param inputCharts
 	 * @param stage
+	 * @throws IOException 
 	 */
-	public static void fileExport(List<DataTable> inputDataTables, List<Chart> inputCharts, Stage stage){	
+	public static void fileExport(List<DataTable> inputDataTables, List<Chart> inputCharts, Stage stage) throws IOException{	
 		if (inputDataTables == null && inputCharts == null) { return; }
 
 		CustomFileChooser chooser = new CustomFileChooser();
@@ -109,8 +47,9 @@ public class IOManager {
 	 * Import Pepsi File and save as Pepsi Object
 	 * 
 	 * @param stage
+	 * @throws IOException 
 	 */
-	public static void fileImport(Stage stage) {		
+	public static void fileImport(Stage stage) throws IOException {		
 		//Basic Settings for FileChooser (Open Version)
 		CustomFileChooser fc = new CustomFileChooser();
 		fc.LoadFileChooser(stage, "Please select .pepsi dataset for import", "Customized Pepsi File (*.PEPSI)", "*.pepsi", "user.home");
