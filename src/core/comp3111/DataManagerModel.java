@@ -29,11 +29,11 @@ public class DataManagerModel {
 	
 	//Attributes
 	private static final char DEFAULT_SEPARATOR = ',';
-
+	private static final int DEFAULT_TESTFLAG = -1;
+	private static int testFlag = DEFAULT_TESTFLAG;
 	
 	//Functions
-	
-	
+
 	public static DataTable handleCSVFile(File file) throws FileNotFoundException {
 		DataTable dataTable = new DataTable();
 		
@@ -60,7 +60,9 @@ public class DataManagerModel {
 			if (checkNumericalColumn(column_index, columns)) {
 				int option = 0;
 				if (!containNumericalColumn) {
-					option = getUserReplacementOption();
+					//For testing purpose, implement different options with testFlag (Int value)
+					if (testFlag != DEFAULT_TESTFLAG) { option = testFlag; }
+					else { option = DataManager.getUserReplacementOption();}
 				}
 				containNumericalColumn = true;
 
@@ -149,33 +151,6 @@ public class DataManagerModel {
 		}
 	}
 
-	/**
-	 * @return
-	 */
-	private static int getUserReplacementOption() {
-		// Set up JOptionPane Picture.
-		ImageIcon icon = new ImageIcon("src/images/selection.jpg");
-
-		Image image = icon.getImage(); // transform it
-		Image newimg = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // scale it the smooth way
-		icon = new ImageIcon(newimg); // transform it back
-
-		// create a jframe
-		JFrame frame = new JFrame("JOptionPane showMessageDialog example");
-
-		// show a JOptionPane dialog using showMessageDialog
-		// JOptionPane.showMessageDialog(frame,
-		// "Please select methods",
-		// "Please preferred way for replacing missing numerical values",
-		// JOptionPane.INFORMATION_MESSAGE);
-
-		Object[] possibilities = { "Replace with Mean", "Replace with Median", "Replace with Zero" };
-
-		return JOptionPane.showOptionDialog(frame,
-				"Please preferred way for replacing missing numerical values", "Please select...",
-				JOptionPane.INFORMATION_MESSAGE, 1, icon, possibilities, 0);
-	}
-
 
 	/**
 	 * Responsible for handling numerical column Only.
@@ -227,6 +202,20 @@ public class DataManagerModel {
 		}
 	}
 
+	/**
+	 * @return the testFlag
+	 */
+	public static int isTestFlag() {
+		return testFlag;
+	}
+
+	/**
+	 * @param testFlag the testFlag to set
+	 */
+	public static void setTestFlag(int testFlag) {
+		DataManagerModel.testFlag = testFlag;
+	}
+	
 	/**
 	 * Transpose a two-dimensional array list
 	 * 
