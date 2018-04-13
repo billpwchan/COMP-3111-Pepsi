@@ -50,10 +50,6 @@ public class Main extends Application {
 	
 	private ListView<String> datasetslist = new ListView<String>();
 	
-	private ListView<String> plotChartTypeList = new ListView<String>();
-	private int graphSelectedIndex = 0;
-	private ObservableList<String> chartTypesName = FXCollections.observableArrayList ("Line Chart", "Bar Chart", "Animated Line Chart");
-	
 	private int datasetsSelectedIndex = 0;
 	private ObservableList<String> datasetsname = FXCollections.observableArrayList ();
 	
@@ -67,12 +63,11 @@ public class Main extends Application {
 	// Attributes: Scene and Stage
 	
 	
-	private static final int SCENE_NUM = 4;
+	private static final int SCENE_NUM = 3;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;;
 	private static final int SCENE_DATA_FILTER = 2;
-	private static final int PLOT_GRAPH = 3;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation", "Plot graph with selected dataset" };
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
@@ -80,8 +75,8 @@ public class Main extends Application {
 	// The following UI components are used to keep references after invoking
 	// createScene()
 	// Screen 1: paneMainScreen
-	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton, plotChartBackMainBtn, selectChartTypeBtn ;
-	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel,chartSelectionDataLabel;
+	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
+	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel;
 	
 	//private ListView<DataTable> datasetListView;
 	
@@ -105,7 +100,6 @@ public class Main extends Application {
 		scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 800, 600);
 
 		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
-		scenes[PLOT_GRAPH] = new Scene(panePlotGraphScreen(), 800, 600);
 
 		//scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 700, 600);
 		for (Scene s : scenes) {
@@ -129,8 +123,6 @@ public class Main extends Application {
 
 			datasetsname.add("Dataset "+String.valueOf(i+1)); 
 		}
-		//highlight and select the newly added dataset by default
-		datasetslist.getSelectionModel().select(dataTables.size()-1);
 
 	}
 
@@ -143,7 +135,6 @@ public class Main extends Application {
 		initMainScreenHandlers();
 		initLineChartScreenHandlers();
 		initDataFilterScreenHandlers();
-		initGraphTypeSelectionScreenHandlers();
 	}
 
 	/**
@@ -193,41 +184,6 @@ public class Main extends Application {
 
 		});
 	}
-
-	
-	/**
-	 * Initialize event handlers of the plot graph type selection screen
-	 * 
-	 */
-	private void initGraphTypeSelectionScreenHandlers() {
-
-		// click handler
-		plotChartBackMainBtn.setOnAction(e -> {
-			putSceneOnStage(SCENE_MAIN_SCREEN);
-		});
-		
-		selectChartTypeBtn.setOnAction(e -> {
-			graphSelectedIndex = plotChartTypeList.getFocusModel().getFocusedIndex();
-			System.out.println(graphSelectedIndex);
-			switch(graphSelectedIndex)
-			{
-			case 0: 
-				//Line Chart Implementation
-				break;
-				
-			case 1:
-				//Bar Chart Implementation				
-				break;
-				
-			case 2:
-				//Animated Line Chart Implementation				
-				break;
-			
-			}
-			
-		});
-	}
-	
 
 	/**
 	 * Populate sample data table values to the chart view
@@ -443,17 +399,13 @@ public class Main extends Application {
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
 			System.out.println(datasetsSelectedIndex );
 			if (datasetsSelectedIndex==-1) {
-				showDataLabel.setText(String.format("Please select a dataset to plot a graph."));
+				System.out.println("Please select a dataset" );
 			}else {
 				sampleDataTable = dataTables.get(datasetsSelectedIndex);
 				
 				//use the sampleDataTable variable to plot graph 
 
 				//Won Please add your function here
-				//select Line Chart option by default and put the chart selection scene on
-				plotChartTypeList.getSelectionModel().select(0);
-				putSceneOnStage(PLOT_GRAPH);
-				
 			}
 			
 
@@ -594,48 +546,6 @@ public class Main extends Application {
 		return pane;
 	}
 
-	
-	/*
-	 * Creates the graph type screen and layout its UI components
-	 * 
-	 * WY
-	 */
-	
-	private Pane panePlotGraphScreen() {
-		chartSelectionDataLabel = new Label("Please select a chart type ");
-		plotChartBackMainBtn = new Button("Back");
-		selectChartTypeBtn = new Button("Select Chart Type");
-		plotChartTypeList.setItems(chartTypesName);
-		
-		plotChartTypeList.setPrefWidth(400);
-		plotChartTypeList.setPrefHeight(300);
-		
-		HBox title = new HBox(20);
-		title.getChildren().add(chartSelectionDataLabel);
-		title.setAlignment(Pos.CENTER);
-		
-		HBox groupofList = new HBox(20);
-		groupofList.getChildren().add(plotChartTypeList);
-		groupofList.setAlignment(Pos.CENTER);
-		
-		HBox groupofButtons = new HBox(20);
-		groupofButtons.getChildren().addAll(selectChartTypeBtn,plotChartBackMainBtn);
-		groupofButtons.setAlignment(Pos.CENTER);
-		
-		VBox container = new VBox(20);
-		container.getChildren().addAll(title, groupofList, groupofButtons);
-		container.setAlignment(Pos.CENTER);
-		
-		
-		BorderPane pane = new BorderPane();
-		pane.setCenter(container);
-		pane.getStyleClass().add("screen-background");
-
-		return pane;
-		
-	}
-	
-	
 	/**
 	 * This method is used to pick anyone of the scene on the stage. It handles the
 	 * hide and show order. In this application, only one active scene should be
