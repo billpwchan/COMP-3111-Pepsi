@@ -64,8 +64,10 @@ class IOManagerTest {
 		File file = new File("IOManageTest.pepsi");
 		testDataList.add(SampleDataGenerator.generateSampleLineData());
 		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
-		Chart tempChart = new Chart();
-		testChartList.add(tempChart);
+		
+		//bill I think you have to fix this part Chart object should not be instantiated. it should be an abstract class.
+		//Chart tempChart = new Chart();
+		//testChartList.add(tempChart);
 		try {
 			IOManagerModel.storeFile(testDataList, testChartList, file);
 			IOManagerModel.loadPepsiFile(file);
