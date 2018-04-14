@@ -5,6 +5,10 @@ import core.comp3111.DataTable;
 import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 import core.comp3111.SampleDataGenerator;
+import core.comp3111.Chart;
+import core.comp3111.LineChartP;
+import core.comp3111.BarChartP;
+import core.comp3111.AnimatedLineChart;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -57,8 +61,9 @@ public class Main extends Application {
 	private int datasetsSelectedIndex = 0;
 	private ObservableList<String> datasetsname = FXCollections.observableArrayList ();
 	
+	private List<Chart> charts = new ArrayList<Chart>();
 	private ListView<String> chartslist = new ListView<String>();
-	private ObservableList<String> chartsname =FXCollections.observableArrayList ("Chart 1", "Chart 2", "Chart 3", "Chart 4");
+	private ObservableList<String> chartsname =FXCollections.observableArrayList ();
 	
 	//Just for testing puropose
 	
@@ -67,12 +72,13 @@ public class Main extends Application {
 	// Attributes: Scene and Stage
 	
 	
-	private static final int SCENE_NUM = 4;
+	private static final int SCENE_NUM = 5;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;;
 	private static final int SCENE_DATA_FILTER = 2;
 	private static final int PLOT_GRAPH = 3;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation", "Plot graph with selected dataset" };
+	private static final int SCENE_CHART = 4;
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation", "Plot graph with selected dataset", "Chart view" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
@@ -80,9 +86,9 @@ public class Main extends Application {
 	// The following UI components are used to keep references after invoking
 	// createScene()
 	// Screen 1: paneMainScreen
-	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton, plotChartBackMainBtn, selectChartTypeBtn ;
-	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel,chartSelectionDataLabel;
-	
+	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
+	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel;	
+
 	//private ListView<DataTable> datasetListView;
 	
 	       
@@ -95,7 +101,15 @@ public class Main extends Application {
 	private NumberAxis yAxis = null;
 	private Button btLineChartBackMain = null;
 	
-
+	// Screen 3 :panePlotGraphScreen
+	private Button plotChartBackMainBtn, selectChartTypeBtn;
+	private Label chartSelectionDataLabel,chartInvalidDataset;
+	
+	// Screen 4 : 
+	private Chart chart = null;
+	private Button btChartBackMain, saveChartBtn;
+	
+	
 	/**
 	 * create all scenes in this application
 	 */
@@ -106,7 +120,8 @@ public class Main extends Application {
 
 		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
 		scenes[PLOT_GRAPH] = new Scene(panePlotGraphScreen(), 800, 600);
-
+		scenes[SCENE_CHART] = new Scene(paneChartScreen(), 800, 600);
+		
 		//scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 700, 600);
 		for (Scene s : scenes) {
 			if (s != null)
@@ -122,16 +137,24 @@ public class Main extends Application {
 		
 		//TODO 
 		
-		
 		datasetsname.clear();
 		
 		for(int i=0;i<dataTables.size();i++) {
 
 			datasetsname.add("Dataset "+String.valueOf(i+1)); 
 		}
+		
+
+		
+		chartsname.clear();
+		for(int i = 0; i<charts.size();++i) {
+			chartsname.add("Chart" + String.valueOf(i+1));
+		}
+		
 		//highlight and select the newly added dataset by default
 		datasetslist.getSelectionModel().select(dataTables.size()-1);
-
+		chartslist.getSelectionModel().select(charts.size()-1);
+		
 	}
 
 	/**
@@ -144,6 +167,7 @@ public class Main extends Application {
 		initLineChartScreenHandlers();
 		initDataFilterScreenHandlers();
 		initGraphTypeSelectionScreenHandlers();
+		initChartScreenHandlers();
 	}
 
 	/**
@@ -200,7 +224,6 @@ public class Main extends Application {
 	 * 
 	 */
 	private void initGraphTypeSelectionScreenHandlers() {
-
 		// click handler
 		plotChartBackMainBtn.setOnAction(e -> {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
@@ -213,14 +236,38 @@ public class Main extends Application {
 			{
 			case 0: 
 				//Line Chart Implementation
+				LineChartP lineChart = new LineChartP(dataTables.get(datasetsSelectedIndex));
+				if(lineChart.dataRequirementValidation())
+				{
+					charts.add(lineChart);
+					putSceneOnStage(SCENE_CHART);
+				}
+				else
+					chartInvalidDataset.setText("Invalid Dataset!");
 				break;
 				
 			case 1:
-				//Bar Chart Implementation				
+				//Bar Chart Implementation
+				BarChartP barChart = new BarChartP(dataTables.get(datasetsSelectedIndex));
+				if(barChart.dataRequirementValidation())
+				{
+					charts.add(barChart);
+					putSceneOnStage(SCENE_CHART);
+				}
+				else
+					chartInvalidDataset.setText("Invalid Dataset!");				
 				break;
 				
 			case 2:
-				//Animated Line Chart Implementation				
+				//Animated Line Chart Implementation
+				AnimatedLineChart animatedLineChart = new AnimatedLineChart(dataTables.get(datasetsSelectedIndex));
+				if(animatedLineChart.dataRequirementValidation())
+				{
+					charts.add(animatedLineChart);
+					putSceneOnStage(SCENE_CHART);
+				}
+				else
+					chartInvalidDataset.setText("Invalid Dataset!");
 				break;
 			
 			}
@@ -228,6 +275,21 @@ public class Main extends Application {
 		});
 	}
 	
+	private void initChartScreenHandlers() {
+
+		// click handler
+		btChartBackMain.setOnAction(e -> {
+			charts.remove(charts.size()-1);
+			chartInvalidDataset.setText("");
+			putSceneOnStage(PLOT_GRAPH);
+		});
+		
+		saveChartBtn.setOnAction(e -> {
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+		});
+		
+	}
 
 	/**
 	 * Populate sample data table values to the chart view
@@ -451,6 +513,7 @@ public class Main extends Application {
 
 				//Won Please add your function here
 				//select Line Chart option by default and put the chart selection scene on
+				chartInvalidDataset.setText("");
 				plotChartTypeList.getSelectionModel().select(0);
 				putSceneOnStage(PLOT_GRAPH);
 				
@@ -603,6 +666,7 @@ public class Main extends Application {
 	
 	private Pane panePlotGraphScreen() {
 		chartSelectionDataLabel = new Label("Please select a chart type ");
+		chartInvalidDataset = new Label("");
 		plotChartBackMainBtn = new Button("Back");
 		selectChartTypeBtn = new Button("Select Chart Type");
 		plotChartTypeList.setItems(chartTypesName);
@@ -614,6 +678,10 @@ public class Main extends Application {
 		title.getChildren().add(chartSelectionDataLabel);
 		title.setAlignment(Pos.CENTER);
 		
+		HBox errorMsg = new HBox(20);
+		errorMsg.getChildren().add(chartInvalidDataset);
+		errorMsg.setAlignment(Pos.CENTER);
+		
 		HBox groupofList = new HBox(20);
 		groupofList.getChildren().add(plotChartTypeList);
 		groupofList.setAlignment(Pos.CENTER);
@@ -623,7 +691,7 @@ public class Main extends Application {
 		groupofButtons.setAlignment(Pos.CENTER);
 		
 		VBox container = new VBox(20);
-		container.getChildren().addAll(title, groupofList, groupofButtons);
+		container.getChildren().addAll(title,errorMsg, groupofList, groupofButtons);
 		container.setAlignment(Pos.CENTER);
 		
 		
@@ -635,6 +703,21 @@ public class Main extends Application {
 		
 	}
 	
+//Chart screen after selection
+	
+private Pane paneChartScreen() {
+		btChartBackMain = new Button("Back");
+		saveChartBtn = new Button("Save Chart");
+		HBox container = new HBox(20);
+		container.getChildren().addAll(saveChartBtn, btChartBackMain);
+		container.setAlignment(Pos.CENTER);
+		
+		BorderPane pane = new BorderPane();
+		pane.setCenter(container);
+// Apply CSS to style the GUI components
+		pane.getStyleClass().add("screen-background");
+		return pane;
+	}	
 	
 	/**
 	 * This method is used to pick anyone of the scene on the stage. It handles the
