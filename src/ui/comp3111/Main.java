@@ -378,7 +378,7 @@ public class Main extends Application {
 			
 			try {
 				IOManager.fileImport(stage);
-			} catch (IOException e1) {
+			} catch (IOException | ClassNotFoundException e1) {
 				e1.printStackTrace();
 			}
 			

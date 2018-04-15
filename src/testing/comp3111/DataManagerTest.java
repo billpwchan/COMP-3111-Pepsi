@@ -78,6 +78,17 @@ class DataManagerTest {
 	}
 	
 	@Test
+	void DataManagerTest_CreateObject() {
+		DataManagerModel temp = new DataManagerModel();
+		assertTrue(temp instanceof DataManagerModel);
+	}
+	
+	@Test
+	void DataManagerTest_GetTestFlag() {
+		assertEquals(-1, DataManagerModel.isTestFlag());
+	}
+	
+	@Test
 	void DataImportTest_MissingValue() {
 		// Aim in here is to write a test file in a specific path
 		// Then use DataManager.dataImport to test the .csv file.

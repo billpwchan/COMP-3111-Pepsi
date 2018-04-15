@@ -22,33 +22,36 @@ import ui.comp3111.CustomFileChooser;
  */
 
 //
-//Copyright (c) .NET Foundation. All rights reserved.  
-//Licensed under the MIT License. See LICENSE file in the project root for full license information.  
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for full
+// license information.
 //
 public class DataManagerModel {
-	
-	//Attributes
+
+	// Attributes
 	private static final char DEFAULT_SEPARATOR = ',';
 	private static final int DEFAULT_TESTFLAG = -1;
 	private static int testFlag = DEFAULT_TESTFLAG;
-	
-	//Functions
+
+	// Functions
 
 	/**
-	 * Input a .csv file and convert content into a DataTable Object.
-	 * 	- Assume each column has same number of rows. 
-	 * 	- Missing value is allowed
+	 * Input a .csv file and convert content into a DataTable Object. - Assume each
+	 * column has same number of rows. - Missing value is allowed
 	 * 
-	 * @param Input File Object
+	 * @param Input
+	 *            File Object
 	 * @return DataTable Object
 	 * @throws FileNotFoundException
-	 * @throws DataTableException 
+	 * @throws DataTableException
 	 */
 	public static DataTable handleCSVFile(File file) throws FileNotFoundException, DataTableException {
-		if (file == null) { throw new FileNotFoundException(); }
-		
+		if (file == null) {
+			throw new FileNotFoundException();
+		}
+
 		DataTable dataTable = new DataTable();
-		
+
 		Scanner scanner = new Scanner(file);
 		// Two-dimensional ArrayList for storing .csv file
 		List<List<String>> rows = new ArrayList<>();
@@ -72,9 +75,12 @@ public class DataManagerModel {
 			if (checkNumericalColumn(column_index, columns)) {
 				int option = 0;
 				if (!containNumericalColumn) {
-					//For testing purpose, implement different options with testFlag (Int value)
-					if (testFlag != DEFAULT_TESTFLAG) { option = testFlag; }
-					else { option = CustomFileChooser.getUserReplacementOption();}
+					// For testing purpose, implement different options with testFlag (Int value)
+					if (testFlag != DEFAULT_TESTFLAG) {
+						option = testFlag;
+					} else {
+						option = CustomFileChooser.getUserReplacementOption();
+					}
 				}
 				containNumericalColumn = true;
 
@@ -82,7 +88,7 @@ public class DataManagerModel {
 				// For all columns.
 				System.out.println("This is a numerical column");
 				containNumericalColumn = true;
-				
+
 				// Option = 0 ==> Mean; Option = 1 ==> Median Option = 2 ==> Zero
 				handleNumericalMissingValue(column_index, columns, option);
 
@@ -107,11 +113,13 @@ public class DataManagerModel {
 		printColumnbyColumn(columns);
 		return dataTable;
 	}
-	
+
 	/**
-	 * @param Two-dimensional ArrayList
-	 * @param Stage Object
-	 * @throws IOException 
+	 * @param Two-dimensional
+	 *            ArrayList
+	 * @param Stage
+	 *            Object
+	 * @throws IOException
 	 */
 	public static void saveCSVFile(DataTable dataTable, File file) throws IOException {
 
@@ -122,7 +130,7 @@ public class DataManagerModel {
 		List<DataColumn> inputDataColsValue = dataTable.getAllColValue();
 		List<String> inputDataColsName = dataTable.getAllColName();
 
-		//if (inputDataColsValue.size() != inputDataColsName.size()) { return; }
+		// if (inputDataColsValue.size() != inputDataColsName.size()) { return; }
 
 		for (int index = 0; index < inputDataColsValue.size() && index < inputDataColsName.size(); index++) {
 			List<String> temp = new ArrayList<>();
@@ -136,25 +144,27 @@ public class DataManagerModel {
 		}
 
 		rows = transpose(columns);
-		
+
 		if (file != null) {
 			FileWriter fw = new FileWriter(file);
 			for (List<String> row : rows) {
 				writeLine(fw, row);
-			fw.flush();
-			fw.close();
+				fw.flush();
+				fw.close();
 			}
 		}
 	}
 
-
 	/**
-	 * Responsible for handling numerical column Only.
-	 * Will assume all is numerical value.
+	 * Responsible for handling numerical column Only. Will assume all is numerical
+	 * value.
 	 * 
-	 * @param Specific Column Index
-	 * @param 2-dimensional ArrayList Object
-	 * @param Replacement Option (0: Average; 1: Median; 2: Zero)
+	 * @param Specific
+	 *            Column Index
+	 * @param 2-dimensional
+	 *            ArrayList Object
+	 * @param Replacement
+	 *            Option (0: Average; 1: Median; 2: Zero)
 	 */
 	private static void handleNumericalMissingValue(int column_index, List<List<String>> columns, int option) {
 		int realNumCount = 0;
@@ -206,12 +216,13 @@ public class DataManagerModel {
 	}
 
 	/**
-	 * @param testFlag the testFlag to set
+	 * @param testFlag
+	 *            the testFlag to set
 	 */
 	public static void setTestFlag(int testFlag) {
 		DataManagerModel.testFlag = testFlag;
 	}
-	
+
 	/**
 	 * Transpose a two-dimensional array list
 	 * 
@@ -229,7 +240,7 @@ public class DataManagerModel {
 			ret.add(col);
 		}
 		return ret;
-	} 
+	}
 
 	private static boolean checkNumericalColumn(int columnNum, List<List<String>> columns) {
 
@@ -254,9 +265,11 @@ public class DataManagerModel {
 	}
 
 	/**
-	 * Check a certain string is composed entirely via nummerical value or not  (Assume not "")
+	 * Check a certain string is composed entirely via nummerical value or not
+	 * (Assume not "")
 	 * 
-	 * @param string for check
+	 * @param string
+	 *            for check
 	 * @return boolean value
 	 */
 	private static boolean stringIsNumeric(String str) {
@@ -270,7 +283,8 @@ public class DataManagerModel {
 	/**
 	 * Print DataTable Object column by column
 	 * 
-	 * @param 2-dimensional ArrayList Object 
+	 * @param 2-dimensional
+	 *            ArrayList Object
 	 */
 	private static void printColumnbyColumn(List<List<String>> rows) {
 		int lineNo = 1;
@@ -285,18 +299,20 @@ public class DataManagerModel {
 	}
 
 	/**
-	 * @param Writer Object
-	 * @param ArrayList Object
+	 * @param Writer
+	 *            Object
+	 * @param ArrayList
+	 *            Object
 	 * @throws IOException
 	 */
 	public static void writeLine(Writer w, List<String> values) throws IOException {
 		writeLine(w, values, DEFAULT_SEPARATOR, ' ');
 	}
 
-
 	/**
-	 * @param CSV Format String
-	 * @return 
+	 * @param CSV
+	 *            Format String
+	 * @return
 	 */
 	private static String followCVSformat(String value) {
 
@@ -309,8 +325,10 @@ public class DataManagerModel {
 	}
 
 	/**
-	 * @param Writer Object
-	 * @param Arraylist Values
+	 * @param Writer
+	 *            Object
+	 * @param Arraylist
+	 *            Values
 	 * @param separators
 	 * @param customQuote
 	 * @throws IOException
@@ -318,7 +336,6 @@ public class DataManagerModel {
 	public static void writeLine(Writer w, List<String> values, char separators, char customQuote) throws IOException {
 
 		boolean first = true;
-
 
 		StringBuilder sb = new StringBuilder();
 		for (String value : values) {

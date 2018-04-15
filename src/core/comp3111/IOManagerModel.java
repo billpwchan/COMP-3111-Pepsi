@@ -24,8 +24,9 @@ public class IOManagerModel {
 	/**
 	 * @param file
 	 * @throws IOException 
+	 * @throws ClassNotFoundException 
 	 */
-	public static void loadPepsiFile(File file) throws IOException {
+	public static void loadPepsiFile(File file) throws IOException, ClassNotFoundException {
 		if (file == null) {return;} 
 		
 		ObjectInputStream ois = null;
@@ -33,15 +34,14 @@ public class IOManagerModel {
 		List<Object> storePepsi = new ArrayList<Object>();
 		List<DataTable> tempDataTableSets = new ArrayList<DataTable>();
 		List<Chart> tempChartSets = new ArrayList<Chart>();
-		try {
-			FileInputStream streamIn = new FileInputStream(file);
-			ois = new ObjectInputStream(streamIn);
-			storePepsi = (ArrayList<Object>) ois.readObject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (ois != null) { ois.close(); }
-		}
+		
+		FileInputStream streamIn = new FileInputStream(file);
+		ois = new ObjectInputStream(streamIn);
+		storePepsi = (ArrayList<Object>) ois.readObject();
+
+		streamIn.close();
+		ois.close();
+		
 		
 		for (Object eachOne : storePepsi) {
 			if (eachOne instanceof DataTable) {
@@ -75,19 +75,14 @@ public class IOManagerModel {
 			storePepsi.add(eachOne);
 		}
 
-	    try {
-			//PepsiObject tempPepsi = new PepsiObject(inputDataTables, inputCharts);
-			fout = new FileOutputStream(file);
-			oos = new ObjectOutputStream(fout);
-			oos.writeObject((ArrayList<Object>)storePepsi);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (oos != null) {
-				oos.close();
-			}
-		}
+		//PepsiObject tempPepsi = new PepsiObject(inputDataTables, inputCharts);
+		fout = new FileOutputStream(file);
+		oos = new ObjectOutputStream(fout);
+		oos.writeObject((ArrayList<Object>)storePepsi);
+		
+		fout.close();
+		oos.close();
+		
 		
 	}
 	
