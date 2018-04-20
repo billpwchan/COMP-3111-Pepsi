@@ -78,6 +78,7 @@ class IOManagerTest {
 		try {
 			IOManagerModel.storeFile(testDataList, testChartList, file);
 			IOManagerModel.loadPepsiFile(file);
+			file.delete();
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
