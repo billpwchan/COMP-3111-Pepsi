@@ -149,9 +149,9 @@ public class DataManagerModel {
 			FileWriter fw = new FileWriter(file);
 			for (List<String> row : rows) {
 				writeLine(fw, row);
-				fw.flush();
-				fw.close();
 			}
+			fw.flush();
+			fw.close();
 		}
 	}
 
@@ -298,6 +298,7 @@ public class DataManagerModel {
 		}
 	}
 
+	
 	/**
 	 * @param Writer
 	 *            Object

@@ -404,10 +404,8 @@ public class Main extends Application {
 			//Log G: If a chart is selected, should not allow the user to use it! 
 			
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
-			System.out.println(datasetsSelectedIndex );
 			if (datasetsSelectedIndex==-1) {
 				showDataLabel.setText(String.format("Please select a dataset to export to .csv"));
-				
 			}else {
 				sampleDataTable = dataTables.get(datasetsSelectedIndex);
 				
@@ -425,11 +423,12 @@ public class Main extends Application {
 		
 		savingButton.setOnAction(e -> {
 			//Bill Please add your function here
-			//save dataTables and TODO charts
 			try {
-				IOManager.fileExport(dataTables, null, stage);
+				// If not both are empty, then we can save as a .pepsi file.
+				if (! (dataTables.isEmpty() && charts.isEmpty() )) {
+					IOManager.fileExport(dataTables, charts, stage);
+				}
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
@@ -443,15 +442,19 @@ public class Main extends Application {
 			} catch (IOException | ClassNotFoundException e1) {
 				e1.printStackTrace();
 			}
-			
+			//Testing required
 			//Please put corresponding datatables and charts ArrayList into attribute in this class.
 			List<DataTable> inputDataTable = IOManager.getDataTables();
 			for (DataTable DataTableObj : inputDataTable) {
 				dataTables.add(DataTableObj);
 			}
-			IOManager.getCharts();
-			
-
+			List<Chart> inputCharts = IOManager.getCharts();
+			if (inputCharts != null && inputCharts.isEmpty()) {
+				for (Chart ChartObj : inputCharts) {
+					charts.add(ChartObj);
+				}
+			}
+		
 			updateDatasetsListandChartList();
 			
 		});
