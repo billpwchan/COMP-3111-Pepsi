@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.comp3111.Chart;
+import javafx.collections.ObservableList;
 
 /**
  * @author wonyoung1026
@@ -13,6 +14,12 @@ import core.comp3111.Chart;
 public class BarChartP extends Chart {
 	public BarChartP(DataTable dt){
 		dataTable = dt;
+	}
+	
+	public BarChartP(DataTable dt, ObservableList<String> X, ObservableList<String> Y ){
+		dataTable = dt;
+		selectedItemsX= X;
+		selectedItemsY= Y;
 	}
 	
 	public boolean dataRequirementValidation() {
