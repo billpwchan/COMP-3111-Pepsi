@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.comp3111.Chart;
+import javafx.collections.ObservableList;
 
 /**
  * @author wonyoung1026
@@ -14,7 +15,12 @@ public class AnimatedLineChart extends Chart {
 	public AnimatedLineChart(DataTable dt) {
 		dataTable = dt;
 	}
-
+	public AnimatedLineChart(DataTable dt, ObservableList<String> X, ObservableList<String> Y ){
+		dataTable = dt;
+		selectedItemsX= X;
+		selectedItemsY= Y;
+	}
+	
 	public boolean dataRequirementValidation() {
 		int count = 0;
 

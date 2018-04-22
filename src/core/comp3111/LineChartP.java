@@ -1,6 +1,8 @@
 package core.comp3111;
 
 import core.comp3111.Chart;
+import javafx.collections.ObservableList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,12 @@ public class LineChartP extends Chart {
 
 	public LineChartP(DataTable dt) {
 		dataTable = dt;
+	}
+  
+	public LineChartP(DataTable dt, ObservableList<String> X, ObservableList<String> Y ){
+		dataTable = dt;
+		selectedItemsX= X;
+		selectedItemsY= Y;
 	}
 
 	public boolean dataRequirementValidation() {

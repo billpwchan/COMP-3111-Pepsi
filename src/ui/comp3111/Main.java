@@ -64,6 +64,12 @@ public class Main extends Application {
 	private List<Chart> charts = new ArrayList<Chart>();
 	private ListView<String> chartslist = new ListView<String>();
 	private ObservableList<String> chartsname =FXCollections.observableArrayList ();
+
+	
+	private List<DataColumn> dataColumns = new ArrayList<DataColumn>();
+	private ListView<String> dataColumnslistX = new ListView<String>();
+	private ListView<String> dataColumnslistY = new ListView<String>();
+	private ObservableList<String> dataColumnsName =FXCollections.observableArrayList ();
 	
 	//Just for testing puropose
 	
@@ -72,13 +78,14 @@ public class Main extends Application {
 	// Attributes: Scene and Stage
 	
 	
-	private static final int SCENE_NUM = 5;
+	private static final int SCENE_NUM = 6;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;;
 	private static final int SCENE_DATA_FILTER = 2;
 	private static final int PLOT_GRAPH = 3;
-	private static final int SCENE_CHART = 4;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation", "Plot graph with selected dataset", "Chart view" };
+	private static final int SCENE_AXIS_SELECT = 4;
+	private static final int SCENE_CHART = 5;
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation", "Plot graph with selected dataset", "Select axis", "Chart view" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
@@ -104,11 +111,18 @@ public class Main extends Application {
 	// Screen 3 :panePlotGraphScreen
 	private Button plotChartBackMainBtn, selectChartTypeBtn;
 	private Label chartSelectionDataLabel,chartInvalidDataset;
+
+	// Screen 4: paneAxisScreen
+	private Button btAxisBack, selectAxisBtn;
+	private Label axisSelectionLabel,invalidAxis, xAxisLabel, yAxisLabel;
+	private ObservableList<String> selectedColumnsX = null;
+	private ObservableList<String> selectedColumnsY = null;
 	
-	// Screen 4 : 
+	// Screen 5 : paneChartScreen
 	private Chart chart = null;
-	private Button btChartBackMain, saveChartBtn;
+	private Button btChartBackMain, saveChartBtn, btChartBack ;
 	
+
 	
 	/**
 	 * create all scenes in this application
@@ -120,7 +134,9 @@ public class Main extends Application {
 
 		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
 		scenes[PLOT_GRAPH] = new Scene(panePlotGraphScreen(), 800, 600);
+		scenes[SCENE_AXIS_SELECT] = new Scene(paneAxisScreen(), 800, 600);
 		scenes[SCENE_CHART] = new Scene(paneChartScreen(), 800, 600);
+		
 		
 		//scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 700, 600);
 		for (Scene s : scenes) {
@@ -132,6 +148,9 @@ public class Main extends Application {
 	}
 	
 	
+	/**
+	 * update the dataset list and  chart list on the main screen
+	 */
 	private void updateDatasetsListandChartList() {
 		
 		
@@ -157,6 +176,38 @@ public class Main extends Application {
 		
 	}
 
+	
+	/**
+	 * update the column liston the axis selection screen
+	 */
+	private void updateAxisList() {
+		dataColumnsName.clear();
+		
+		DataTable tempDataTable = dataTables.get(datasetsSelectedIndex);
+		dataColumns = tempDataTable.getAllColValue();
+		List<String> tempColName = tempDataTable.getAllColName();
+		
+		
+		int numCol = tempDataTable.getNumCol();
+		
+		
+		for(int i = 0; i<numCol; ++i) {
+			dataColumnsName.add(tempColName.get(i));
+		}
+		
+		
+		dataColumnslistX.setItems(dataColumnsName);
+		dataColumnslistY.setItems(dataColumnsName);
+		
+		dataColumnslistX.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		dataColumnslistY.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
+		
+		//select the first column on the axis selection list by default 
+		dataColumnslistX.getSelectionModel().select(0);
+		dataColumnslistY.getSelectionModel().select(0);
+		
+	}
 	/**
 	 * This method will be invoked after createScenes(). In this stage, all UI
 	 * components will be created with a non-NULL references for the UI components
@@ -167,7 +218,9 @@ public class Main extends Application {
 		initLineChartScreenHandlers();
 		initDataFilterScreenHandlers();
 		initGraphTypeSelectionScreenHandlers();
+		initAxisScreenHandlers();
 		initChartScreenHandlers();
+		
 	}
 
 	/**
@@ -223,66 +276,158 @@ public class Main extends Application {
 	 * Initialize event handlers of the plot graph type selection screen
 	 * 
 	 */
+
 	private void initGraphTypeSelectionScreenHandlers() {
 		// click handler
 		plotChartBackMainBtn.setOnAction(e -> {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
+			chartInvalidDataset.setText("");
 		});
 		
 		selectChartTypeBtn.setOnAction(e -> {
 			graphSelectedIndex = plotChartTypeList.getFocusModel().getFocusedIndex();
 			System.out.println(graphSelectedIndex);
+			//data requirement check
 			switch(graphSelectedIndex)
 			{
 			case 0: 
-				//Line Chart Implementation
+				//Line Chart
 				LineChartP lineChart = new LineChartP(dataTables.get(datasetsSelectedIndex));
-				if(lineChart.dataRequirementValidation())
+				if(lineChart.dataRequirementValidation())		
 				{
-					charts.add(lineChart);
-					putSceneOnStage(SCENE_CHART);
+					putSceneOnStage(SCENE_AXIS_SELECT);
+					chartInvalidDataset.setText("");
 				}
 				else
-					chartInvalidDataset.setText("Invalid Dataset!");
+					chartInvalidDataset.setText("Line chart requires at least 2 numeric columns!");
 				break;
 				
 			case 1:
-				//Bar Chart Implementation
+				//Bar Chart
 				BarChartP barChart = new BarChartP(dataTables.get(datasetsSelectedIndex));
 				if(barChart.dataRequirementValidation())
 				{
-					charts.add(barChart);
-					putSceneOnStage(SCENE_CHART);
+					putSceneOnStage(SCENE_AXIS_SELECT);
+					chartInvalidDataset.setText("");
 				}
 				else
-					chartInvalidDataset.setText("Invalid Dataset!");				
+					chartInvalidDataset.setText("Bar chart requires at least 1 text column and 1 numeric column!");								
 				break;
 				
 			case 2:
-				//Animated Line Chart Implementation
+				//Animated Line Chart
 				AnimatedLineChart animatedLineChart = new AnimatedLineChart(dataTables.get(datasetsSelectedIndex));
 				if(animatedLineChart.dataRequirementValidation())
 				{
-					charts.add(animatedLineChart);
-					putSceneOnStage(SCENE_CHART);
+					putSceneOnStage(SCENE_AXIS_SELECT);
+					chartInvalidDataset.setText("");
 				}
 				else
-					chartInvalidDataset.setText("Invalid Dataset!");
+					chartInvalidDataset.setText("Animated line chart requires at least 2 numeric columns!");
 				break;
-			
+				
 			}
+			
+			updateAxisList();
 			
 		});
 	}
 	
+	/**
+	 * Initialize event handlers of the Axis selection screen
+	 * 
+	 */
+	private void initAxisScreenHandlers() {
+
+		// click handler
+		btAxisBack.setOnAction(e -> {
+			
+			putSceneOnStage(PLOT_GRAPH);
+			invalidAxis.setText("");
+		});
+		
+		selectAxisBtn.setOnAction(e -> {
+			selectedColumnsX =  dataColumnslistX.getSelectionModel().getSelectedItems();
+			selectedColumnsY =  dataColumnslistY.getSelectionModel().getSelectedItems();
+			DataTable selectedDT = dataTables.get(datasetsSelectedIndex);
+			DataColumn tempCol = null;
+			int numColnumX = 0;
+			int textColnumX = 0;
+			int numColnumY = 0;
+			int textColnumY = 0;
+//count number of selected numeric and text columns for X and Y axis			
+			for(int i =0; i<selectedColumnsX.size(); ++i)
+			{
+				tempCol = selectedDT.getCol(selectedColumnsX.get(i));
+				if(tempCol.getTypeName().equals(DataType.TYPE_NUMBER))
+					numColnumX++;
+				if(tempCol.getTypeName().equals(DataType.TYPE_STRING))
+					textColnumX++;
+			}
+			System.out.println(numColnumX+" "+ textColnumX + " " + numColnumY + " " + textColnumY);
+			
+			for(int i =0; i<selectedColumnsY.size(); ++i)
+			{
+				tempCol = selectedDT.getCol(selectedColumnsY.get(i));
+				if(tempCol.getTypeName().equals(DataType.TYPE_NUMBER))
+					numColnumY++;
+				if(tempCol.getTypeName().equals(DataType.TYPE_STRING))
+					textColnumY++;
+			}
+			
+			System.out.println(numColnumX+" "+ textColnumX + " " + numColnumY + " " + textColnumY);
+		 			
+			//Add chart
+			switch(graphSelectedIndex)
+			{
+			case 0: 
+				//Line Chart
+				LineChartP lineChart = new LineChartP(dataTables.get(datasetsSelectedIndex));
+				
+				charts.add(lineChart);
+				
+				
+				
+				
+				break;
+				
+			case 1:
+				//Bar Chart
+				BarChartP barChart = new BarChartP(dataTables.get(datasetsSelectedIndex));
+				charts.add(barChart);				
+				break;
+				
+			case 2:
+				//Animated Line Chart
+				AnimatedLineChart animatedLineChart = new AnimatedLineChart(dataTables.get(datasetsSelectedIndex));
+				charts.add(animatedLineChart);	
+				break;
+				
+			}
+			
+			
+			putSceneOnStage(SCENE_CHART);
+			invalidAxis.setText("");
+		});
+		
+	}
+	
+	/**
+	 * Initialize event handlers of the Chart screen
+	 */
 	private void initChartScreenHandlers() {
 
 		// click handler
+		btChartBack.setOnAction(e -> {
+			charts.remove(charts.size()-1);
+			putSceneOnStage(SCENE_AXIS_SELECT);
+		});
+		
 		btChartBackMain.setOnAction(e -> {
 			charts.remove(charts.size()-1);
-			chartInvalidDataset.setText("");
-			putSceneOnStage(PLOT_GRAPH);
+			putSceneOnStage(SCENE_MAIN_SCREEN);
 		});
+		
 		
 		saveChartBtn.setOnAction(e -> {
 			
@@ -561,11 +706,7 @@ public class Main extends Application {
 		return pane;
 	}
 
-	/**
-	 * Creates the main screen and layout its UI components
-	 * 
-	 * @return a Pane component to be displayed on a scene
-	 */
+
 	
 	private Pane paneDataFilterScreen() {
 		
@@ -595,6 +736,12 @@ public class Main extends Application {
 		return pane;
 		
 	}
+	
+	/**
+	 * Creates the main screen and layout its UI components
+	 * 
+	 * @return a Pane component to be displayed on a scene
+	 */
 	private Pane paneMainScreen() {
 
 		lbMainScreenTitle = new Label("COMP3111 Chart");
@@ -660,11 +807,11 @@ public class Main extends Application {
 		return pane;
 	}
 
-	
-	/*
+		
+	/**
 	 * Creates the graph type screen and layout its UI components
 	 * 
-	 * WY
+	 * @return a Pane component to be displayed on a graph type selection scene
 	 */
 	
 	private Pane panePlotGraphScreen() {
@@ -705,14 +852,76 @@ public class Main extends Application {
 		return pane;
 		
 	}
+
+/**
+ * Creates the Axis selection screen and layout its UI components
+ * 
+ * @return a Pane component to be displayed on a Axis selection scene
+ */	
+
+private Pane paneAxisScreen() {
+	axisSelectionLabel = new Label("Please select columns for X and Y axis (Press Ctrl or Shift for multiple selection)");
+	invalidAxis = new Label("");
+	xAxisLabel = new Label("X Axis");
+	yAxisLabel = new Label("Y Axis");
+	btAxisBack = new Button("Back");
+	selectAxisBtn = new Button("Select columns");
 	
-//Chart screen after selection
 	
+
+	dataColumnslistX.setPrefWidth(350);
+	dataColumnslistX.setPrefHeight(300);
+	dataColumnslistY.setPrefWidth(350);
+	dataColumnslistY.setPrefHeight(300);
+	
+	HBox title = new HBox(20);
+	title.getChildren().add(axisSelectionLabel);
+	title.setAlignment(Pos.CENTER);
+	
+	HBox errorMsg = new HBox(20);
+	errorMsg.getChildren().add(invalidAxis);
+	errorMsg.setAlignment(Pos.CENTER);
+	
+	VBox xAxisBox = new VBox(20);
+	xAxisBox.getChildren().addAll(xAxisLabel, dataColumnslistX);
+	xAxisBox.setAlignment(Pos.CENTER);
+	
+	VBox yAxisBox = new VBox(20);
+	yAxisBox.getChildren().addAll(yAxisLabel, dataColumnslistY);
+	yAxisBox.setAlignment(Pos.CENTER);
+	
+	HBox axisListBox = new HBox(20);
+	axisListBox.getChildren().addAll(xAxisBox, yAxisBox);
+	axisListBox.setAlignment(Pos.CENTER);
+	
+	HBox groupofButtons = new HBox(20);
+	groupofButtons.getChildren().addAll(selectAxisBtn,btAxisBack);
+	groupofButtons.setAlignment(Pos.CENTER);
+	
+	VBox container = new VBox(20);
+	container.getChildren().addAll(title,errorMsg, axisListBox, groupofButtons);
+	container.setAlignment(Pos.CENTER);
+	
+	
+	BorderPane pane = new BorderPane();
+	pane.setCenter(container);
+	pane.getStyleClass().add("screen-background");
+	return pane;
+}
+	
+	
+	
+/**
+ * Creates the Chart screen and layout its UI components
+ * 
+ * @return a Pane component to be displayed on a Chart scene
+ */	
 private Pane paneChartScreen() {
-		btChartBackMain = new Button("Back");
-		saveChartBtn = new Button("Save Chart");
+		btChartBack = new Button("Back");
+		btChartBackMain = new Button("Back to main");
+		saveChartBtn = new Button("Save chart");
 		HBox container = new HBox(20);
-		container.getChildren().addAll(saveChartBtn, btChartBackMain);
+		container.getChildren().addAll(saveChartBtn, btChartBackMain,btChartBack);
 		container.setAlignment(Pos.CENTER);
 		
 		BorderPane pane = new BorderPane();
