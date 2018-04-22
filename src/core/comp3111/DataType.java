@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author cspeter
  *
  */
-public class DataType implements Serializable{
+public class DataType implements Serializable {
 
 	public static final String TYPE_OBJECT = "java.lang.Object";
 	public static final String TYPE_NUMBER = "java.lang.Number";

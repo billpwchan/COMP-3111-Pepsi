@@ -57,7 +57,14 @@ class IOManagerTest {
 	}
 
 	@Test
+	void IOManagerTest_GenerateObject() {
+		IOManagerModel temp = new IOManagerModel();
+		assertTrue(temp instanceof IOManagerModel);
+	}
+	
+	@Test
 	void IOManagerTest_GetDataTables() {
+		
 		List<DataTable> testDataList = new ArrayList<DataTable>();
 		List<Chart> testChartList = new ArrayList<Chart>();
 		
@@ -71,12 +78,25 @@ class IOManagerTest {
 		try {
 			IOManagerModel.storeFile(testDataList, testChartList, file);
 			IOManagerModel.loadPepsiFile(file);
-		} catch (IOException e) {
+			file.delete();
+		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		System.out.println(IOManager.getCharts().size());
 		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(), IOManager.getDataTables().get(0).getNumCol());
 		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(), IOManager.getDataTables().get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(), IOManager.getDataTables().get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(), IOManager.getDataTables().get(1).getDataTableName());
+
+	}
+	
+	@Test
+	void IOManagerTest_NullFile() {
+		try {
+			IOManagerModel.loadPepsiFile(null);
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

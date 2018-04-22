@@ -50,8 +50,9 @@ public class IOManager {
 	 * 
 	 * @param stage
 	 * @throws IOException 
+	 * @throws ClassNotFoundException 
 	 */
-	public static void fileImport(Stage stage) throws IOException {		
+	public static void fileImport(Stage stage) throws IOException, ClassNotFoundException {		
 		//Basic Settings for FileChooser (Open Version)
 		CustomFileChooser fc = new CustomFileChooser();
 		fc.LoadFileChooser(stage, "Please select .pepsi dataset for import", "Customized Pepsi File (*.PEPSI)", "*.pepsi", "user.home");
