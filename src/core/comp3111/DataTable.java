@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * 2D array of data values with the following requirements: (1) There are 0 to
  * many columns (2) The number of row for each column is the same (3) 2 columns
@@ -16,10 +17,10 @@ import java.util.Map;
  * @author cspeter
  *
  */
-public class DataTable implements Serializable {
+public class DataTable implements Serializable{
+
 
 	private static final long serialVersionUID = -274838538823903772L;
-
 	/**
 	 * Construct - Create an empty DataTable
 	 */
@@ -113,38 +114,35 @@ public class DataTable implements Serializable {
 	public int getNumCol() {
 		return dc.size();
 	}
-
+	
+	
 	/**
 	 * Return all datacolumn instances in the data table
 	 * 
 	 * @return the arraylist of datacolumn instances in the data table
 	 */
 	public List<DataColumn> getAllColValue() {
-		if (dc == null) {
-			return null;
-		}
-
+		if (dc == null) { return null; }
+		
 		List<DataColumn> allCol = new ArrayList<>();
-
+		
 		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
 			System.out.println(entry.getKey() + "/" + entry.getValue());
 			allCol.add(entry.getValue());
 		}
 		return allCol;
 	}
-
+	
 	/**
 	 * Return all column name in the data table
 	 * 
 	 * @return the arraylist of column name in the data table
 	 */
 	public List<String> getAllColName() {
-		if (dc == null) {
-			return null;
-		}
-
+		if (dc == null) { return null; }
+		
 		List<String> allCol = new ArrayList<>();
-
+		
 		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
 			System.out.println(entry.getKey() + "/" + entry.getValue());
 			allCol.add(entry.getKey());
@@ -167,7 +165,7 @@ public class DataTable implements Serializable {
 		Map.Entry<String, DataColumn> entry = dc.entrySet().iterator().next();
 		return dc.get(entry.getKey()).getSize();
 	}
-
+	
 	public String getDataTableName() {
 		return dataTableName;
 	}
@@ -175,11 +173,36 @@ public class DataTable implements Serializable {
 	public void setDataTableName(String dataTableName) {
 		this.dataTableName = dataTableName;
 	}
+	
+	/**
+	 * @return number of numeric columns in the datatable
+	 */
+	public int numCountDT() {
+		int count = 0;
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			if(entry.getValue().getTypeName().equals(DataType.TYPE_NUMBER))
+				++count;
+		}
+		return count;
+	}
+	
+	/**
+	 * @return number of text columns in the datatable
+	 */
+	public int textCountDT() {
+		int count = 0;
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			if(entry.getValue().getTypeName().equals(DataType.TYPE_STRING))
+				++count;
+		}
+		return count;
+	}
 
 	// attribute: A java.util.Map interface
 	// KeyType: String
 	// ValueType: DataColumn
 	private Map<String, DataColumn> dc;
 	private String dataTableName;
+
 
 }

@@ -11,33 +11,47 @@ import java.util.List;
  *
  */
 
+
 public class LineChartP extends Chart {
-
-	public LineChartP(DataTable dt) {
+	//attribute
+	private int typeID = 0;
+	
+	/**
+	 * constructor for line chart object before columns for X and Y axis are selected
+	 * @param dt
+	 */
+	public LineChartP(DataTable dt){
 		dataTable = dt;
 	}
-  
-	public LineChartP(DataTable dt, ObservableList<String> X, ObservableList<String> Y ){
-		dataTable = dt;
-		selectedItemsX= X;
-		selectedItemsY= Y;
+	
+	public int getTypeID() {
+		return typeID;
 	}
-
+	
+	/**
+	 * constructor for line chart object after columns for X and Y axis are selected
+	 * @param dt
+	 * @param X
+	 * @param Y
+	 */
+	public LineChartP(DataTable dt, DataTable X, DataTable Y, String t){
+		dataTable = dt;
+		selectedItemsX = X;
+		selectedItemsY = Y;
+		title = t +" line chart";
+	}
+	
+	
+	
 	public boolean dataRequirementValidation() {
-		int count = 0;
-
-		List<DataColumn> allCol = new ArrayList<>();
-		allCol = dataTable.getAllColValue();
-
-		for (int i = 0; i < allCol.size(); ++i) {
-			// at least 2 numeric columns
-			if (allCol.get(i).getTypeName().equals(DataType.TYPE_NUMBER))
-				++count;
-
-			if (count > 1)
-				return true;
-		}
+		//at least 2 numeric columns
+		if(dataTable.numCountDT() > 1)
+			return true;
+		
 		return false;
 	}
+	
 
+	
+	
 }

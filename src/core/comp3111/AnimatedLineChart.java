@@ -12,29 +12,41 @@ import javafx.collections.ObservableList;
  */
 
 public class AnimatedLineChart extends Chart {
-	public AnimatedLineChart(DataTable dt) {
+	/**
+	 * constructor for animated line chart object before columns for X and Y axis are selected
+	 * @param dt
+	 * */
+	public AnimatedLineChart(DataTable dt){
+	 
 		dataTable = dt;
 	}
-	public AnimatedLineChart(DataTable dt, ObservableList<String> X, ObservableList<String> Y ){
+	
+	/**
+	 * constructor for animated line chart object after columns for X and Y axis are selected
+	 * @param dt
+	 * @param X
+	 * @param Y
+	 */
+	public AnimatedLineChart(DataTable dt, DataTable X, DataTable Y, String t){
 		dataTable = dt;
-		selectedItemsX= X;
-		selectedItemsY= Y;
+		selectedItemsX = new DataTable();
+		selectedItemsY = new DataTable();
+		title = t + " animated line chart";
+	}
+	
+	public int getTypeID() {
+		return typeID;
 	}
 	
 	public boolean dataRequirementValidation() {
-		int count = 0;
-
-		List<DataColumn> allCol = new ArrayList<>();
-		allCol = dataTable.getAllColValue();
-
-		for (int i = 0; i < allCol.size(); ++i) {
-			// at least 2 numeric columns
-			if (allCol.get(i).getTypeName().equals(DataType.TYPE_NUMBER))
-				++count;
-
-			if (count > 1)
-				return true;
-		}
+		//at least 2 numeric columns
+		if(dataTable.numCountDT() > 1)
+			return true;
+		
 		return false;
 	}
+	
+	//attribute
+	private int typeID = 2;
+
 }
