@@ -646,7 +646,7 @@ public class Main extends Application {
 	}
 	
 	/**
-	 * change axis boundary dynamically to animate the line chart
+	 * change upper anad lower bound of Xaxis dynamically to animate the line chart
 	 */
 	private void plotAnimatedChart() {
 		double speed = (maxVal - minVal)/10;
@@ -742,8 +742,9 @@ public class Main extends Application {
 			Number[] xValues = (Number[]) xCol.getData();
 			Number[] yValues = (Number[]) yCol.getData();
 			
-			//sort xValues in ascending order to extract max and min value
-			double[] xDouble = ascendingSort(xValues);
+
+			double[] xDouble = xCol.ascendingSort();			
+			
 			minVal = xDouble[0];
 			maxVal = xDouble[xDouble.length-1];
 			
@@ -759,10 +760,7 @@ public class Main extends Application {
 
 			animatedLineChartFinal.getData().clear();
 			animatedLineChartFinal.getData().add(series);
-			
-
-
-			
+	
 //Set initial X axis range			
 
 				double axisLowerBound = minVal;
