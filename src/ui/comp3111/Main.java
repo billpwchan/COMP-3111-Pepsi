@@ -134,7 +134,7 @@ public class Main extends Application {
 	
 	private ObservableList<String> lineChartDropDownX =FXCollections.observableArrayList ();
 	private ObservableList<String> lineChartDropDownY =FXCollections.observableArrayList ();
-	private ComboBox comboBoxX, comboBoxY;
+	private ComboBox<String> comboBoxX, comboBoxY;
 	private String xSelected, ySelected;
 
 	
