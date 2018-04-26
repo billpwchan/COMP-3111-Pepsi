@@ -75,6 +75,42 @@ public class DataColumn implements Serializable {
 			return 0;
 		return data.length;
 	}
+	
+	/**
+	 * sort an array of Number objects in ascending order to extract max and min value, which will be used for upper and lower bound of X axis when plotting animated line chart
+	 * 
+	 * @return double array that has been sorted in a ascending order
+	 */
+	public double[] ascendingSort() {
+		if(!this.getTypeName().equals(DataType.TYPE_NUMBER))
+			return null;
+		
+		Number[] xValues = (Number[]) this.getData();
+		double[] xDouble = new double[xValues.length-1] ;
+		
+		for(int i =1; i<xValues.length; ++i) {
+			xDouble[i-1] = (double) xValues[i];
+		}
+
+		for(int i =0; i<xDouble.length; ++i) {
+			double min = xDouble[i];
+			double temp;
+			for(int j=i+1; j<xDouble.length; ++j){
+				if(min> xDouble[j])
+				{
+					min = xDouble[j];
+					
+					temp = xDouble[i];
+					xDouble[i] = xDouble[j];
+					xDouble[j] = temp;						
+				}
+			}
+		}
+
+		return xDouble;
+		
+	}
+	
 
 	// attributes
 	private Object[] data;

@@ -13,7 +13,9 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -33,7 +35,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.layout.StackPane;
-
+import javafx.animation.Animation;
+import javafx.animation.Timeline;
+import javafx.animation.KeyValue;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
+import javafx.event.ActionEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 /**
  * The Main class of this GUI application
  * 
@@ -61,10 +70,21 @@ public class Main extends Application {
 	private int datasetsSelectedIndex = 0;
 	private ObservableList<String> datasetsname = FXCollections.observableArrayList ();
 	
+	private int chartslistSelectedIndex = 0;
 	private List<Chart> charts = new ArrayList<Chart>();
 	private ListView<String> chartslist = new ListView<String>();
 	private ObservableList<String> chartsname =FXCollections.observableArrayList ();
+
 	
+	private List<DataColumn> dataColumns = new ArrayList<DataColumn>();
+	private ListView<String> dataColumnslistX = new ListView<String>();
+	private ListView<String> dataColumnslistY = new ListView<String>();
+	private ObservableList<String> dataColumnsName =FXCollections.observableArrayList ();
+	
+	private boolean showChartLock = false;
+	
+	//for animation
+	private Timeline timeline;
 	//Just for testing puropose
 	
 	//ObservableList<String> items =FXCollections.observableArrayList ("Single", "Double", "Suite", "Family App");
@@ -72,13 +92,14 @@ public class Main extends Application {
 	// Attributes: Scene and Stage
 	
 	
-	private static final int SCENE_NUM = 5;
+	private static final int SCENE_NUM = 6;
 	private static final int SCENE_MAIN_SCREEN = 0;
 	private static final int SCENE_LINE_CHART = 1;;
 	private static final int SCENE_DATA_FILTER = 2;
 	private static final int PLOT_GRAPH = 3;
-	private static final int SCENE_CHART = 4;
-	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation", "Plot graph with selected dataset", "Chart view" };
+	private static final int SCENE_AXIS_SELECT = 4;
+	private static final int SCENE_CHART = 5;
+	private static final String[] SCENE_TITLES = { "COMP3111 Chart - Pepsi", "Sample Line Chart Screen","Data filtering and transformation", "Plot graph with selected dataset", "Select axis", "Chart view" };
 	private Stage stage = null;
 	private Scene[] scenes = null;
 
@@ -104,11 +125,33 @@ public class Main extends Application {
 	// Screen 3 :panePlotGraphScreen
 	private Button plotChartBackMainBtn, selectChartTypeBtn;
 	private Label chartSelectionDataLabel,chartInvalidDataset;
+
+	// Screen 4: paneAxisScreen
+	private Button btAxisBack, selectAxisBtn;
+	private Label axisSelectionLabel,invalidAxis, xAxisLabel, yAxisLabel;
+	private ObservableList<String> selectedColumnsX = null;
+	private ObservableList<String> selectedColumnsY = null;
 	
-	// Screen 4 : 
+	private ObservableList<String> lineChartDropDownX =FXCollections.observableArrayList ();
+	private ObservableList<String> lineChartDropDownY =FXCollections.observableArrayList ();
+	private ComboBox comboBoxX, comboBoxY;
+	private String xSelected, ySelected;
+
+	
+	
+	// Screen 5 : paneChartScreen
 	private Chart chart = null;
-	private Button btChartBackMain, saveChartBtn;
+	private Button btChartBackMain, saveChartBtn, btChartBack;
+	private LineChart<Number, Number> lineChartFinal = null;
+	private BarChart<String, Number> barChartFinal = null;
+	private LineChart<Number, Number> animatedLineChartFinal = null;
+	private NumberAxis xAxisNum = null;
+	private NumberAxis yAxisNum = null;
+	private CategoryAxis xAxisTxt = null;
+	private double minVal, maxVal, speed;
 	
+
+
 	
 	/**
 	 * create all scenes in this application
@@ -120,7 +163,8 @@ public class Main extends Application {
 
 		scenes[SCENE_DATA_FILTER] = new Scene(paneDataFilterScreen(), 800, 600);
 		scenes[PLOT_GRAPH] = new Scene(panePlotGraphScreen(), 800, 600);
-		scenes[SCENE_CHART] = new Scene(paneChartScreen(), 800, 600);
+		
+		
 		
 		//scenes[SCENE_LINE_CHART] = new Scene(paneLineChartScreen(), 700, 600);
 		for (Scene s : scenes) {
@@ -132,6 +176,9 @@ public class Main extends Application {
 	}
 	
 	
+	/**
+	 * update the dataset list and  chart list on the main screen
+	 */
 	private void updateDatasetsListandChartList() {
 		
 		
@@ -148,7 +195,8 @@ public class Main extends Application {
 		
 		chartsname.clear();
 		for(int i = 0; i<charts.size();++i) {
-			chartsname.add("Chart" + String.valueOf(i+1));
+
+			chartsname.add(charts.get(i).getTitle());
 		}
 		
 		//highlight and select the newly added dataset by default
@@ -157,6 +205,75 @@ public class Main extends Application {
 		
 	}
 
+	
+	/**
+	 * update the column liston the axis selection screen
+	 */
+	private void updateAxisList() {
+		switch(graphSelectedIndex) {
+		//bar chart
+			case 1:
+				dataColumnsName.clear();
+				
+				DataTable tempDataTable = dataTables.get(datasetsSelectedIndex);
+				dataColumns = tempDataTable.getAllColValue();
+				List<String> tempColName = tempDataTable.getAllColName();
+				
+				
+				int numCol = tempDataTable.getNumCol();
+				
+				
+				for(int i = 0; i<numCol; ++i) {
+					dataColumnsName.add(tempColName.get(i));
+				}
+				
+				
+				dataColumnslistX.setItems(dataColumnsName);
+				dataColumnslistY.setItems(dataColumnsName);
+				
+				dataColumnslistX.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+				dataColumnslistY.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+				
+				
+				//select the first column on the axis selection list by default 
+				dataColumnslistX.getSelectionModel().select(0);
+				dataColumnslistY.getSelectionModel().select(0);
+				break;
+			
+			case 0:
+			case 2:
+				List <String> xColumnsList = dataTables.get(datasetsSelectedIndex).getAllColName();
+				List <String> yColumnsList = dataTables.get(datasetsSelectedIndex).getAllColName();
+				
+				for(int i = 0;i<xColumnsList.size();++i)
+					comboBoxX.getItems().add(xColumnsList.get(i));
+				
+				for(int i = 0;i<yColumnsList.size();++i)
+					comboBoxY.getItems().add(yColumnsList.get(i));
+				break;
+		
+		}
+
+		
+	}
+	
+	/**
+	 * updates the chart screen after the columns for axis have been selected
+	 */
+	private void updateSceneChart(Chart chart) {
+		scenes[SCENE_CHART] = new Scene(paneChartScreen(chart), 800, 600);
+		initChartScreenHandlers();
+	}
+	
+	/**
+	 * updates the chart screen after the chart type has been selected
+	 */
+	private void updateSceneAxisSelect() {
+		scenes[SCENE_AXIS_SELECT] = new Scene(paneAxisScreen(), 800, 600);
+		scenes[SCENE_AXIS_SELECT].getStylesheets().add("Main.css");
+		initAxisScreenHandlers();
+	}
+	
 	/**
 	 * This method will be invoked after createScenes(). In this stage, all UI
 	 * components will be created with a non-NULL references for the UI components
@@ -167,7 +284,8 @@ public class Main extends Application {
 		initLineChartScreenHandlers();
 		initDataFilterScreenHandlers();
 		initGraphTypeSelectionScreenHandlers();
-		initChartScreenHandlers();
+
+		
 	}
 
 	/**
@@ -223,74 +341,483 @@ public class Main extends Application {
 	 * Initialize event handlers of the plot graph type selection screen
 	 * 
 	 */
+
 	private void initGraphTypeSelectionScreenHandlers() {
 		// click handler
 		plotChartBackMainBtn.setOnAction(e -> {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
+			chartInvalidDataset.setText("");
 		});
 		
 		selectChartTypeBtn.setOnAction(e -> {
 			graphSelectedIndex = plotChartTypeList.getFocusModel().getFocusedIndex();
 			System.out.println(graphSelectedIndex);
+			//data requirement check
 			switch(graphSelectedIndex)
 			{
 			case 0: 
-				//Line Chart Implementation
-				LineChartP lineChart = new LineChartP(dataTables.get(datasetsSelectedIndex));
-				if(lineChart.dataRequirementValidation())
+				//Line Chart
+				chart = new LineChartP(dataTables.get(datasetsSelectedIndex));
+				
+				if(chart.dataRequirementValidation())		
 				{
-					charts.add(lineChart);
-					putSceneOnStage(SCENE_CHART);
+					updateSceneAxisSelect();
+					putSceneOnStage(SCENE_AXIS_SELECT);
+					chartInvalidDataset.setText("");
 				}
 				else
-					chartInvalidDataset.setText("Invalid Dataset!");
+					chartInvalidDataset.setText("Line chart requires at least 2 numeric columns!");
 				break;
 				
 			case 1:
-				//Bar Chart Implementation
-				BarChartP barChart = new BarChartP(dataTables.get(datasetsSelectedIndex));
-				if(barChart.dataRequirementValidation())
+				//Bar Chart
+				chart = new BarChartP(dataTables.get(datasetsSelectedIndex));
+				
+				if(chart.dataRequirementValidation())
 				{
-					charts.add(barChart);
-					putSceneOnStage(SCENE_CHART);
+					updateSceneAxisSelect();
+					putSceneOnStage(SCENE_AXIS_SELECT);
+					chartInvalidDataset.setText("");
 				}
 				else
-					chartInvalidDataset.setText("Invalid Dataset!");				
+					chartInvalidDataset.setText("Bar chart requires at least 1 text column and 1 numeric column!");								
 				break;
 				
 			case 2:
-				//Animated Line Chart Implementation
-				AnimatedLineChart animatedLineChart = new AnimatedLineChart(dataTables.get(datasetsSelectedIndex));
-				if(animatedLineChart.dataRequirementValidation())
+				//Animated Line Chart
+				chart = new AnimatedLineChart(dataTables.get(datasetsSelectedIndex));
+				if(chart.dataRequirementValidation())
 				{
-					charts.add(animatedLineChart);
-					putSceneOnStage(SCENE_CHART);
+					updateSceneAxisSelect();
+					putSceneOnStage(SCENE_AXIS_SELECT);
+					chartInvalidDataset.setText("");
 				}
 				else
-					chartInvalidDataset.setText("Invalid Dataset!");
+					chartInvalidDataset.setText("Animated line chart requires at least 2 numeric columns!");
 				break;
-			
+				
 			}
+
+			updateAxisList();
 			
 		});
 	}
 	
-	private void initChartScreenHandlers() {
+	
+	/**
+	 * Initialize event handlers of the Axis selection screen
+	 * 
+	 */
+	private void initAxisScreenHandlers() {
 
 		// click handler
-		btChartBackMain.setOnAction(e -> {
-			charts.remove(charts.size()-1);
-			chartInvalidDataset.setText("");
+		btAxisBack.setOnAction(e -> {
+			
 			putSceneOnStage(PLOT_GRAPH);
+			invalidAxis.setText("");
 		});
 		
-		saveChartBtn.setOnAction(e -> {
+		selectAxisBtn.setOnAction(e -> {
+
+			DataTable selectedDT = dataTables.get(datasetsSelectedIndex);
+			DataTable Xcol = new DataTable();
+			DataTable Ycol = new DataTable();
+			//String selectedDTTitle = selectedDT.getDataTableName();
+			String selectedDTTitle = "";
+//put the selected columns into datatable Xcol and Ycol
+			switch(graphSelectedIndex) {
+			case 0:
+			case 2:
+				if(comboBoxX.getValue() != null) {
+					xSelected = comboBoxX.getValue().toString();
+					
+					try {
+						Xcol.addCol(xSelected,dataTables.get(datasetsSelectedIndex).getCol(xSelected));
+					} catch (DataTableException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					
+				}
+
+				if(comboBoxY.getValue() != null) {
+					ySelected = comboBoxY.getValue().toString();
+					try {
+						Ycol.addCol(ySelected,dataTables.get(datasetsSelectedIndex).getCol(ySelected));
+					} catch (DataTableException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+				}
+				selectedDTTitle = xSelected + "v" + ySelected;
+				
+				break;
 			
-			putSceneOnStage(SCENE_MAIN_SCREEN);
+			case 1:
+				selectedColumnsX =  dataColumnslistX.getSelectionModel().getSelectedItems();
+				selectedColumnsY =  dataColumnslistY.getSelectionModel().getSelectedItems();
+				
+				
+				for(int i =0; i<selectedColumnsX.size(); ++i)
+					try {
+						Xcol.addCol(selectedColumnsX.get(i),selectedDT.getCol(selectedColumnsX.get(i)));
+					} catch (DataTableException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				
+				for(int i =0; i<selectedColumnsY.size(); ++i)
+					try {
+						Ycol.addCol(selectedColumnsY.get(i),selectedDT.getCol(selectedColumnsY.get(i)));
+					} catch (DataTableException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				
+				selectedDTTitle = selectedColumnsX.get(0);
+				break;
+			
+			}
+
+			
+			
+		 			
+			//Add chart to charts list
+			switch(graphSelectedIndex)
+			{
+			//Line Chart
+			case 0: 
+				//no text column & at least 1 numeric column for each X and Y
+				if(Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() != 0 && Ycol.numCountDT() != 0)
+				{
+					LineChartP lineChart = new LineChartP(selectedDT, Xcol, Ycol,selectedDTTitle);
+					charts.add(lineChart);
+					for(int i =0; i<charts.size();++i) {
+						System.out.println(i+ charts.get(i).getTitle());
+					}
+					
+					updateSceneChart(lineChart);
+					populateToLineChart(Xcol, Ycol, selectedDTTitle);
+					
+					putSceneOnStage(SCENE_CHART);
+					
+					invalidAxis.setText("");
+				} else
+					invalidAxis.setText("Line chart requires no text column and one numeric column for each X and Y axis!");
+
+				break;
+
+			//Bar Chart				
+			case 1:
+				//1 text column on X axis and multiple numeric columns on Y axis
+				if(Xcol.textCountDT() == 1 && Ycol.textCountDT() == 0 && Xcol.numCountDT() == 0 && Ycol.numCountDT() != 0)
+				{
+
+					BarChartP barChart = new BarChartP(selectedDT, Xcol, Ycol,selectedDTTitle);
+
+					charts.add(barChart);	
+										
+					updateSceneChart(barChart);
+					populateToBarChart(Xcol,Ycol,selectedDTTitle);
+					
+					putSceneOnStage(SCENE_CHART);
+					invalidAxis.setText("");
+				} else
+					invalidAxis.setText("Bar chart requires 1 text column on X axis and at least one numeric column on Y axis!");
+				break;
+
+			//Animated Line Chart
+			case 2:
+				//only 1 numeric column on each X and Y axis
+				if(Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() == 1 && Ycol.numCountDT() == 1)
+				{
+					
+					AnimatedLineChart animatedLineChart = new AnimatedLineChart(selectedDT, Xcol, Ycol,selectedDTTitle);
+					charts.add(animatedLineChart);
+					
+					updateSceneChart(animatedLineChart);
+					
+					//animation using timeline
+					timeline = new Timeline();
+					timeline.setCycleCount(Timeline.INDEFINITE);
+					timeline.setAutoReverse(true); 
+					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),(ActionEvent actionEvent) -> plotAnimatedChart()));
+					
+
+					
+					populateToAnimatedLineChart(Xcol,Ycol,selectedDTTitle);
+					putSceneOnStage(SCENE_CHART);
+					
+					timeline.play();
+					invalidAxis.setText("");
+
+									
+				}
+				else
+					invalidAxis.setText("Animated line chart requires no text column and one numeric column for each X and Y axis!");
+				
+				break;
+				
+			}
 		});
 		
 	}
+	
+	
+	/**
+	 * Initialize event handlers of the Chart screen
+	 */
+	private void initChartScreenHandlers() {
 
+		// click handler
+		btChartBack.setOnAction(e -> {
+			if(!showChartLock) {
+				charts.remove(charts.size()-1);
+				putSceneOnStage(SCENE_AXIS_SELECT);
+			}
+			else {
+				putSceneOnStage(SCENE_MAIN_SCREEN);
+				showChartLock = false;
+			}
+				
+			
+			if(timeline != null)
+				timeline.stop();
+		});
+		
+		btChartBackMain.setOnAction(e -> {
+			if(!showChartLock)
+				charts.remove(charts.size()-1);
+			else
+				showChartLock = false;
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+			if(timeline != null)
+				timeline.stop();
+
+		});
+		
+		
+		saveChartBtn.setOnAction(e -> {
+			//delete chart if entered through show chart button on the main screen
+			if(showChartLock) {
+				charts.remove(chartslistSelectedIndex);
+				showChartLock = false;
+			}
+			
+			putSceneOnStage(SCENE_MAIN_SCREEN);
+
+			if(timeline != null)
+				timeline.stop();
+
+		});
+		
+
+		
+	}
+	
+	/**sort an Number array into double array. Used for finding the min and max boundary for X axis
+	 * @param inputArr
+	 * @return double array sorted in ascending order
+	 */
+	private double[] ascendingSort(Number[] inputArr) {
+		//sort xValues in ascending order. For min and max value of the xAxis
+		double[] xDouble = new double[inputArr.length-1];
+		for(int i =1; i<inputArr.length; ++i) {
+			xDouble[i-1] = (double) inputArr[i];
+		}
+
+		for(int i =0; i<xDouble.length; ++i) {
+			double min = xDouble[i];
+			double temp;
+			for(int j=i+1; j<xDouble.length; ++j){
+				if(min> xDouble[j])
+				{
+					min = xDouble[j];
+					
+					temp = xDouble[i];
+					xDouble[i] = xDouble[j];
+					xDouble[j] = temp;						
+				}
+			}
+		}
+
+
+		
+		return xDouble;
+	}
+	
+	/**
+	 * change upper anad lower bound of Xaxis dynamically to animate the line chart
+	 */
+	private void plotAnimatedChart() {
+		//double speed = xAxisNum.getTickUnit()*2;
+		
+		double axisLowerBound = xAxisNum.getLowerBound() + speed;
+		double axisUpperBound = xAxisNum.getUpperBound() + speed;
+		if(axisUpperBound > maxVal) {
+			axisLowerBound = minVal;
+			axisUpperBound = minVal + ((maxVal-minVal)/2);
+		}
+		
+//		xAxisNum.setTickUnit(speed/4);
+		xAxisNum.setLowerBound(axisLowerBound);
+		xAxisNum.setUpperBound(axisUpperBound);
+	}
+	
+	
+	
+	/**
+	 * populate selected datacolumns into bar chart view
+	 * @param X
+	 * @param Y
+	 * @param title
+	 */
+	private void populateToBarChart(DataTable X, DataTable Y, String title) {
+		List <String> xColumnsList = X.getAllColName();
+		List <String> yColumnsList = Y.getAllColName();
+		
+		String xName = xColumnsList.get(0);
+		String[] yNames = new String[yColumnsList.size()];
+		
+		for(int i=0; i<yColumnsList.size();++i)
+			yNames[i]= yColumnsList.get(i);
+		
+		if(X != null && Y != null) {
+			barChartFinal.setTitle(xName + " bar chart");
+			xAxisTxt.setLabel(xName);
+			
+			XYChart.Series<String, Number>[] series = (XYChart.Series<String, Number>[]) new XYChart.Series[yColumnsList.size()];
+			
+			for(int i=0;i<yColumnsList.size();++i) {
+				series[i] = new XYChart.Series<String, Number>();
+				series[i].setName(yNames[i]);
+				System.out.println(yNames[i]);
+				String[] xValues = (String[]) X.getCol(xName).getData();
+				Number[] yValues = (Number[]) Y.getCol(yNames[i]).getData();
+				
+				for(int j =1; j<yValues.length;++j) {
+					series[i].getData().add(new XYChart.Data<String, Number>(xValues[j], yValues[j]));
+				}
+				
+			}
+			barChartFinal.getData().clear();
+			for(int i=0; i<series.length;++i) 
+				barChartFinal.getData().add(series[i]);
+			
+		}
+		
+	}
+	
+
+	
+
+	/**
+	 * populate selected datacolumns into animated line chart view
+	 * @param X
+	 * @param Y
+	 * @param title
+	 */
+	
+	private void populateToAnimatedLineChart(DataTable X, DataTable Y, String title) {
+		List <String> xColumnsList = X.getAllColName();
+		List <String> yColumnsList = Y.getAllColName();
+
+		String xName = xColumnsList.get(0);
+		String yName = yColumnsList.get(0);
+		xAxisNum.setAutoRanging(false);
+		xAxisNum.setTickLabelsVisible(true);
+		xAxisNum.setTickMarkVisible(true);
+		
+		
+		
+		DataColumn xCol = X.getCol(xName);
+		DataColumn yCol = Y.getCol(yName);
+
+		if(X != null && Y != null) {
+			animatedLineChartFinal.setTitle(xName + "v" + yName + " line chart");
+			xAxisNum.setLabel(xName);
+			yAxisNum.setLabel(yName);
+			
+			XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+			series.setName(yName);
+			Number[] xValues = (Number[]) xCol.getData();
+			Number[] yValues = (Number[]) yCol.getData();
+			
+
+			double[] xDouble = xCol.ascendingSort();			
+			
+			minVal = xDouble[0];
+			maxVal = xDouble[xDouble.length-1];
+			speed = (maxVal - minVal)/20;
+			xAxisNum.setTickUnit(speed);
+			xAxisNum.setTickLabelFill(Color.BLACK);
+			
+			for(int i =1; i<xValues.length; ++i) {
+				xValues[i] = (Number) xDouble[i-1];
+			}
+			
+
+			
+			for (int i = 1; i < xValues.length; i++) {
+				series.getData().add(new XYChart.Data<Number, Number>(xValues[i], yValues[i]));
+			}
+
+			animatedLineChartFinal.getData().clear();
+			animatedLineChartFinal.getData().add(series);
+	
+//Set initial X axis range			
+
+				double axisLowerBound = minVal;
+				double axisUpperBound = minVal+ ((maxVal-minVal)/2);		
+				xAxisNum.setLowerBound(axisLowerBound);
+				xAxisNum.setUpperBound(axisUpperBound);
+
+			
+			
+
+		}
+
+	}
+	
+	/**
+	 * populate selected datacolumns into line chart view
+	 * @param X
+	 * @param Y
+	 * @param title
+	 */
+	private void populateToLineChart(DataTable X, DataTable Y, String title) {
+		List <String> xColumnsList = X.getAllColName();
+		List <String> yColumnsList = Y.getAllColName();
+
+		String xName = xColumnsList.get(0);
+		String yName = yColumnsList.get(0);
+		
+		DataColumn xCol = X.getCol(xName);
+		DataColumn yCol = Y.getCol(yName);
+
+		if(X != null && Y != null) {
+			lineChartFinal.setTitle(xName + "v" + yName + " line chart");
+			xAxisNum.setLabel(xName);
+			yAxisNum.setLabel(yName);
+			
+			XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+			series.setName(yName);
+			
+			Number[] xValues = (Number[]) xCol.getData();
+			Number[] yValues = (Number[]) yCol.getData();
+			
+			
+			
+			for (int i = 1; i < xValues.length; i++) {
+				series.getData().add(new XYChart.Data<Number, Number>(xValues[i], yValues[i]));
+			}
+			
+			lineChartFinal.getData().clear();
+			lineChartFinal.getData().add(series);
+		}
+
+	}
+	
 	/**
 	 * Populate sample data table values to the chart view
 	 */
@@ -375,11 +902,40 @@ public class Main extends Application {
 		});
 		
 		showChartButton.setOnAction(e -> {
+			showChartLock = true;
 			
-			//Won your show chart function here
-			//Log G will pass you the chart
-			//delete the line below if u need
-			putSceneOnStage(SCENE_LINE_CHART);
+			chartslistSelectedIndex = chartslist.getSelectionModel().getSelectedIndex();
+			chart = charts.get(chartslistSelectedIndex);
+			
+			switch(chart.getTypeID()) {
+			case 0:
+				updateSceneChart(chart);
+				populateToLineChart(chart.getDataTable(1), chart.getDataTable(2), chart.getTitle());
+				putSceneOnStage(SCENE_CHART);
+				break;
+			case 1:
+				updateSceneChart(chart);
+				populateToBarChart(chart.getDataTable(1), chart.getDataTable(2), chart.getTitle());
+				putSceneOnStage(SCENE_CHART);
+				break;
+			case 2:
+				updateSceneChart(chart);
+				
+				timeline = new Timeline();
+				timeline.setCycleCount(Timeline.INDEFINITE);
+				timeline.setAutoReverse(true);
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),(ActionEvent actionEvent) -> plotAnimatedChart()));
+
+				populateToAnimatedLineChart(chart.getDataTable(1), chart.getDataTable(2), chart.getTitle());
+				
+				putSceneOnStage(SCENE_CHART);
+				timeline.play();
+				break;
+			
+			}
+			
+			saveChartBtn.setText("Delete chart");
+			
 			
 			
 		});
@@ -561,11 +1117,7 @@ public class Main extends Application {
 		return pane;
 	}
 
-	/**
-	 * Creates the main screen and layout its UI components
-	 * 
-	 * @return a Pane component to be displayed on a scene
-	 */
+
 	
 	private Pane paneDataFilterScreen() {
 		
@@ -595,6 +1147,12 @@ public class Main extends Application {
 		return pane;
 		
 	}
+	
+	/**
+	 * Creates the main screen and layout its UI components
+	 * 
+	 * @return a Pane component to be displayed on a scene
+	 */
 	private Pane paneMainScreen() {
 
 		lbMainScreenTitle = new Label("COMP3111 Chart");
@@ -660,11 +1218,11 @@ public class Main extends Application {
 		return pane;
 	}
 
-	
-	/*
+		
+	/**
 	 * Creates the graph type screen and layout its UI components
 	 * 
-	 * WY
+	 * @return a Pane component to be displayed on a graph type selection scene
 	 */
 	
 	private Pane panePlotGraphScreen() {
@@ -705,22 +1263,150 @@ public class Main extends Application {
 		return pane;
 		
 	}
-	
-//Chart screen after selection
-	
-private Pane paneChartScreen() {
-		btChartBackMain = new Button("Back");
-		saveChartBtn = new Button("Save Chart");
-		HBox container = new HBox(20);
-		container.getChildren().addAll(saveChartBtn, btChartBackMain);
+	/**
+	 * Creates the Axis selection screen and layout its UI components
+	 * 
+	 * @return a Pane component to be displayed on a Axis selection scene
+	 */	
+
+	private Pane paneAxisScreen() {
+		axisSelectionLabel = new Label("");
+		invalidAxis = new Label("");
+		xAxisLabel = new Label("X Axis");
+		yAxisLabel = new Label("Y Axis");
+		btAxisBack = new Button("Back");
+		selectAxisBtn = new Button("Select columns");
+		
+		dataColumnslistX.setPrefWidth(350);
+		dataColumnslistX.setPrefHeight(300);
+		dataColumnslistY.setPrefWidth(350);
+		dataColumnslistY.setPrefHeight(300);
+		
+		HBox title = new HBox(20);
+		title.getChildren().add(axisSelectionLabel);
+		title.setAlignment(Pos.CENTER);
+		
+		HBox errorMsg = new HBox(20);
+		errorMsg.getChildren().add(invalidAxis);
+		errorMsg.setAlignment(Pos.CENTER);
+		
+		VBox xAxisBox = new VBox(20);
+		VBox yAxisBox = new VBox(20);
+
+		switch(graphSelectedIndex) {
+		case 0:
+		case 2:
+			axisSelectionLabel.setText("Please select columns for X and Y axis");
+			comboBoxX = new ComboBox();
+			comboBoxY = new ComboBox();
+			
+			xAxisBox.getChildren().addAll(xAxisLabel, comboBoxX);
+			xAxisBox.setAlignment(Pos.CENTER);
+			
+			yAxisBox.getChildren().addAll(yAxisLabel, comboBoxY);
+			yAxisBox.setAlignment(Pos.CENTER);
+			break;
+			
+		case 1:
+			axisSelectionLabel.setText("Please select columns for X and Y axis (Press Ctrl or Shift for multiple selection)");
+			xAxisBox.getChildren().addAll(xAxisLabel, dataColumnslistX);
+			xAxisBox.setAlignment(Pos.CENTER);
+			
+			yAxisBox.getChildren().addAll(yAxisLabel, dataColumnslistY);
+			yAxisBox.setAlignment(Pos.CENTER);
+			break;
+		}
+
+		
+		HBox axisListBox = new HBox(20);
+		axisListBox.getChildren().addAll(xAxisBox, yAxisBox);
+		axisListBox.setAlignment(Pos.CENTER);
+		
+		HBox groupofButtons = new HBox(20);
+		groupofButtons.getChildren().addAll(selectAxisBtn,btAxisBack);
+		groupofButtons.setAlignment(Pos.CENTER);
+		
+		VBox container = new VBox(20);
+		container.getChildren().addAll(title,errorMsg, axisListBox, groupofButtons);
 		container.setAlignment(Pos.CENTER);
+		
 		
 		BorderPane pane = new BorderPane();
 		pane.setCenter(container);
+		pane.getStyleClass().add("screen-background");
+		return pane;
+	}
+		
+	
+	
+/**
+ * Creates the Chart screen and layout its UI components.
+ * Creates chart accordingly
+ * 
+ * @return a Pane component to be displayed on a Chart scene
+ */	
+private Pane paneChartScreen(Chart chart) {
+		btChartBack = new Button("Back");
+		btChartBackMain = new Button("Back to main");
+		saveChartBtn = new Button("Save chart");
+
+		HBox chartContainer = new HBox(20);
+		switch(chart.getTypeID()) {
+		case 0:
+			chartContainer.getChildren().clear();
+			xAxisNum = new NumberAxis();
+			yAxisNum = new NumberAxis();
+			lineChartFinal = new LineChart<Number, Number>(xAxisNum, yAxisNum);
+			lineChartFinal.setTitle("An empty line chart");
+			xAxisNum.setLabel("");
+			yAxisNum.setLabel("");
+			
+
+			chartContainer.getChildren().add(lineChartFinal);
+			break;
+		case 1:
+			chartContainer.getChildren().clear();
+			xAxisTxt = new CategoryAxis();
+			yAxisNum = new NumberAxis();
+			barChartFinal = new BarChart<String, Number>(xAxisTxt, yAxisNum);
+			barChartFinal.setTitle("An empty bar chart");
+			xAxisTxt.setLabel("");
+			yAxisNum.setLabel("");
+			
+			chartContainer.getChildren().add(barChartFinal);
+			
+			break;
+			
+		case 2:
+			chartContainer.getChildren().clear();
+			xAxisNum = new NumberAxis();
+			yAxisNum = new NumberAxis();
+			animatedLineChartFinal = new LineChart<Number, Number>(xAxisNum, yAxisNum);
+			animatedLineChartFinal.setTitle("An empty animated line chart");
+			xAxisNum.setLabel("");
+			yAxisNum.setLabel("");
+			
+			chartContainer.getChildren().add(animatedLineChartFinal);
+			break;
+		}
+		
+		chartContainer.setAlignment(Pos.CENTER);
+
+		HBox container = new HBox(20);
+		container.getChildren().addAll(saveChartBtn, btChartBackMain,btChartBack);
+		container.setAlignment(Pos.CENTER);
+		
+		VBox totalContainer = new VBox(20);
+		totalContainer.getChildren().addAll(chartContainer, container);
+		totalContainer.setAlignment(Pos.CENTER);
+		
+		BorderPane pane = new BorderPane();
+		pane.setCenter(totalContainer);
 // Apply CSS to style the GUI components
 		pane.getStyleClass().add("screen-background");
 		return pane;
 	}	
+	
 	
 	/**
 	 * This method is used to pick anyone of the scene on the stage. It handles the
