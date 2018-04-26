@@ -35,6 +35,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.layout.StackPane;
+import javafx.animation.Animation;
+import javafx.animation.Timeline;
+import javafx.animation.KeyValue;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
+import javafx.event.ActionEvent;
 
 /**
  * The Main class of this GUI application
@@ -73,6 +79,8 @@ public class Main extends Application {
 	private ListView<String> dataColumnslistY = new ListView<String>();
 	private ObservableList<String> dataColumnsName =FXCollections.observableArrayList ();
 	
+	//for animation
+	private Timeline timeline;
 	//Just for testing puropose
 	
 	//ObservableList<String> items =FXCollections.observableArrayList ("Single", "Double", "Suite", "Family App");
@@ -132,9 +140,11 @@ public class Main extends Application {
 	private Button btChartBackMain, saveChartBtn, btChartBack;
 	private LineChart<Number, Number> lineChartFinal = null;
 	private BarChart<String, Number> barChartFinal = null;
+	private LineChart<Number, Number> animatedLineChartFinal = null;
 	private NumberAxis xAxisNum = null;
 	private NumberAxis yAxisNum = null;
 	private CategoryAxis xAxisTxt = null;
+	private double minVal, maxVal;
 	
 
 
@@ -181,7 +191,8 @@ public class Main extends Application {
 		
 		chartsname.clear();
 		for(int i = 0; i<charts.size();++i) {
-			chartsname.add("Chart" + String.valueOf(i+1));
+
+			chartsname.add(charts.get(i).getTitle());
 		}
 		
 		//highlight and select the newly added dataset by default
@@ -343,6 +354,7 @@ public class Main extends Application {
 			case 0: 
 				//Line Chart
 				chart = new LineChartP(dataTables.get(datasetsSelectedIndex));
+				
 				if(chart.dataRequirementValidation())		
 				{
 					updateSceneAxisSelect();
@@ -356,6 +368,7 @@ public class Main extends Application {
 			case 1:
 				//Bar Chart
 				chart = new BarChartP(dataTables.get(datasetsSelectedIndex));
+				
 				if(chart.dataRequirementValidation())
 				{
 					updateSceneAxisSelect();
@@ -405,8 +418,8 @@ public class Main extends Application {
 			DataTable selectedDT = dataTables.get(datasetsSelectedIndex);
 			DataTable Xcol = new DataTable();
 			DataTable Ycol = new DataTable();
-			String selectedDTTitle = selectedDT.getDataTableName();
-			
+			//String selectedDTTitle = selectedDT.getDataTableName();
+			String selectedDTTitle = "";
 //put the selected columns into datatable Xcol and Ycol
 			switch(graphSelectedIndex) {
 			case 0:
@@ -432,6 +445,8 @@ public class Main extends Application {
 						e2.printStackTrace();
 					}
 				}
+				selectedDTTitle = xSelected + "v" + ySelected;
+				
 				break;
 			
 			case 1:
@@ -454,6 +469,8 @@ public class Main extends Application {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+				
+				selectedDTTitle = selectedColumnsX.get(0);
 				break;
 			
 			}
@@ -469,13 +486,17 @@ public class Main extends Application {
 				//no text column & at least 1 numeric column for each X and Y
 				if(Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() != 0 && Ycol.numCountDT() != 0)
 				{
-					chart = new LineChartP(selectedDT, Xcol, Ycol,selectedDTTitle);
-					charts.add(chart);
+					LineChartP lineChart = new LineChartP(selectedDT, Xcol, Ycol,selectedDTTitle);
+					charts.add(lineChart);
+					for(int i =0; i<charts.size();++i) {
+						System.out.println(i+ charts.get(i).getTitle());
+					}
 					
-					updateSceneChart(chart);
+					updateSceneChart(lineChart);
 					populateToLineChart(Xcol, Ycol, selectedDTTitle);
 					
 					putSceneOnStage(SCENE_CHART);
+					
 					invalidAxis.setText("");
 				} else
 					invalidAxis.setText("Line chart requires no text column and one numeric column for each X and Y axis!");
@@ -487,9 +508,12 @@ public class Main extends Application {
 				//1 text column on X axis and multiple numeric columns on Y axis
 				if(Xcol.textCountDT() == 1 && Ycol.textCountDT() == 0 && Xcol.numCountDT() == 0 && Ycol.numCountDT() != 0)
 				{
-					chart = new BarChartP(selectedDT, Xcol, Ycol,selectedDTTitle);
-					charts.add(chart);	
-					updateSceneChart(chart);
+
+					BarChartP barChart = new BarChartP(selectedDT, Xcol, Ycol,selectedDTTitle);
+
+					charts.add(barChart);	
+										
+					updateSceneChart(barChart);
 					populateToBarChart(Xcol,Ycol,selectedDTTitle);
 					
 					putSceneOnStage(SCENE_CHART);
@@ -503,15 +527,27 @@ public class Main extends Application {
 				//only 1 numeric column on each X and Y axis
 				if(Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() == 1 && Ycol.numCountDT() == 1)
 				{
-					chart = new AnimatedLineChart(selectedDT, Xcol, Ycol,selectedDTTitle);
-					charts.add(chart);
-					updateSceneChart(chart);
-					populateToLineChart(Xcol,Ycol,selectedDTTitle);
 					
+					AnimatedLineChart animatedLineChart = new AnimatedLineChart(selectedDT, Xcol, Ycol,selectedDTTitle);
+					charts.add(animatedLineChart);
+					
+					updateSceneChart(animatedLineChart);
+					
+					//animation using timeline
+					timeline = new Timeline();
+					timeline.setCycleCount(Timeline.INDEFINITE);
+					timeline.setAutoReverse(true);
+					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(75),(ActionEvent actionEvent) -> plotAnimatedChart()));
+					
+
+					
+					populateToAnimatedLineChart(Xcol,Ycol,selectedDTTitle);
 					putSceneOnStage(SCENE_CHART);
 					
+					timeline.play();
 					invalidAxis.setText("");
-				
+
+									
 				}
 				else
 					invalidAxis.setText("Animated line chart requires no text column and one numeric column for each X and Y axis!");
@@ -533,24 +569,78 @@ public class Main extends Application {
 		btChartBack.setOnAction(e -> {
 			charts.remove(charts.size()-1);
 			putSceneOnStage(SCENE_AXIS_SELECT);
+			timeline.stop();
 		});
 		
 		btChartBackMain.setOnAction(e -> {
 			charts.remove(charts.size()-1);
 			putSceneOnStage(SCENE_MAIN_SCREEN);
+			timeline.stop();
 		});
 		
 		
 		saveChartBtn.setOnAction(e -> {
 			
 			putSceneOnStage(SCENE_MAIN_SCREEN);
+			timeline.stop();
 		});
 		
 
 		
 	}
 	
+	/**sort an Number array into double array. Used for finding the min and max boundary for X axis
+	 * @param inputArr
+	 * @return double array sorted in ascending order
+	 */
+	private double[] ascendingSort(Number[] inputArr) {
+		//sort xValues in ascending order. For min and max value of the xAxis
+		double[] xDouble = new double[inputArr.length-1];
+		for(int i =1; i<inputArr.length; ++i) {
+			xDouble[i-1] = (double) inputArr[i];
+		}
 
+		for(int i =0; i<xDouble.length; ++i) {
+			double min = xDouble[i];
+			double temp;
+			for(int j=i+1; j<xDouble.length; ++j){
+				if(min> xDouble[j])
+				{
+					min = xDouble[j];
+					
+					temp = xDouble[i];
+					xDouble[i] = xDouble[j];
+					xDouble[j] = temp;						
+				}
+			}
+		}
+
+
+		
+		return xDouble;
+	}
+	
+	/**
+	 * change axis boundary dynamically to animate the line chart
+	 */
+	private void plotAnimatedChart() {
+		double speed = (maxVal - minVal)/10;
+		//double speed = xAxisNum.getTickUnit()*2;
+		
+		double axisLowerBound = xAxisNum.getLowerBound() + speed;
+		double axisUpperBound = xAxisNum.getUpperBound() + speed;
+		if(axisUpperBound > maxVal) {
+			axisLowerBound = minVal;
+			axisUpperBound = minVal + ((maxVal-minVal)/2);
+		}
+		
+//		xAxisNum.setTickUnit(speed/4);
+		xAxisNum.setLowerBound(axisLowerBound);
+		xAxisNum.setUpperBound(axisUpperBound);
+	}
+	
+	
+	
 	/**
 	 * populate selected datacolumns into bar chart view
 	 * @param X
@@ -568,7 +658,7 @@ public class Main extends Application {
 			yNames[i]= yColumnsList.get(i);
 		
 		if(X != null && Y != null) {
-			barChartFinal.setTitle(title + " bar chart");
+			barChartFinal.setTitle(xName + " bar chart");
 			xAxisTxt.setLabel(xName);
 			
 			XYChart.Series<String, Number>[] series = (XYChart.Series<String, Number>[]) new XYChart.Series[yColumnsList.size()];
@@ -594,41 +684,70 @@ public class Main extends Application {
 	}
 	
 
+	
+
 	/**
 	 * populate selected datacolumns into animated line chart view
 	 * @param X
 	 * @param Y
 	 * @param title
 	 */
+	
 	private void populateToAnimatedLineChart(DataTable X, DataTable Y, String title) {
 		List <String> xColumnsList = X.getAllColName();
 		List <String> yColumnsList = Y.getAllColName();
 
 		String xName = xColumnsList.get(0);
 		String yName = yColumnsList.get(0);
+		xAxisNum.setAutoRanging(false);
+		xAxisNum.setTickLabelsVisible(true);
+		//xAxisNum.setTickMarkVisible(true);
+		
 		
 		DataColumn xCol = X.getCol(xName);
 		DataColumn yCol = Y.getCol(yName);
 
 		if(X != null && Y != null) {
-			lineChartFinal.setTitle(xName + "v" + yName + " line chart");
+			animatedLineChartFinal.setTitle(xName + "v" + yName + " line chart");
 			xAxisNum.setLabel(xName);
 			yAxisNum.setLabel(yName);
 			
 			XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 			series.setName(yName);
-			
 			Number[] xValues = (Number[]) xCol.getData();
 			Number[] yValues = (Number[]) yCol.getData();
 			
+			//sort xValues in ascending order to extract max and min value
+			double[] xDouble = ascendingSort(xValues);
+			minVal = xDouble[0];
+			maxVal = xDouble[xDouble.length-1];
 			
+			for(int i =1; i<xValues.length; ++i) {
+				xValues[i] = (Number) xDouble[i-1];
+			}
+			
+
 			
 			for (int i = 1; i < xValues.length; i++) {
 				series.getData().add(new XYChart.Data<Number, Number>(xValues[i], yValues[i]));
 			}
+
+			animatedLineChartFinal.getData().clear();
+			animatedLineChartFinal.getData().add(series);
 			
-			lineChartFinal.getData().clear();
-			lineChartFinal.getData().add(series);
+
+
+			
+//Set initial X axis range			
+
+				double axisLowerBound = minVal;
+				double axisUpperBound = minVal+ ((maxVal-minVal)/2);		
+				xAxisNum.setLowerBound(axisLowerBound);
+				xAxisNum.setUpperBound(axisUpperBound);
+
+			
+			
+
 		}
 
 	}
@@ -1204,6 +1323,14 @@ private Pane paneChartScreen(Chart chart) {
 			
 		case 2:
 			chartContainer.getChildren().clear();
+			xAxisNum = new NumberAxis();
+			yAxisNum = new NumberAxis();
+			animatedLineChartFinal = new LineChart<Number, Number>(xAxisNum, yAxisNum);
+			animatedLineChartFinal.setTitle("An empty animated line chart");
+			xAxisNum.setLabel("");
+			yAxisNum.setLabel("");
+			
+			chartContainer.getChildren().add(animatedLineChartFinal);
 			break;
 		}
 		

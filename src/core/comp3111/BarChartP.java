@@ -19,6 +19,7 @@ public class BarChartP extends Chart {
 	 */
 	public BarChartP(DataTable dt){
 		dataTable = dt;
+		
 	}
 	
 	/**
@@ -29,8 +30,8 @@ public class BarChartP extends Chart {
 	 */
 	public BarChartP(DataTable dt, DataTable X, DataTable Y, String t){
 		dataTable = dt;
-		selectedItemsX = new DataTable();
-		selectedItemsY = new DataTable();
+		selectedItemsX = X;
+		selectedItemsY = Y;
 		title = t + " bar chart";
 
 	}
@@ -38,6 +39,7 @@ public class BarChartP extends Chart {
 	public int getTypeID() {
 		return typeID;
 	}
+
 	
 	public boolean dataRequirementValidation() {
 //at least 1 text column and 1 numeric column

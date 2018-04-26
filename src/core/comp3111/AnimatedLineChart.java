@@ -26,17 +26,18 @@ public class AnimatedLineChart extends Chart {
 	 * @param dt
 	 * @param X
 	 * @param Y
-	 */
+	 */ 
 	public AnimatedLineChart(DataTable dt, DataTable X, DataTable Y, String t){
 		dataTable = dt;
-		selectedItemsX = new DataTable();
-		selectedItemsY = new DataTable();
+		selectedItemsX = X;
+		selectedItemsY = Y;
 		title = t + " animated line chart";
 	}
 	
 	public int getTypeID() {
 		return typeID;
 	}
+
 	
 	public boolean dataRequirementValidation() {
 		//at least 2 numeric columns

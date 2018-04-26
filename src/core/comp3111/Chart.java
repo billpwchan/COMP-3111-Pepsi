@@ -11,10 +11,10 @@ import java.util.List;
 public abstract class Chart implements Serializable{
 
 	//attribute
-	protected static DataTable dataTable;
-	protected static DataTable selectedItemsX = null;
-	protected static DataTable selectedItemsY = null;
-	protected static String title = "";
+	protected DataTable dataTable;
+	protected DataTable selectedItemsX = null;
+	protected DataTable selectedItemsY = null;
+	protected String title = "";
 	private static final long serialVersionUID = 645367683485015133L;
 	private int option = 1;
 	private int typeID;
@@ -55,11 +55,11 @@ public abstract class Chart implements Serializable{
 	public abstract int getTypeID();
 	
 	/**
-	 * @return Stirng value of chart title
+	 * @return String value of chart title
 	 */
 	public String getTitle() {
 		return title;
-	}
+	};
 	
 	
 

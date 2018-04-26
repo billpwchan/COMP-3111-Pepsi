@@ -27,6 +27,7 @@ public class LineChartP extends Chart {
 	public int getTypeID() {
 		return typeID;
 	}
+
 	
 	/**
 	 * constructor for line chart object after columns for X and Y axis are selected
