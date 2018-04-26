@@ -1005,7 +1005,7 @@ public class Main extends Application {
 				dataTables.add(DataTableObj);
 			}
 			List<Chart> inputCharts = IOManager.getCharts();
-			if (inputCharts != null && inputCharts.isEmpty()) {
+			if (inputCharts != null && !inputCharts.isEmpty()) {
 				for (Chart ChartObj : inputCharts) {
 					charts.add(ChartObj);
 				}

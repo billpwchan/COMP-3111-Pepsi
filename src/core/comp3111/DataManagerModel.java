@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -274,7 +275,7 @@ public class DataManagerModel {
 	 */
 	private static boolean stringIsNumeric(String str) {
 		for (char c : str.toCharArray()) {
-			if (!Character.isDigit(c))
+			if (!Character.isDigit(c) && c!='.')
 				return false;
 		}
 		return true;

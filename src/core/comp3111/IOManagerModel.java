@@ -48,6 +48,7 @@ public class IOManagerModel {
 				tempDataTableSets.add((DataTable) eachOne);
 			}
 			if (eachOne instanceof Chart) {
+				System.out.println("Testing Only");
 				tempChartSets.add((Chart) eachOne);
 			}
 		}
