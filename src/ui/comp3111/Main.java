@@ -69,6 +69,7 @@ public class Main extends Application {
 	private int datasetsSelectedIndex = 0;
 	private ObservableList<String> datasetsname = FXCollections.observableArrayList ();
 	
+	private int chartslistSelectedIndex = 0;
 	private List<Chart> charts = new ArrayList<Chart>();
 	private ListView<String> chartslist = new ListView<String>();
 	private ObservableList<String> chartsname =FXCollections.observableArrayList ();
@@ -78,6 +79,8 @@ public class Main extends Application {
 	private ListView<String> dataColumnslistX = new ListView<String>();
 	private ListView<String> dataColumnslistY = new ListView<String>();
 	private ObservableList<String> dataColumnsName =FXCollections.observableArrayList ();
+	
+	private boolean showChartLock = false;
 	
 	//for animation
 	private Timeline timeline;
@@ -567,22 +570,44 @@ public class Main extends Application {
 
 		// click handler
 		btChartBack.setOnAction(e -> {
-			charts.remove(charts.size()-1);
-			putSceneOnStage(SCENE_AXIS_SELECT);
-			timeline.stop();
+			if(!showChartLock) {
+				charts.remove(charts.size()-1);
+				putSceneOnStage(SCENE_AXIS_SELECT);
+			}
+			else {
+				putSceneOnStage(SCENE_MAIN_SCREEN);
+				showChartLock = false;
+			}
+				
+			
+			if(timeline != null)
+				timeline.stop();
 		});
 		
 		btChartBackMain.setOnAction(e -> {
-			charts.remove(charts.size()-1);
+			if(!showChartLock)
+				charts.remove(charts.size()-1);
+			else
+				showChartLock = false;
 			putSceneOnStage(SCENE_MAIN_SCREEN);
-			timeline.stop();
+			if(timeline != null)
+				timeline.stop();
+
 		});
 		
 		
 		saveChartBtn.setOnAction(e -> {
+			//delete chart if entered through show chart button on the main screen
+			if(showChartLock) {
+				charts.remove(chartslistSelectedIndex);
+				showChartLock = false;
+			}
 			
 			putSceneOnStage(SCENE_MAIN_SCREEN);
-			timeline.stop();
+
+			if(timeline != null)
+				timeline.stop();
+
 		});
 		
 
@@ -875,11 +900,40 @@ public class Main extends Application {
 		});
 		
 		showChartButton.setOnAction(e -> {
+			showChartLock = true;
 			
-			//Won your show chart function here
-			//Log G will pass you the chart
-			//delete the line below if u need
-			putSceneOnStage(SCENE_LINE_CHART);
+			chartslistSelectedIndex = chartslist.getSelectionModel().getSelectedIndex();
+			chart = charts.get(chartslistSelectedIndex);
+			
+			switch(chart.getTypeID()) {
+			case 0:
+				updateSceneChart(chart);
+				populateToLineChart(chart.getDataTable(1), chart.getDataTable(2), chart.getTitle());
+				putSceneOnStage(SCENE_CHART);
+				break;
+			case 1:
+				updateSceneChart(chart);
+				populateToBarChart(chart.getDataTable(1), chart.getDataTable(2), chart.getTitle());
+				putSceneOnStage(SCENE_CHART);
+				break;
+			case 2:
+				updateSceneChart(chart);
+				
+				timeline = new Timeline();
+				timeline.setCycleCount(Timeline.INDEFINITE);
+				timeline.setAutoReverse(true);
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(75),(ActionEvent actionEvent) -> plotAnimatedChart()));
+
+				populateToAnimatedLineChart(chart.getDataTable(1), chart.getDataTable(2), chart.getTitle());
+				
+				putSceneOnStage(SCENE_CHART);
+				timeline.play();
+				break;
+			
+			}
+			
+			saveChartBtn.setText("Delete chart");
+			
 			
 			
 		});
