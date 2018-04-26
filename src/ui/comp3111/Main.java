@@ -41,7 +41,8 @@ import javafx.animation.KeyValue;
 import javafx.animation.KeyFrame;
 import javafx.util.Duration;
 import javafx.event.ActionEvent;
-
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 /**
  * The Main class of this GUI application
  * 
@@ -147,7 +148,7 @@ public class Main extends Application {
 	private NumberAxis xAxisNum = null;
 	private NumberAxis yAxisNum = null;
 	private CategoryAxis xAxisTxt = null;
-	private double minVal, maxVal;
+	private double minVal, maxVal, speed;
 	
 
 
@@ -539,8 +540,8 @@ public class Main extends Application {
 					//animation using timeline
 					timeline = new Timeline();
 					timeline.setCycleCount(Timeline.INDEFINITE);
-					timeline.setAutoReverse(true);
-					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(75),(ActionEvent actionEvent) -> plotAnimatedChart()));
+					timeline.setAutoReverse(true); 
+					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),(ActionEvent actionEvent) -> plotAnimatedChart()));
 					
 
 					
@@ -649,7 +650,6 @@ public class Main extends Application {
 	 * change upper anad lower bound of Xaxis dynamically to animate the line chart
 	 */
 	private void plotAnimatedChart() {
-		double speed = (maxVal - minVal)/10;
 		//double speed = xAxisNum.getTickUnit()*2;
 		
 		double axisLowerBound = xAxisNum.getLowerBound() + speed;
@@ -726,7 +726,8 @@ public class Main extends Application {
 		String yName = yColumnsList.get(0);
 		xAxisNum.setAutoRanging(false);
 		xAxisNum.setTickLabelsVisible(true);
-		//xAxisNum.setTickMarkVisible(true);
+		xAxisNum.setTickMarkVisible(true);
+		
 		
 		
 		DataColumn xCol = X.getCol(xName);
@@ -747,6 +748,9 @@ public class Main extends Application {
 			
 			minVal = xDouble[0];
 			maxVal = xDouble[xDouble.length-1];
+			speed = (maxVal - minVal)/20;
+			xAxisNum.setTickUnit(speed);
+			xAxisNum.setTickLabelFill(Color.BLACK);
 			
 			for(int i =1; i<xValues.length; ++i) {
 				xValues[i] = (Number) xDouble[i-1];
@@ -920,7 +924,7 @@ public class Main extends Application {
 				timeline = new Timeline();
 				timeline.setCycleCount(Timeline.INDEFINITE);
 				timeline.setAutoReverse(true);
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(75),(ActionEvent actionEvent) -> plotAnimatedChart()));
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(100),(ActionEvent actionEvent) -> plotAnimatedChart()));
 
 				populateToAnimatedLineChart(chart.getDataTable(1), chart.getDataTable(2), chart.getTitle());
 				
