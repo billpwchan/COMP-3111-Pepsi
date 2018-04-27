@@ -43,6 +43,18 @@ import javafx.util.Duration;
 import javafx.event.ActionEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import org.controlsfx.control.CheckListView;
+import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.stage.Stage;
 /**
  * The Main class of this GUI application
  * 
@@ -108,8 +120,12 @@ public class Main extends Application {
 	// createScene()
 	// Screen 1: paneMainScreen
 	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
-	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel;	
-
+	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel , datasetlabel, chartlabel, numberfiltertitlelb,textfiltertitlelb;	
+	private ChoiceBox cbfornumfield,cbforoperator,cbfortextfield;
+	private CheckBox numberfiltercb, textfiltercb;
+	
+	private TextField numberfield;
+	private CheckListView<String> checkListView;
 	//private ListView<DataTable> datasetListView;
 	
 	       
@@ -207,7 +223,7 @@ public class Main extends Application {
 
 	
 	/**
-	 * update the column liston the axis selection screen
+	 * update the column list on the axis selection screen
 	 */
 	private void updateAxisList() {
 		switch(graphSelectedIndex) {
@@ -306,6 +322,13 @@ public class Main extends Application {
 			putSceneOnStage(SCENE_MAIN_SCREEN);
 			
 			updateDatasetsListandChartList();
+		});
+		
+		numberfield.textProperty().addListener((observable, oldValue, newValue) -> {
+		    if (!newValue.matches("\\d*")) {
+		        numberfield.setText(oldValue);
+
+		    }
 		});
 		
 		dataFilterReplaceDatasetButton.setOnAction(e -> {
@@ -1121,14 +1144,79 @@ public class Main extends Application {
 	
 	private Pane paneDataFilterScreen() {
 		
+		
+		
+		
+		HBox numberfiltertitlegroup = new HBox(20);
+		
+		numberfiltertitlelb = new Label("Filtering numeric data : (check this box) ");
+		numberfiltercb = new CheckBox();
+		
+		numberfiltertitlegroup.setAlignment(Pos.CENTER);
+		numberfiltertitlegroup.getChildren().addAll(numberfiltertitlelb, numberfiltercb);
+		
+		
+		
 		VBox container = new VBox(20);
 		
 		dataFilterReplaceDatasetButton = new Button("Replacing the current dataset");
 		
+		//TODO
+		cbfornumfield = new ChoiceBox(FXCollections.observableArrayList(
+			    "First", "Second", "Third")
+			);
+		cbfornumfield.setTooltip(new Tooltip("Select the numeric field you want to filter"));
 		
+		cbforoperator = new ChoiceBox(FXCollections.observableArrayList(
+			    ">", "=", "<")
+			);
+		cbforoperator.setTooltip(new Tooltip("Select the operator you want to filter on the field"));
+		
+		
+		numberfield = new TextField();
 		
 		dataFilterSaveAsNewDatasetButton = new Button("Save as new dataset");
 		dataFilterBackMain = new Button("Back");
+		
+		
+		HBox numberfiltergroup = new HBox(20);
+		
+		numberfiltergroup.setAlignment(Pos.CENTER);
+		numberfiltergroup.getChildren().addAll(cbfornumfield, cbforoperator,numberfield);
+		
+		
+		
+		
+		
+		
+		HBox textfiltertitlegroup = new HBox(20);
+		
+		textfiltertitlelb = new Label("Filtering text type data : (check this box) ");
+		textfiltercb = new CheckBox();
+		textfiltertitlegroup.setAlignment(Pos.CENTER);
+		
+		
+		
+		cbfortextfield = new ChoiceBox(FXCollections.observableArrayList(
+			    "First", "Second", "Third")
+			);
+		cbfortextfield.setTooltip(new Tooltip("Select the text field you want to filter"));
+		
+		
+
+		textfiltertitlegroup.getChildren().addAll(textfiltertitlelb, textfiltercb);
+		
+		
+		 // create the data to show in the CheckListView 
+		 ObservableList<String> strings = FXCollections.observableArrayList();
+		 for (int i = 0; i <= 100; i++) {
+		     strings.add("Item " + i);
+		 }
+		 
+		 // Create the CheckListView with the data 
+		checkListView = new CheckListView<>(strings);
+		       
+		checkListView.getCheckModel().checkAll();
 		
 
 		HBox buttongroup = new HBox(20);
@@ -1137,7 +1225,7 @@ public class Main extends Application {
 		buttongroup.setAlignment(Pos.CENTER);
 		buttongroup.getChildren().addAll(dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain);
 		
-		container.getChildren().addAll(buttongroup);
+		container.getChildren().addAll( numberfiltertitlegroup ,numberfiltergroup, new Separator(),textfiltertitlegroup, cbfortextfield,checkListView, new Separator(),buttongroup);
 		container.setAlignment(Pos.CENTER);
 		
 		BorderPane pane = new BorderPane();
@@ -1170,6 +1258,8 @@ public class Main extends Application {
 		
 		showChartButton = new Button("Show Chart");
 		showDataLabel = new Label("Welcome!");
+		datasetlabel =  new Label("Dataset");
+		chartlabel = new Label("Chart");
 
 		dataSetPreviewButton = new Button("Data set preview");
 		
@@ -1198,13 +1288,20 @@ public class Main extends Application {
 		HBox groupofChartandTrans = new HBox(20);
 		groupofChartandTrans.setAlignment(Pos.CENTER);
 		groupofChartandTrans.getChildren().addAll(dataSetPreviewButton, dataFilteringAndTransformationButton, showChartButton, plotGraphButton);
-
+		
+		//this below can be delete
 		HBox hc = new HBox(20);
 		hc.setAlignment(Pos.CENTER);
 		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
+		
+		//above can be delete
+		HBox namegroup = new HBox(200);
+		namegroup.setAlignment(Pos.CENTER);
+		namegroup.getChildren().addAll(datasetlabel, showDataLabel, chartlabel);
 
+		
 		VBox container = new VBox(20);
-		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), showDataLabel, groupofList, new Separator(), groupofChartandTrans);
+		container.getChildren().addAll(groupofBill,lbMainScreenTitle, new Separator(), namegroup , groupofList, new Separator(), groupofChartandTrans);
 		container.setAlignment(Pos.CENTER);
 
 		BorderPane pane = new BorderPane();
