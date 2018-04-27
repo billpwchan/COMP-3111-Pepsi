@@ -1,12 +1,10 @@
 package core.comp3111;
 
-import java.util.HashMap;
-import java.util.Map;
-//Arrays related
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -19,8 +17,10 @@ import java.util.List;
  * @author cspeter
  *
  */
-public class DataTable {
+public class DataTable implements Serializable{
 
+
+	private static final long serialVersionUID = -274838538823903772L;
 	/**
 	 * Construct - Create an empty DataTable
 	 */
@@ -174,6 +174,29 @@ public class DataTable {
 		this.dataTableName = dataTableName;
 	}
 	
+	/**
+	 * @return number of numeric columns in the datatable
+	 */
+	public int numCountDT() {
+		int count = 0;
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			if(entry.getValue().getTypeName().equals(DataType.TYPE_NUMBER))
+				++count;
+		}
+		return count;
+	}
+	
+	/**
+	 * @return number of text columns in the datatable
+	 */
+	public int textCountDT() {
+		int count = 0;
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			if(entry.getValue().getTypeName().equals(DataType.TYPE_STRING))
+				++count;
+		}
+		return count;
+	}
 
 	// attribute: A java.util.Map interface
 	// KeyType: String
