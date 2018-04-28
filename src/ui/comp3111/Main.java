@@ -43,6 +43,20 @@ import javafx.util.Duration;
 import javafx.event.ActionEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import org.controlsfx.control.CheckListView;
+import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.stage.Stage;
 /**
  * The Main class of this GUI application
  * 
@@ -81,6 +95,16 @@ public class Main extends Application {
 	private ListView<String> dataColumnslistY = new ListView<String>();
 	private ObservableList<String> dataColumnsName =FXCollections.observableArrayList ();
 	
+	private ChoiceBox<String> cbfornumfield =  new ChoiceBox<String>();
+	private ChoiceBox<String> cbforoperator = new ChoiceBox<String>();
+	private ChoiceBox<String> cbfortextfield = new ChoiceBox<String>();
+	private ObservableList<String> textFieldName =FXCollections.observableArrayList ();
+	private ObservableList<String> numFieldName =FXCollections.observableArrayList ();
+	private ObservableList<String> uniqueTextinColSelected = FXCollections.observableArrayList();
+	
+
+	private CheckListView<String> checkListView = new CheckListView<>();
+	
 	private boolean showChartLock = false;
 	
 	//for animation
@@ -108,8 +132,11 @@ public class Main extends Application {
 	// createScene()
 	// Screen 1: paneMainScreen
 	private Button dataSetPreviewButton, dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain, btSampleLineChartData, btSampleLineChartDataV2, btSampleLineChart, importButton, exportButton, savingButton, loadingButton, dataFilteringAndTransformationButton, plotGraphButton,showChartButton ;
-	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel;	
+	private Label lbSampleDataTable, lbMainScreenTitle, showDataLabel , dFS_Warninglb, datasetlabel, chartlabel, numberfiltertitlelb,textfiltertitlelb;	
 
+	private CheckBox numberfiltercb, textfiltercb;
+	
+	private TextField numberfield;
 	//private ListView<DataTable> datasetListView;
 	
 	       
@@ -134,7 +161,7 @@ public class Main extends Application {
 	
 	private ObservableList<String> lineChartDropDownX =FXCollections.observableArrayList ();
 	private ObservableList<String> lineChartDropDownY =FXCollections.observableArrayList ();
-	private ComboBox comboBoxX, comboBoxY;
+	private ComboBox<String> comboBoxX, comboBoxY;
 	private String xSelected, ySelected;
 
 	
@@ -204,10 +231,186 @@ public class Main extends Application {
 		chartslist.getSelectionModel().select(charts.size()-1);
 		
 	}
+	
+	
+	private boolean filterSampleDataSet() {
+		
+		//Check if one of them is ticked
+		
+		
+		if ((!textfiltercb.isSelected())&&(!numberfiltercb.isSelected())) {
+			return false;
+		}
+		
+		if (numberfiltercb.isSelected()) {
+			//check if all field is chosen
+			
+			if (cbfornumfield.getValue()==null) {
+				return false;
+			}
+			if (cbforoperator.getValue()==null) {
+				return false;
+			}
+			if (numberfield.getText() == null || numberfield.getText().trim().isEmpty()) {
+				return false;
+			}
+			Float f = Float.parseFloat(numberfield.getText());
+
+
+			int count = 1;
+			DataColumn sampleDataColumn = sampleDataTable.getCol(cbfornumfield.getValue());
+			List<Boolean> boollist = new ArrayList<>();
+		
+			//List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
+
+			boollist.add(true);
+			for (int i=1; i < sampleDataTable.getNumRow();i++) {
+				Number b = (Number)sampleDataColumn.getData()[i];
+				Float a = b.floatValue();
+				
+				boolean satisfy = false;
+				if ((cbforoperator.getValue()=="<"&& (a<f))||(cbforoperator.getValue()=="="&& (a==f)) || (cbforoperator.getValue()==">"&& (a>f))) {
+					satisfy = true;
+				}
+				
+				boollist.add(satisfy);	
+				if (satisfy) {
+					count = count +1;
+				}
+			}
+			
+			//todo
+			
+			
+			//boollist store all the array of true or false
+			// true will store in data table
+
+			DataTable newDataTable = new DataTable();
+			List<String> newDataColumnNameList = sampleDataTable.getAllColName();
+			
+			for (int k = 0; k <  newDataColumnNameList.size();k++) {
+				DataColumn newDataColumn = new DataColumn();
+				Object[] newDataColumnObjectArray = new Object[count]; ;
+				String coleName = newDataColumnNameList.get(k);
+				String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
+				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
+					newDataColumnObjectArray = new Number[count];
+				}
+				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
+					newDataColumnObjectArray = new String[count];
+				}
+				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
+					newDataColumnObjectArray = new Object[count];
+				}
+				
+				int countthis = 0;
+				//for (int i=0; i < boollist.size();i++) {
+				for (int i=0; i < count;i++) {
+					if (boollist.get(i)) {
+						newDataColumnObjectArray[countthis]=sampleDataTable.getCol(coleName).getData()[i];
+						countthis = countthis + 1;
+					}
+				}
+				
+				newDataColumn.set(newTypeName,newDataColumnObjectArray);
+				try {
+					newDataTable.addCol(coleName, newDataColumn);
+				} catch (DataTableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			sampleDataTable = newDataTable;
+			//perform text filter function
+			
+			//perform number filter function on sampleDataTable
+			
+		}
+			
+		if (textfiltercb.isSelected()) {
+			
+			
+			if (cbfortextfield.getValue()==null) {
+				return false;
+			}
+			int count = 1;
+			DataColumn sampleDataColumn = sampleDataTable.getCol(cbfortextfield.getValue());
+			List<Boolean> boollist = new ArrayList<>();
+			//
+			List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
+			
+			boollist.add(true);	
+			for (int i=1; i < sampleDataTable.getNumRow();i++) {
+				boolean same = false;
+				for (int j=0;j<checkeditems.size();j++) {
+					
+
+					System.out.println("The number of row is "+sampleDataColumn.getData()[i]+"==" +checkeditems.get(j));
+					
+					if (sampleDataColumn.getData()[i].equals(checkeditems.get(j))) {
+						
+						same = true;
+					}
+				}
+				boollist.add(same);	
+				if (same) {
+					count = count +1;
+				}
+
+				System.out.println("The this row is "+same);
+			}
+			//boollist store all the array of true or false
+			// true will store in data table
+
+			DataTable newDataTable = new DataTable();
+			List<String> newDataColumnNameList = sampleDataTable.getAllColName();
+			
+			for (int k = 0; k <  newDataColumnNameList.size();k++) {
+				DataColumn newDataColumn = new DataColumn();
+				Object[] newDataColumnObjectArray = new Object[count]; ;
+				String coleName = newDataColumnNameList.get(k);
+				String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
+				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
+					newDataColumnObjectArray = new Number[count];
+				}
+				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
+					newDataColumnObjectArray = new String[count];
+				}
+				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
+					newDataColumnObjectArray = new Object[count];
+				}
+				
+				int countthis = 0;
+				//for (int i=0; i < boollist.size();i++) {
+				for (int i=0; i < count;i++) {
+					if (boollist.get(i)) {
+						newDataColumnObjectArray[countthis]=sampleDataTable.getCol(coleName).getData()[i];
+						countthis = countthis + 1;
+					}
+				}
+				
+				newDataColumn.set(newTypeName,newDataColumnObjectArray);
+				try {
+					newDataTable.addCol(coleName, newDataColumn);
+				} catch (DataTableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			sampleDataTable = newDataTable;
+			//perform text filter function
+		}
+		
+		return true;
+		
+		
+	}
 
 	
 	/**
-	 * update the column liston the axis selection screen
+	 * update the column list on the axis selection screen
 	 */
 	private void updateAxisList() {
 		switch(graphSelectedIndex) {
@@ -308,30 +511,78 @@ public class Main extends Application {
 			updateDatasetsListandChartList();
 		});
 		
+		numberfield.textProperty().addListener((observable, oldValue, newValue) -> {
+		    if (!newValue.matches("\\d*")) {
+		        numberfield.setText(oldValue);
+
+		    }
+		});
+		
+		//cbfortextfield.getSelectionModel().selectedItemProperty().addListener( (ObservableValue<? extends String> observable, String oldValue, String newValue) -> System.out.println(newValue) );
+		cbfortextfield.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		      @Override
+		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+		        //System.out.println(cbfortextfield.getItems().get((Integer) number2));
+		    	  System.out.println((Integer) number2);
+		    
+		    	  DataColumn b = sampleDataTable.getCol(cbfortextfield.getItems().get((Integer) number2));
+		    	  
+		    	List<String> a = new ArrayList<>();
+		  		String[] xDouble = (String[]) b.getData();
+		  		for(int i =1; i<xDouble.length; ++i) {
+		  			
+		  			if(!a.contains(xDouble[i])) {
+		  				a.add(xDouble[i]);
+		  			}
+		  		}
+
+		    	System.out.println("The size of a is "+ xDouble.length);
+		  		
+		    	  
+		    	  uniqueTextinColSelected = FXCollections.observableArrayList(a);
+		  		  checkListView.setItems(uniqueTextinColSelected);
+
+		  		  checkListView.getCheckModel().checkAll();
+		      }
+		    });
 		dataFilterReplaceDatasetButton.setOnAction(e -> {
 			//TODO save the modify dataset to same dataset sampleDataTable
 			
 			
 			
-			
+			if (filterSampleDataSet()) {
+				dataTables.remove(datasetsSelectedIndex);
+				dataTables.add(datasetsSelectedIndex, sampleDataTable);
+				updateDatasetsListandChartList();
+				
+				putSceneOnStage(SCENE_MAIN_SCREEN);
+			}else {
+				
+				dFS_Warninglb.setText("Reminder!! 1. You have to check which filtering method you want to use! 2. Remember to select what you want to filter or we cannot perform filtering for you");
+				
+				//show error message
+			}
 			//dataTables.listIterator(datasetsSelectedIndex);
-			dataTables.remove(datasetsSelectedIndex);
-			dataTables.add(datasetsSelectedIndex, sampleDataTable);
-			updateDatasetsListandChartList();
 			
-			putSceneOnStage(SCENE_MAIN_SCREEN);
 
 		});
 		
 		dataFilterSaveAsNewDatasetButton.setOnAction(e -> {
 			
+			
+			if (filterSampleDataSet()) {
+				dataTables.add(sampleDataTable);
+				
+				updateDatasetsListandChartList();
+				
+				putSceneOnStage(SCENE_MAIN_SCREEN);
+			}else {
+				//show error message
+				dFS_Warninglb.setText("Reminder!! 1. You have to check which filtering method you want to use! 2. Remember to select what you want to filter or we cannot perform filtering for you");
+				
+			}
 			//TODO modify the sampleDataTable
 			
-			dataTables.add(sampleDataTable);
-			
-			updateDatasetsListandChartList();
-			
-			putSceneOnStage(SCENE_MAIN_SCREEN);
 
 		});
 	}
@@ -1019,13 +1270,30 @@ public class Main extends Application {
 			//Log G Please add your function here
 			
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
-			System.out.println(datasetsSelectedIndex );
 			if (datasetsSelectedIndex==-1) {
 				showDataLabel.setText(String.format("Please select a dataset to do filtering and transformation."));
 				
 			}else {
 				sampleDataTable = dataTables.get(datasetsSelectedIndex);
-				putSceneOnStage(SCENE_DATA_FILTER);	
+				
+				
+				numFieldName.clear();
+				numFieldName = FXCollections.observableList(sampleDataTable.getAllNumColName());
+				cbfornumfield.setItems(numFieldName);
+				
+				
+				textFieldName.clear();
+				textFieldName = FXCollections.observableList(sampleDataTable.getAllTextColName());
+				cbfortextfield.setItems(textFieldName);
+				cbfortextfield.getSelectionModel().select(-1);
+				//icy
+				uniqueTextinColSelected.clear();
+				checkListView.setItems(uniqueTextinColSelected);
+				
+				
+				
+				//System.out.println("Size of numFieldName: "+ numFieldName.size());
+				putSceneOnStage(SCENE_DATA_FILTER);	   
 				showDataLabel.setText(String.format("Welcome!"));
 				
 			}
@@ -1121,14 +1389,84 @@ public class Main extends Application {
 	
 	private Pane paneDataFilterScreen() {
 		
+		
+		dFS_Warninglb =  new Label("Choose which kind of filtering do you want to perform! Remember to check the box of the respective method before you press the button!");
+		
+		//icy
+		HBox numberfiltertitlegroup = new HBox(20);
+		
+		numberfiltertitlelb = new Label("Filtering numeric data : (check this box if you want to perform numeric filtering) ");
+		numberfiltercb = new CheckBox();
+		
+		numberfiltertitlegroup.setAlignment(Pos.CENTER);
+		numberfiltertitlegroup.getChildren().addAll(numberfiltertitlelb, numberfiltercb);
+		
+		
+		
 		VBox container = new VBox(20);
 		
 		dataFilterReplaceDatasetButton = new Button("Replacing the current dataset");
 		
+		//TODO
+//		List<String> a = sampleDataTable.getAllColName();
+//		
+//		if (a == null)  {
+//			a.add("");
+//		}
 		
+		cbfornumfield.setItems(numFieldName);
+		
+		//FXCollections.observableArrayList("First", "Second", "Third")
+		cbfornumfield.setTooltip(new Tooltip("Select the numeric field you want to filter"));
+		
+		cbforoperator = new ChoiceBox<String>(FXCollections.observableArrayList(
+			    ">", "=", "<")
+			);
+		
+		cbforoperator.setTooltip(new Tooltip("Select the operator you want to filter on the field"));
+		
+		
+		numberfield = new TextField();
 		
 		dataFilterSaveAsNewDatasetButton = new Button("Save as new dataset");
 		dataFilterBackMain = new Button("Back");
+		
+		
+		HBox numberfiltergroup = new HBox(20);
+		
+		numberfiltergroup.setAlignment(Pos.CENTER);
+		numberfiltergroup.getChildren().addAll(cbfornumfield, cbforoperator,numberfield);
+		
+		
+		
+		
+		
+		HBox textfiltertitlegroup = new HBox(20);
+		
+		textfiltertitlelb = new Label("Filtering text type data : (check this box if you want to perform text filtering) (only one field can be perform to at each time)");
+		textfiltercb = new CheckBox();
+		textfiltertitlegroup.setAlignment(Pos.CENTER);
+		
+		
+		
+
+		cbfornumfield.setItems(textFieldName);
+		cbfortextfield.setTooltip(new Tooltip("Select the text field you want to filter"));
+		
+		
+
+		textfiltertitlegroup.getChildren().addAll(textfiltertitlelb, textfiltercb);
+		
+		
+		 // create the data to show in the CheckListView 
+//		 ObservableList<String> uniqueTextinColSelected22 = FXCollections.observableArrayList();
+//		 for (int i = 0; i <= 100; i++) {
+//			 uniqueTextinColSelected22.add("Item " + i);
+//		 }
+//		 
+//		 // Create the CheckListView with the data 
+//		checkListView = new CheckListView<>(uniqueTextinColSelected22);
+		checkListView.setItems(uniqueTextinColSelected);
 		
 
 		HBox buttongroup = new HBox(20);
@@ -1137,7 +1475,7 @@ public class Main extends Application {
 		buttongroup.setAlignment(Pos.CENTER);
 		buttongroup.getChildren().addAll(dataFilterReplaceDatasetButton, dataFilterSaveAsNewDatasetButton, dataFilterBackMain);
 		
-		container.getChildren().addAll(buttongroup);
+		container.getChildren().addAll( dFS_Warninglb, numberfiltertitlegroup ,numberfiltergroup, new Separator(),textfiltertitlegroup, cbfortextfield,checkListView, new Separator(),buttongroup);
 		container.setAlignment(Pos.CENTER);
 		
 		BorderPane pane = new BorderPane();
@@ -1170,6 +1508,8 @@ public class Main extends Application {
 		
 		showChartButton = new Button("Show Chart");
 		showDataLabel = new Label("Welcome!");
+		datasetlabel =  new Label("Dataset");
+		chartlabel = new Label("Chart");
 
 		dataSetPreviewButton = new Button("Data set preview");
 		
@@ -1198,13 +1538,20 @@ public class Main extends Application {
 		HBox groupofChartandTrans = new HBox(20);
 		groupofChartandTrans.setAlignment(Pos.CENTER);
 		groupofChartandTrans.getChildren().addAll(dataSetPreviewButton, dataFilteringAndTransformationButton, showChartButton, plotGraphButton);
-
+		
+		//this below can be delete
 		HBox hc = new HBox(20);
 		hc.setAlignment(Pos.CENTER);
 		hc.getChildren().addAll(btSampleLineChartData, btSampleLineChartDataV2);
+		
+		//above can be delete
+		HBox namegroup = new HBox(200);
+		namegroup.setAlignment(Pos.CENTER);
+		namegroup.getChildren().addAll(datasetlabel, showDataLabel, chartlabel);
 
+		
 		VBox container = new VBox(20);
-		container.getChildren().addAll(groupofBill,lbMainScreenTitle, hc, lbSampleDataTable, btSampleLineChart ,new Separator(), showDataLabel, groupofList, new Separator(), groupofChartandTrans);
+		container.getChildren().addAll(groupofBill,lbMainScreenTitle, new Separator(), namegroup , groupofList, new Separator(), groupofChartandTrans);
 		container.setAlignment(Pos.CENTER);
 
 		BorderPane pane = new BorderPane();

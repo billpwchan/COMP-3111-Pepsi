@@ -149,6 +149,36 @@ public class DataTable implements Serializable{
 		}
 		return allCol;
 	}
+	
+	public List<String> getAllTextColName() {
+		if (dc == null) { return null; }
+		
+		List<String> allCol = new ArrayList<>();
+		
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			if(entry.getValue().getTypeName().equals(DataType.TYPE_STRING)) {
+				System.out.println(entry.getKey() + "/" + entry.getValue());
+				allCol.add(entry.getKey());
+			}
+
+		}
+		return allCol;
+	}
+	
+	public List<String> getAllNumColName() {
+		if (dc == null) { return null; }
+		
+		List<String> allCol = new ArrayList<>();
+		for (Map.Entry<String, DataColumn> entry : dc.entrySet()) {
+			if(!entry.getValue().getTypeName().equals(DataType.TYPE_STRING)) {
+				System.out.println(entry.getKey() + "/" + entry.getValue());
+				allCol.add(entry.getKey());
+			}
+
+		}
+		return allCol;
+	}
+
 
 	/**
 	 * Return the number of row of the data table. This data structure ensures that
