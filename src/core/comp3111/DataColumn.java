@@ -1,6 +1,8 @@
 package core.comp3111;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DataColumn - A column of data. This class will be used by DataTable. It
@@ -110,6 +112,8 @@ public class DataColumn implements Serializable {
 		return xDouble;
 		
 	}
+	
+	
 	
 
 	// attributes
