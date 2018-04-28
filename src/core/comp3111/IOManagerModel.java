@@ -9,11 +9,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import ui.comp3111.IOManager;
-
-import java.util.ArrayList;
 
 /**
  * @author billpwchan
@@ -48,7 +47,6 @@ public class IOManagerModel {
 				tempDataTableSets.add((DataTable) eachOne);
 			}
 			if (eachOne instanceof Chart) {
-				System.out.println("Testing Only");
 				tempChartSets.add((Chart) eachOne);
 			}
 		}

@@ -3,6 +3,10 @@
  */
 package testing.comp3111;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -23,23 +27,22 @@ import core.comp3111.DataTable;
 import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * @author billpwchan
  *
  */
 class DataManagerTest {
-	
+
 	List<String[]> table;
-	String[] titles = new String[] { "PureNum","PureString","MissingNum","MissingString","Empty","NewPure","Diagnol"};
-	String[] row1 = new String[] {"1","A","1","A","","1",""};
-	String[] row2 = new String[] {"2","B","2","B","","2",""};
-	String[] row3 = new String[] {"3","C","","","","3",""};
-	String[] row4 = new String[] {"4","D","4","C","","4",""};
-	String[] row5 = new String[] {"5","E","5","D","","5",""};
-	String[] row6 = new String[] {"","","","","","","6"};
-	String[] row7 = new String[] {"","","","","","",""};
+	String[] titles = new String[] { "PureNum", "PureString", "MissingNum", "MissingString", "Empty", "NewPure",
+			"Diagnol" };
+	String[] row1 = new String[] { "1", "A", "1", "A", "", "1", "" };
+	String[] row2 = new String[] { "2", "B", "2", "B", "", "2", "" };
+	String[] row3 = new String[] { "3", "C", "", "", "", "3", "" };
+	String[] row4 = new String[] { "4", "D", "4", "C", "", "4", "" };
+	String[] row5 = new String[] { "5", "E", "5", "D", "", "5", "" };
+	String[] row6 = new String[] { "", "", "", "", "", "", "6" };
+	String[] row7 = new String[] { "", "", "", "", "", "", "" };
 
 	/**
 	 * @throws java.lang.Exception
@@ -76,18 +79,18 @@ class DataManagerTest {
 	void DataImportTest_NullFile() {
 		assertThrows(FileNotFoundException.class, () -> DataManagerModel.handleCSVFile(null));
 	}
-	
+
 	@Test
 	void DataManagerTest_CreateObject() {
 		DataManagerModel temp = new DataManagerModel();
 		assertTrue(temp instanceof DataManagerModel);
 	}
-	
+
 	@Test
 	void DataManagerTest_GetTestFlag() {
 		assertEquals(-1, DataManagerModel.isTestFlag());
 	}
-	
+
 	@Test
 	void DataImportTest_MissingValue() {
 		// Aim in here is to write a test file in a specific path
@@ -101,7 +104,7 @@ class DataManagerTest {
 		table.add(row4);
 		table.add(row5);
 		table.add(row6);
-		
+
 		writeTestFile(file, table);
 		try {
 			DataManagerModel.setTestFlag(0);
@@ -114,31 +117,13 @@ class DataManagerTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	void DataImportTest_OneEmptyRow() {
 		File file = new File("DataManagerTest.csv");
 		table = new ArrayList<String[]>();
 		table.add(titles);
 		table.add(row7);
-		
-		writeTestFile(file, table);
-		try {
-			DataManagerModel.setTestFlag(1);
-			DataManagerModel.handleCSVFile(file);
-			file.delete();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Test
-	void DataImportTest_OnlyTitle() {
-		File file = new File("DataManagerTest.csv");
-		table = new ArrayList<String[]>();
-		table.add(titles);
-		
-		//Write this file into the project for testing.
 
 		writeTestFile(file, table);
 		try {
@@ -149,7 +134,25 @@ class DataManagerTest {
 			e.printStackTrace();
 		}
 	}
-	
+
+	@Test
+	void DataImportTest_OnlyTitle() {
+		File file = new File("DataManagerTest.csv");
+		table = new ArrayList<String[]>();
+		table.add(titles);
+
+		// Write this file into the project for testing.
+
+		writeTestFile(file, table);
+		try {
+			DataManagerModel.setTestFlag(1);
+			DataManagerModel.handleCSVFile(file);
+			file.delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Test
 	void DataExportTest_General() {
 		File file = new File("DataManagerTest.csv");
@@ -177,12 +180,12 @@ class DataManagerTest {
 			e.printStackTrace();
 
 		}
-		
+
 		try {
 			DataManagerModel.saveCSVFile(t, file);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	/**
@@ -193,7 +196,7 @@ class DataManagerTest {
 	 */
 	private void writeTestFile(File file, List<String[]> table) {
 		try {
-			FileWriter fw = new FileWriter(file);	
+			FileWriter fw = new FileWriter(file);
 			for (String[] str_ary : table) {
 				DataManagerModel.writeLine(fw, Arrays.asList(str_ary));
 			}
@@ -203,5 +206,5 @@ class DataManagerTest {
 			e.printStackTrace();
 		}
 	}
- 
+
 }

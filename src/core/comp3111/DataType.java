@@ -14,8 +14,4 @@ public class DataType implements Serializable {
 	public static final String TYPE_NUMBER = "java.lang.Number";
 	public static final String TYPE_STRING = "java.lang.String";
 
-	// TODO: Add more type mapping here...
-	
-	
-	
 }

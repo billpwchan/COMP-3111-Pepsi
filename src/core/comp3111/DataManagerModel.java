@@ -275,7 +275,7 @@ public class DataManagerModel {
 	 */
 	private static boolean stringIsNumeric(String str) {
 		for (char c : str.toCharArray()) {
-			if (!Character.isDigit(c) && c!='.')
+			if (!Character.isDigit(c) && c != '.')
 				return false;
 		}
 		return true;
@@ -299,7 +299,6 @@ public class DataManagerModel {
 		}
 	}
 
-	
 	/**
 	 * @param Writer
 	 *            Object
