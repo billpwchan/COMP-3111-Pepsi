@@ -39,5 +39,19 @@ class DataColumnTest {
 		assert (dc.getData() == null);
 
 	}
+	
+	@Test
+	void testAscendingSort() {
+		String[] arrStr = new String[] {"abc","def","gh"};
+		Number[] arrNum = new Integer[] { 1, 2, 3, 4, 5 };
+		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING,arrStr);
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		assert(dcStr.ascendingSort() == null);
+		//assert(dcNum.ascendingSort()!= null);
+		
+		
+		
+		
+	}
 
 }
