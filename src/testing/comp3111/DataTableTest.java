@@ -11,6 +11,11 @@ import core.comp3111.DataTable;
 import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Tests for the DataTable class.
  * 
@@ -91,5 +96,98 @@ public class DataTableTest {
 		assertEquals(2, numCol);
 
 	}
+	
+	@Test
+	void testGetDataTableName() {
+		DataTable dt = new DataTable();
+		assert(dt.getDataTableName() == "");
+	
+	}
+	
+	@Test
+	void testSetDataTableName() {
+		DataTable dt = new DataTable();
+		dt.setDataTableName("temp");
+		assert(dt.getDataTableName() == "temp");
+	}
+	
+	@Test
+	void testNumCountDT() throws DataTableException {
+		DataTable dt = new DataTable();
+		Number[] arrNum = new Number[] { 1, 4, 2};
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		String[] arrStr = new String[] {"abc","def","gh"};
+		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING, arrStr);
+		
+		assert(dt.numCountDT() == 0);
+		dt.addCol("dcNum", dcNum);
+		assert(dt.numCountDT() == 1);
+		dt.addCol("dcStr", dcStr);
+		assert(dt.numCountDT() == 1);
+		
+	}
+	
+	@Test
+	void testTextCountDT() throws DataTableException {
+		DataTable dt = new DataTable();
+		Number[] arrNum = new Number[] { 1, 4, 2};
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		String[] arrStr = new String[] {"abc","def","gh"};
+		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING, arrStr);
+		
+		assert(dt.textCountDT() == 0);
+		dt.addCol("dcNum", dcNum);
+		assert(dt.textCountDT() == 0);
+		dt.addCol("dcStr", dcStr);
+		assert(dt.textCountDT() == 1);
+		
+	}
+	
+	@Test
+	void testGetCol() throws DataTableException {
+		DataTable dt = new DataTable();
+		Number[] arrNum = new Number[] { 1, 4, 2};
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		dt.addCol("dcNum", dcNum);
+		
+		assert(dt.getCol("temp") == null);
+		assert(dt.getCol("dcNum") == dcNum);
+		
+		
+	}
+	
+	@Test
+	void testRemoveCol() throws DataTableException{
+		DataTable dt = new DataTable();
+		Number[] arrNum = new Number[] { 1, 4, 2};
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		dt.addCol("dcNum", dcNum);
+		//assertThrows(DataTableException.class, () -> dataTable.removeCol());
+		
+		
+		assert(dt.getNumCol() == 1);
+		dt.removeCol("dcNum");
+		assert(dt.getNumCol() == 0);
+		dt.removeCol("temp");
+	}
+	
+	@Test
+	void testGetAllColValue() throws DataTableException {
+		
+		Number[] arrNum = new Number[] { 1, 4, 2};
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		
+		List<DataColumn> allColAns = new ArrayList<>();
+		allColAns.add(dcNum);
+		
+		DataTable dt = new DataTable();
+		assert(dt.getAllColValue() == null);
+		
+		dt.addCol("dcNum", dcNum);
+		
+		assert(dt.getAllColValue() == allColAns);
+		
 
+	}
+	
 }
