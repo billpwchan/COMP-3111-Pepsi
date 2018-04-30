@@ -41,7 +41,7 @@ public class LineChartP extends Chart {
 		// at least 2 numeric columns
 		if (dataTable.numCountDT() > 1)
 			return true;
-
+		
 		return false;
 	}
 

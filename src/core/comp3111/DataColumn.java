@@ -91,7 +91,7 @@ public class DataColumn implements Serializable {
 		double[] xDouble = new double[xValues.length - 1];
 
 		for (int i = 1; i < xValues.length; ++i) {
-			xDouble[i - 1] = (double) xValues[i];
+			xDouble[i - 1] = (double) xValues[i].doubleValue();
 		}
 
 		for (int i = 0; i < xDouble.length; ++i) {
