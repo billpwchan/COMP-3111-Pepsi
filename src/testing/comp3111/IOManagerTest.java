@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import core.comp3111.BarChartP;
 import core.comp3111.Chart;
 import core.comp3111.DataTable;
+import core.comp3111.DataTableException;
 import core.comp3111.IOManagerModel;
 import core.comp3111.LineChartP;
 import core.comp3111.SampleDataGenerator;
@@ -66,7 +67,7 @@ class IOManagerTest {
 	}
 
 	@Test
-	void IOManagerTest_GetDataTables() {
+	void IOManagerTest_GetDataTables() throws DataTableException {
 
 		List<DataTable> testDataList = new ArrayList<DataTable>();
 		List<Chart> testChartList = new ArrayList<Chart>();
@@ -76,7 +77,7 @@ class IOManagerTest {
 		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
 		Chart tempChart = new BarChartP(SampleDataGenerator.generateSampleLineData());
 		Chart tempChart2 = new LineChartP(SampleDataGenerator.generateSampleLineDataV2());
-		
+
 		testChartList.add(tempChart);
 		testChartList.add(tempChart2);
 

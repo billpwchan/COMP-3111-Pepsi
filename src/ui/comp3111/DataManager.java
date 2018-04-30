@@ -3,15 +3,10 @@
  */
 package ui.comp3111;
 
-import java.awt.Image;
 //For I/O
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 import core.comp3111.DataManagerModel;
 import core.comp3111.DataTable;
@@ -28,24 +23,25 @@ public class DataManager {
 	// attributes
 	private static DataTable dataTable;
 
-
 	// Functions
 
 	/**
 	 * Store an array of DataTable Objects after importing .csv files. A dialog box
 	 * will be shown after invoking this static function.
 	 * 
-	 * @param Stage Object
+	 * @param Stage
+	 *            Object
 	 * @return Void
 	 * @throws FileNotFoundException
-	 * @throws DataTableException 
+	 * @throws DataTableException
 	 */
 
 	public static DataTable dataImport(Stage stage) throws FileNotFoundException, DataTableException {
 		dataTable = new DataTable();
 
 		CustomFileChooser fileChooser = new CustomFileChooser();
-		fileChooser.LoadFileChooser(stage, "Please select .csv dataset for import", "Comma Delimited File (*.CSV)", "*.csv", "user.home");
+		fileChooser.LoadFileChooser(stage, "Please select .csv dataset for import", "Comma Delimited File (*.CSV)",
+				"*.csv", "user.home");
 		File file = fileChooser.getFile();
 		// Perform CSV File Handle for the selected .csv
 		if (file != null) {
@@ -66,7 +62,7 @@ public class DataManager {
 	 * @param dataTable
 	 *            - defined in DataTable class. Should not be a null object.
 	 * @return Void
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void dataExport(DataTable dataTable, Stage stage) throws IOException {
 		if (dataTable == null) {
@@ -75,16 +71,15 @@ public class DataManager {
 		if (!(dataTable instanceof DataTable)) {
 			return;
 		}
-		
+
 		CustomFileChooser chooser = new CustomFileChooser();
-		chooser.saveFileChooser(stage, "Save .csv file", "Comma Delimited File (*.CSV)", "*.csv", "user.home", "DataSet.csv");
+		chooser.saveFileChooser(stage, "Save .csv file", "Comma Delimited File (*.CSV)", "*.csv", "user.home",
+				"DataSet.csv");
 		File file = chooser.getFile();
 
 		DataManagerModel.saveCSVFile(dataTable, file);
 	}
 
-	
-	
 	/**
 	 * @return the dataTable
 	 */

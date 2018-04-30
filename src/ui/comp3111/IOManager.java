@@ -9,57 +9,58 @@ import core.comp3111.DataTable;
 import core.comp3111.IOManagerModel;
 import javafx.stage.Stage;
 
-
 /**
  * @author billpwchan
  *
  */
 public class IOManager {
-	
-	//Attributes
-	
+
+	// Attributes
+
 	private static List<DataTable> dataTables;
 	private static List<Chart> charts;
 
-	
 	/**
-	 * Input DataTable Object, Chart Object and stage. Then export to user specified path as a .pepsi file.
+	 * Input DataTable Object, Chart Object and stage. Then export to user specified
+	 * path as a .pepsi file.
 	 * 
 	 * @param inputDataTables
 	 * @param inputCharts
 	 * @param stage
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static void fileExport(List<DataTable> inputDataTables, List<Chart> inputCharts, Stage stage) throws IOException{	
-		if (inputDataTables == null && inputCharts == null) { return; }
+	public static void fileExport(List<DataTable> inputDataTables, List<Chart> inputCharts, Stage stage)
+			throws IOException {
+		if (inputDataTables == null && inputCharts == null) {
+			return;
+		}
 
 		CustomFileChooser chooser = new CustomFileChooser();
-		chooser.saveFileChooser(stage, "Store .pepsi file", "Customized Pepsi File (*.PEPSI)", "*.pepsi", "user.home", "Data.pepsi");
+		chooser.saveFileChooser(stage, "Store .pepsi file", "Customized Pepsi File (*.PEPSI)", "*.pepsi", "user.home",
+				"Data.pepsi");
 		File file = chooser.getFile();
 		if (file != null) {
 			IOManagerModel.storeFile(inputDataTables, inputCharts, file);
-		}	
-		
-	}
-	
-	
+		}
 
-	
+	}
+
 	/**
 	 * Import Pepsi File and save as Pepsi Object
 	 * 
 	 * @param stage
-	 * @throws IOException 
-	 * @throws ClassNotFoundException 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
 	 */
-	public static void fileImport(Stage stage) throws IOException, ClassNotFoundException {		
-		//Basic Settings for FileChooser (Open Version)
+	public static void fileImport(Stage stage) throws IOException, ClassNotFoundException {
+		// Basic Settings for FileChooser (Open Version)
 		CustomFileChooser fc = new CustomFileChooser();
-		fc.LoadFileChooser(stage, "Please select .pepsi dataset for import", "Customized Pepsi File (*.PEPSI)", "*.pepsi", "user.home");
+		fc.LoadFileChooser(stage, "Please select .pepsi dataset for import", "Customized Pepsi File (*.PEPSI)",
+				"*.pepsi", "user.home");
 		File file = fc.getFile();
-		
-		//Perform CSV File Handle for the selected .csv
-		if (file != null) {			
+
+		// Perform CSV File Handle for the selected .csv
+		if (file != null) {
 			IOManagerModel.loadPepsiFile(file);
 		}
 	}
@@ -72,7 +73,8 @@ public class IOManager {
 	}
 
 	/**
-	 * @param dataTables the dataTables to set
+	 * @param dataTables
+	 *            the dataTables to set
 	 */
 	public static void setDataTables(List<DataTable> dataTables) {
 		IOManager.dataTables = dataTables;
@@ -85,9 +87,9 @@ public class IOManager {
 		return charts;
 	}
 
-
 	/**
-	 * @param charts the charts to set
+	 * @param charts
+	 *            the charts to set
 	 */
 	public static void setCharts(List<Chart> charts) {
 		IOManager.charts = charts;

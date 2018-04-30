@@ -16,8 +16,9 @@ public class SampleDataGenerator {
 	 * implemented in the base code
 	 * 
 	 * @return DataTable object
+	 * @throws DataTableException
 	 */
-	public static DataTable generateSampleLineData() {
+	public static DataTable generateSampleLineData() throws DataTableException {
 
 		DataTable t = new DataTable();
 
@@ -33,16 +34,9 @@ public class SampleDataGenerator {
 		String[] labels = new String[] { "P1", "P2", "P3", "P4", "P5" };
 		DataColumn labelsCol = new DataColumn(DataType.TYPE_STRING, labels);
 
-		try {
-
-			t.addCol("X", xvaluesCol);
-			t.addCol("Y", yvaluesCol);
-			t.addCol("label", labelsCol);
-
-		} catch (DataTableException e) {
-			e.printStackTrace();
-
-		}
+		t.addCol("X", xvaluesCol);
+		t.addCol("Y", yvaluesCol);
+		t.addCol("label", labelsCol);
 
 		return t;
 	}
@@ -52,8 +46,9 @@ public class SampleDataGenerator {
 	 * implemented in the base code
 	 * 
 	 * @return DataTable object
+	 * @throws DataTableException
 	 */
-	public static DataTable generateSampleLineDataV2() {
+	public static DataTable generateSampleLineDataV2() throws DataTableException {
 		DataTable t = new DataTable();
 
 		final int num = 100;
@@ -67,16 +62,8 @@ public class SampleDataGenerator {
 
 		DataColumn xvaluesCol = new DataColumn(DataType.TYPE_NUMBER, xvalues);
 		DataColumn yvaluesCol = new DataColumn(DataType.TYPE_NUMBER, yvalues);
-
-		try {
-
-			t.addCol("X", xvaluesCol);
-			t.addCol("Y", yvaluesCol);
-
-		} catch (DataTableException e) {
-			e.printStackTrace();
-
-		}
+		t.addCol("X", xvaluesCol);
+		t.addCol("Y", yvaluesCol);
 
 		return t;
 	}

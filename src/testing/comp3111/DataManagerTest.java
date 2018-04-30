@@ -109,7 +109,7 @@ class DataManagerTest {
 		try {
 			DataManagerModel.setTestFlag(0);
 			DataTable temp = DataManagerModel.handleCSVFile(file);
-			assertEquals(7 ,temp.getNumCol());
+			assertEquals(7, temp.getNumCol());
 			assertEquals(7, temp.getNumRow());
 			DataManagerModel.setTestFlag(1);
 			temp = DataManagerModel.handleCSVFile(file);
@@ -122,7 +122,7 @@ class DataManagerTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Test

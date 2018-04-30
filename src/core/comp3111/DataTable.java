@@ -17,13 +17,14 @@ import java.util.Map;
  *
  */
 public class DataTable implements Serializable {
-	
+
 	// attribute: A java.util.Map interface
 	// KeyType: String
 	// ValueType: DataColumn
 	private Map<String, DataColumn> dc;
 	private String dataTableName;
 	private static final long serialVersionUID = -274838538823903772L;
+
 	/**
 	 * Construct - Create an empty DataTable
 	 */
