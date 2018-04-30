@@ -108,14 +108,21 @@ class DataManagerTest {
 		writeTestFile(file, table);
 		try {
 			DataManagerModel.setTestFlag(0);
-			DataManagerModel.handleCSVFile(file);
+			DataTable temp = DataManagerModel.handleCSVFile(file);
+			assertEquals(7 ,temp.getNumCol());
+			assertEquals(7, temp.getNumRow());
 			DataManagerModel.setTestFlag(1);
-			DataManagerModel.handleCSVFile(file);
+			temp = DataManagerModel.handleCSVFile(file);
+			assertEquals(7, temp.getNumCol());
+			assertEquals(7, temp.getNumRow());
 			DataManagerModel.setTestFlag(2);
-			DataManagerModel.handleCSVFile(file);
+			temp = DataManagerModel.handleCSVFile(file);
+			assertEquals(7, temp.getNumCol());
+			assertEquals(7, temp.getNumRow());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	@Test
@@ -128,7 +135,9 @@ class DataManagerTest {
 		writeTestFile(file, table);
 		try {
 			DataManagerModel.setTestFlag(1);
-			DataManagerModel.handleCSVFile(file);
+			DataTable temp = DataManagerModel.handleCSVFile(file);
+			assertEquals(7, temp.getNumCol());
+			assertEquals(2, temp.getNumRow());
 			file.delete();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -146,7 +155,9 @@ class DataManagerTest {
 		writeTestFile(file, table);
 		try {
 			DataManagerModel.setTestFlag(1);
-			DataManagerModel.handleCSVFile(file);
+			DataTable temp = DataManagerModel.handleCSVFile(file);
+			assertEquals(1, temp.getNumRow());
+			assertEquals(7, temp.getNumCol());
 			file.delete();
 		} catch (Exception e) {
 			e.printStackTrace();

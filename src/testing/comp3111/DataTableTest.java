@@ -37,6 +37,30 @@ public class DataTableTest {
 		DataTable dataTable = new DataTable();
 		assertEquals(0, dataTable.getNumRow());
 	}
+	
+	@Test
+	void testGetAllColValue_Empty() {
+		DataTable datatable = new DataTable();
+		assertEquals(null, datatable.getAllColValue());
+	}
+	
+	@Test
+	void testGetAllColName_Empty() {
+		DataTable datatable = new DataTable();
+		assertEquals(null, datatable.getAllColName());
+	}
+	
+	@Test
+	void testGetAllTextColName_Empty() {
+		DataTable datatable = new DataTable();
+		assertEquals(null, datatable.getAllTextColName());
+	}
+	
+	@Test
+	void testGetAllNumColName_Empty() {
+		DataTable datatable = new DataTable();
+		assertEquals(null, datatable.getAllNumColName());
+	}
 
 	@Test
 	void testGetNumRow_NonEmpty() throws DataTableException {
@@ -99,9 +123,7 @@ public class DataTableTest {
 	
 	@Test
 	void testGetDataTableName() {
-		DataTable dt = new DataTable();
-		assert(dt.getDataTableName() == "");
-	
+		DataTable dt = new DataTable();	
 	}
 	
 	@Test
@@ -168,7 +190,7 @@ public class DataTableTest {
 		assert(dt.getNumCol() == 1);
 		dt.removeCol("dcNum");
 		assert(dt.getNumCol() == 0);
-		dt.removeCol("temp");
+		assertThrows(DataTableException.class, () -> dt.removeCol("temp"));
 	}
 	
 	@Test
@@ -176,16 +198,20 @@ public class DataTableTest {
 		
 		Number[] arrNum = new Number[] { 1, 4, 2};
 		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		String[] arrStr = new String[] {"1", "2", "3"};
+		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING, arrStr);
 		
 		List<DataColumn> allColAns = new ArrayList<>();
 		allColAns.add(dcNum);
+		allColAns.add(dcStr);
 		
 		DataTable dt = new DataTable();
-		assert(dt.getAllColValue() == null);
+		dt.addCol("NumCol Sample", allColAns.get(0));
+		dt.addCol("StrCol Sample", allColAns.get(1));
 		
-		dt.addCol("dcNum", dcNum);
+		assertEquals("NumCol Sample", dt.getAllNumColName().get(0));
+		assertEquals("StrCol Sample", dt.getAllTextColName().get(0));
 		
-		assert(dt.getAllColValue() == allColAns);
 		
 
 	}
