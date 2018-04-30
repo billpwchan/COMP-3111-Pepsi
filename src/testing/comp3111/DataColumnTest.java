@@ -16,7 +16,7 @@ class DataColumnTest {
 
 	@Test
 	void testCoverageEmptyDataColumnConstructor() {
-
+		DataType dType = new DataType();
 		DataColumn dc = new DataColumn();
 		assert (dc.getSize() == 0);
 
@@ -39,5 +39,33 @@ class DataColumnTest {
 		assert (dc.getData() == null);
 
 	}
+	
+	@Test
+	void testAscendingSort_nonNumber() {
+		String[] arrStr = new String[] {"abc","def","gh"};
+		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING, arrStr);
+		Object[] arrObj = new Object[] {'a', 'b', 'c'};
+		DataColumn dcObj = new DataColumn(DataType.TYPE_OBJECT, arrObj);
+		Number[] arrNum = new Number[] { 1, 4, 2, 3, 5 };
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		
+		assert(dcStr.ascendingSort() == null);
+		assert(dcObj.ascendingSort() == null);
+		assert(dcNum.ascendingSort() != null);
+	}
 
+	@Test
+	void testAscendingSort_number() {
+		Number[] arrNum = new Number[] { 1, 4, 2, 3, 5 };
+		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
+		
+		
+		double[] ansDouble = new double[] {2, 3, 4, 5};
+		double[] xDouble = dcNum.ascendingSort();
+
+		
+		for(int i=0;i<xDouble.length;++i)
+			assert(xDouble[i] == ansDouble[i]);
+		
+	}
 }
