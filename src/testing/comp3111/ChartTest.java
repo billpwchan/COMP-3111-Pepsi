@@ -1,5 +1,7 @@
 package testing.comp3111;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -111,7 +113,7 @@ public class ChartTest {
 	
 	@Test
 	void testGetTitle() {
-		assert(lineChart.getTitle() == "");
+		assertEquals(lineChart.getTitle(), title + " line chart");
 	}
 	
 	@Test

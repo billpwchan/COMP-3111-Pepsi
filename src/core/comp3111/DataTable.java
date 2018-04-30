@@ -17,9 +17,13 @@ import java.util.Map;
  *
  */
 public class DataTable implements Serializable {
-
+	
+	// attribute: A java.util.Map interface
+	// KeyType: String
+	// ValueType: DataColumn
+	private Map<String, DataColumn> dc;
+	private String dataTableName;
 	private static final long serialVersionUID = -274838538823903772L;
-
 	/**
 	 * Construct - Create an empty DataTable
 	 */
@@ -120,7 +124,7 @@ public class DataTable implements Serializable {
 	 * @return the arraylist of datacolumn instances in the data table
 	 */
 	public List<DataColumn> getAllColValue() {
-		if (dc == null) {
+		if (dc.isEmpty()) {
 			return null;
 		}
 
@@ -139,7 +143,7 @@ public class DataTable implements Serializable {
 	 * @return the arraylist of column name in the data table
 	 */
 	public List<String> getAllColName() {
-		if (dc == null) {
+		if (dc.isEmpty()) {
 			return null;
 		}
 
@@ -153,7 +157,7 @@ public class DataTable implements Serializable {
 	}
 
 	public List<String> getAllTextColName() {
-		if (dc == null) {
+		if (dc.isEmpty()) {
 			return null;
 		}
 
@@ -170,7 +174,7 @@ public class DataTable implements Serializable {
 	}
 
 	public List<String> getAllNumColName() {
-		if (dc == null) {
+		if (dc.isEmpty()) {
 			return null;
 		}
 
@@ -232,11 +236,4 @@ public class DataTable implements Serializable {
 		}
 		return count;
 	}
-
-	// attribute: A java.util.Map interface
-	// KeyType: String
-	// ValueType: DataColumn
-	private Map<String, DataColumn> dc;
-	private String dataTableName;
-
 }
