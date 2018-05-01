@@ -194,8 +194,6 @@ public class Main extends Application {
 	 */
 	private void updateDatasetsListandChartList() {
 
-		// TODO
-
 		datasetsname.clear();
 
 		for (int i = 0; i < dataTables.size(); i++) {
@@ -235,22 +233,28 @@ public class Main extends Application {
 			if (numberfield.getText() == null || numberfield.getText().trim().isEmpty()) {
 				return false;
 			}
-			Float f = Float.parseFloat(numberfield.getText());
 
-			int count = 1;
+			
 			DataColumn sampleDataColumn = sampleDataTable.getCol(cbfornumfield.getValue());
-			List<Boolean> boollist = new ArrayList<>();
 
+			Float f = Float.parseFloat(numberfield.getText());
+			String Operatorusing = cbforoperator.getValue(); 
+			
+			int numOfRowinSDT = sampleDataTable.getNumRow();
 			// List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
 
+			
+			
+			List<Boolean> boollist = new ArrayList<>();		
+			int count = 1;
 			boollist.add(true);
-			for (int i = 1; i < sampleDataTable.getNumRow(); i++) {
+			for (int i = 1; i < numOfRowinSDT; i++) {
 				Number b = (Number) sampleDataColumn.getData()[i];
 				Float a = b.floatValue();
 
 				boolean satisfy = false;
-				if ((cbforoperator.getValue() == "<" && (a < f)) || (cbforoperator.getValue() == "=" && (a == f))
-						|| (cbforoperator.getValue() == ">" && (a > f))) {
+				if ((Operatorusing == "<" && (a < f)) || (Operatorusing == "=" && (a == f))
+						|| (Operatorusing == ">" && (a > f))) {
 					satisfy = true;
 				}
 
@@ -259,6 +263,7 @@ public class Main extends Application {
 					count = count + 1;
 				}
 			}
+			//icy
 
 			// todo
 
@@ -553,7 +558,6 @@ public class Main extends Application {
 						"Reminder!! 1. You have to check which filtering method you want to use! 2. Remember to select what you want to filter or we cannot perform filtering for you");
 
 			}
-			// TODO modify the sampleDataTable
 
 		});
 	}
@@ -850,7 +854,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * change upper anad lower bound of Xaxis dynamically to animate the line chart
+	 * change upper and lower bound of Xaxis dynamically to animate the line chart
 	 */
 	private void plotAnimatedChart() {
 		// double speed = xAxisNum.getTickUnit()*2;
@@ -1232,6 +1236,8 @@ public class Main extends Application {
 				// icy
 				uniqueTextinColSelected.clear();
 				checkListView.setItems(uniqueTextinColSelected);
+				
+				
 
 				// System.out.println("Size of numFieldName: "+ numFieldName.size());
 				putSceneOnStage(SCENE_DATA_FILTER);
@@ -1321,7 +1327,6 @@ public class Main extends Application {
 		dFS_Warninglb = new Label(
 				"Choose which kind of filtering do you want to perform! Remember to check the box of the respective method before you press the button!");
 
-		// icy
 		HBox numberfiltertitlegroup = new HBox(20);
 
 		numberfiltertitlelb = new Label(
