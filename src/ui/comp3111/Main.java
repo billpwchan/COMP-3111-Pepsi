@@ -214,6 +214,11 @@ public class Main extends Application {
 
 	}
 
+	/**
+	 * Do filtering based on user selected preference on sampleDataTable
+	 * @return false if input is not complete
+	 * 
+	 */
 	private boolean filterSampleDataSet() {
 
 		// Check if one of them is ticked
@@ -225,173 +230,25 @@ public class Main extends Application {
 		if (numberfiltercb.isSelected()) {
 			// check if all field is chosen
 
-			if (cbfornumfield.getValue() == null) {
+			if ((cbfornumfield.getValue() == null)||(cbforoperator.getValue() == null)||(numberfield.getText() == null || numberfield.getText().trim().isEmpty())) {
 				return false;
 			}
-			if (cbforoperator.getValue() == null) {
-				return false;
-			}
-			if (numberfield.getText() == null || numberfield.getText().trim().isEmpty()) {
-				return false;
-			}
-
-			
-			
 			Float f = Float.parseFloat(numberfield.getText());
 			String Operatorusing = cbforoperator.getValue(); 
 			String columnNamechosen = cbfornumfield.getValue();
-			
-//			int numOfRowinSDT = sampleDataTable.getNumRow();
-//			DataColumn sampleDataColumn = sampleDataTable.getCol(columnNamechosen);
-//			List<Boolean> boollist = new ArrayList<>();		
-//			int count = 1;
-//			boollist.add(true);
-//			for (int i = 1; i < numOfRowinSDT; i++) {
-//				Number b = (Number) sampleDataColumn.getData()[i];
-//				Float a = b.floatValue();
-//				boolean satisfy = false;
-//				if ((Operatorusing == "<" && (a < f)) || (Operatorusing == "=" && (a == f))
-//						|| (Operatorusing == ">" && (a > f))) {
-//					satisfy = true;
-//				}
-//				boollist.add(satisfy);
-//				if (satisfy) {
-//					count = count + 1;
-//				}
-//			}
-//			// boollist store all the array of true or false
-//			// true will store in data table
-//			DataTable newDataTable = new DataTable();
-//			List<String> newDataColumnNameList = sampleDataTable.getAllColName();
-//
-//			for (int k = 0; k < newDataColumnNameList.size(); k++) {
-//				DataColumn newDataColumn = new DataColumn();
-//				Object[] newDataColumnObjectArray = new Object[count];
-//				;
-//				String coleName = newDataColumnNameList.get(k);
-//				String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
-//				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
-//					newDataColumnObjectArray = new Number[count];
-//				}
-//				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
-//					newDataColumnObjectArray = new String[count];
-//				}
-//				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
-//					newDataColumnObjectArray = new Object[count];
-//				}
-//
-//				int countthis = 0;
-//				for (int i = 0; i < numOfRowinSDT; i++) {
-//					if (boollist.get(i)) {
-//						newDataColumnObjectArray[countthis] = sampleDataTable.getCol(coleName).getData()[i];
-//						countthis = countthis + 1;
-//					}
-//				}
-//				newDataColumn.set(newTypeName, newDataColumnObjectArray);
-//				try {
-//					newDataTable.addCol(coleName, newDataColumn);
-//				} catch (DataTableException e) {
-//					e.printStackTrace();
-//				}
-//
-//			}
-			
-			
 			sampleDataTable = DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, sampleDataTable);
-			
-			// perform text filter function
-
 			// perform number filter function on sampleDataTable
-
 		}
-
 		if (textfiltercb.isSelected()) {
-
 			if (cbfortextfield.getValue() == null) {
 				return false;
 			}
-			int count = 1;
-			DataColumn sampleDataColumn = sampleDataTable.getCol(cbfortextfield.getValue());
-			List<Boolean> boollist = new ArrayList<>();
-			//
+			String textChosenInTextField = cbfortextfield.getValue();
 			List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
-
-			boollist.add(true);
-			for (int i = 1; i < sampleDataTable.getNumRow(); i++) {
-				boolean same = false;
-				for (int j = 0; j < checkeditems.size(); j++) {
-//
-//					System.out.println(
-//							"The number of row is " + sampleDataColumn.getData()[i] + "==" + checkeditems.get(j));
-
-					if (sampleDataColumn.getData()[i].equals(checkeditems.get(j))) {
-
-						same = true;
-					}
-				}
-				boollist.add(same);
-				if (same) {
-					count = count + 1;
-				}
-
-			}
-			
-
-
-			// boollist store all the array of true or false
-			// true will store in data table
-
-			DataTable newDataTable = new DataTable();
-			List<String> newDataColumnNameList = sampleDataTable.getAllColName();
-
-			for (int k = 0; k < newDataColumnNameList.size(); k++) {
-				DataColumn newDataColumn = new DataColumn();
-				Object[] newDataColumnObjectArray = new Object[count];
-				;
-				String coleName = newDataColumnNameList.get(k);
-				String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
-					newDataColumnObjectArray = new Number[count];
-				}
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
-					newDataColumnObjectArray = new String[count];
-				}
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
-					newDataColumnObjectArray = new Object[count];
-				}
-
-				int countthis = 0;
-				// for (int i=0; i < boollist.size();i++) {
-				for (int i = 0; i < sampleDataTable.getNumRow(); i++) {
-					if (boollist.get(i)) {
-						newDataColumnObjectArray[countthis] = sampleDataTable.getCol(coleName).getData()[i];
-						countthis = countthis + 1;
-					}
-				}
-
-				newDataColumn.set(newTypeName, newDataColumnObjectArray);
-				try {
-					newDataTable.addCol(coleName, newDataColumn);
-				} catch (DataTableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-			
-			
-			sampleDataTable = newDataTable;
+			sampleDataTable = DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, sampleDataTable);
 			// perform text filter function
 		}
-		
-//		
-//		for (int hhh=0; hhh<sampleDataTable.getNumCol();hhh++) {
-//
-//			System.out.println(Arrays.toString(sampleDataTable.getCol(sampleDataTable.getAllColName().get(hhh)).getData()));
-//		}
-
 		return true;
-
 	}
 
 	/**

@@ -4,21 +4,13 @@
 package ui.comp3111;
 
 //For DataFiltering
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
-
 import core.comp3111.DataColumn;
-import core.comp3111.DataManagerModel;
 import core.comp3111.DataTable;
 import core.comp3111.DataTableException;
 import core.comp3111.DataType;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-
 /**
  * @author logg926
  * 
@@ -29,16 +21,16 @@ public class DataFilterManager {
 	
 	private static DataTable newDataTable;
 	
-	public static DataTable NumberFilterSet(String columnNamechosen, String Operatorusing, Float f, DataTable sampleDataTable) {
+	public static DataTable NumberFilterSet(final String columnNamechosen, final String Operatorusing, final Float f, final DataTable sampleDataTable) {
 	
-		int numOfRowinSDT = sampleDataTable.getNumRow();
-		DataColumn sampleDataColumn = sampleDataTable.getCol(columnNamechosen);
-		List<Boolean> boollist = new ArrayList<>();		
+		final int numOfRowinSDT = sampleDataTable.getNumRow();
+		final DataColumn sampleDataColumn = sampleDataTable.getCol(columnNamechosen);
+		final List<Boolean> boollist = new ArrayList<>();		
 		int count = 1;
 		boollist.add(true);
 		for (int i = 1; i < numOfRowinSDT; i++) {
-			Number b = (Number) sampleDataColumn.getData()[i];
-			Float a = b.floatValue();
+			final Number b = (Number) sampleDataColumn.getData()[i];
+			final Float a = b.floatValue();
 			boolean satisfy = false;
 			if ((Operatorusing == "<" && (a < f)) || (Operatorusing == "=" && (a == f))
 					|| (Operatorusing == ">" && (a > f))) {
@@ -52,14 +44,14 @@ public class DataFilterManager {
 		// boollist store all the array of true or false
 		// true will store in data table
 		newDataTable = new DataTable();
-		List<String> newDataColumnNameList = sampleDataTable.getAllColName();
+		final List<String> newDataColumnNameList = sampleDataTable.getAllColName();
 
 		for (int k = 0; k < newDataColumnNameList.size(); k++) {
-			DataColumn newDataColumn = new DataColumn();
+			final DataColumn newDataColumn = new DataColumn();
 			Object[] newDataColumnObjectArray = new Object[count];
 			;
-			String coleName = newDataColumnNameList.get(k);
-			String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
+			final String coleName = newDataColumnNameList.get(k);
+			final String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
 			if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
 				newDataColumnObjectArray = new Number[count];
 			}
@@ -80,7 +72,7 @@ public class DataFilterManager {
 			newDataColumn.set(newTypeName, newDataColumnObjectArray);
 			try {
 				newDataTable.addCol(coleName, newDataColumn);
-			} catch (DataTableException e) {
+			} catch (final DataTableException e) {
 				e.printStackTrace();
 			}
 
@@ -90,7 +82,72 @@ public class DataFilterManager {
 		
 	
 	}
+	
+	
+	
+	public static DataTable TextFilterSet(final String textChosenInTextField, final List<String>  checkeditems, final DataTable sampleDataTable) {
 		
+	int count = 1;
+	final DataColumn sampleDataColumn = sampleDataTable.getCol(textChosenInTextField);
+	final List<Boolean> boollist = new ArrayList<>();
+	boollist.add(true);
+	for (int i = 1; i < sampleDataTable.getNumRow(); i++) {
+		boolean same = false;
+		for (int j = 0; j < checkeditems.size(); j++) {
+//
+//			System.out.println(
+//					"The number of row is " + sampleDataColumn.getData()[i] + "==" + checkeditems.get(j));
+
+			if (sampleDataColumn.getData()[i].equals(checkeditems.get(j))) {
+
+				same = true;
+			}
+		}
+		boollist.add(same);
+		if (same) {
+			count = count + 1;
+		}
+	}
+	// boollist store all the array of true or false
+	// true will store in data table
+	newDataTable = new DataTable();
+	final List<String> newDataColumnNameList = sampleDataTable.getAllColName();
+
+	for (int k = 0; k < newDataColumnNameList.size(); k++) {
+		final DataColumn newDataColumn = new DataColumn();
+		Object[] newDataColumnObjectArray = new Object[count];
+		final String coleName = newDataColumnNameList.get(k);
+		final String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
+		if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
+			newDataColumnObjectArray = new Number[count];
+		}
+		if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
+			newDataColumnObjectArray = new String[count];
+		}
+		if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
+			newDataColumnObjectArray = new Object[count];
+		}
+		int countthis = 0;
+		// for (int i=0; i < boollist.size();i++) {
+		for (int i = 0; i < sampleDataTable.getNumRow(); i++) {
+			if (boollist.get(i)) {
+				newDataColumnObjectArray[countthis] = sampleDataTable.getCol(coleName).getData()[i];
+				countthis = countthis + 1;
+			}
+		}
+		newDataColumn.set(newTypeName, newDataColumnObjectArray);
+		try {
+			newDataTable.addCol(coleName, newDataColumn);
+		} catch (final DataTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	return newDataTable;
+	
+	}			
 }
 	
 	
