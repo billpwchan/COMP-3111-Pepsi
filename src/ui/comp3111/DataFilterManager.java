@@ -27,29 +27,71 @@ import javafx.stage.Stage;
 public class DataFilterManager {
 
 	
+	private static DataTable newDataTable;
 	
+	public static DataTable NumberFilterSet(String columnNamechosen, String Operatorusing, Float f, DataTable sampleDataTable) {
 	
-	public static void NumberFilterSet(DataColumn sampleDataColumn, String Operatorusing, Float f, int numOfRowinSDT) {
+		int numOfRowinSDT = sampleDataTable.getNumRow();
+		DataColumn sampleDataColumn = sampleDataTable.getCol(columnNamechosen);
 		List<Boolean> boollist = new ArrayList<>();		
 		int count = 1;
 		boollist.add(true);
 		for (int i = 1; i < numOfRowinSDT; i++) {
 			Number b = (Number) sampleDataColumn.getData()[i];
 			Float a = b.floatValue();
-
 			boolean satisfy = false;
 			if ((Operatorusing == "<" && (a < f)) || (Operatorusing == "=" && (a == f))
 					|| (Operatorusing == ">" && (a > f))) {
 				satisfy = true;
 			}
-
 			boollist.add(satisfy);
 			if (satisfy) {
 				count = count + 1;
 			}
 		}
+		// boollist store all the array of true or false
+		// true will store in data table
+		newDataTable = new DataTable();
+		List<String> newDataColumnNameList = sampleDataTable.getAllColName();
+
+		for (int k = 0; k < newDataColumnNameList.size(); k++) {
+			DataColumn newDataColumn = new DataColumn();
+			Object[] newDataColumnObjectArray = new Object[count];
+			;
+			String coleName = newDataColumnNameList.get(k);
+			String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
+			if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
+				newDataColumnObjectArray = new Number[count];
+			}
+			if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
+				newDataColumnObjectArray = new String[count];
+			}
+			if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
+				newDataColumnObjectArray = new Object[count];
+			}
+
+			int countthis = 0;
+			for (int i = 0; i < numOfRowinSDT; i++) {
+				if (boollist.get(i)) {
+					newDataColumnObjectArray[countthis] = sampleDataTable.getCol(coleName).getData()[i];
+					countthis = countthis + 1;
+				}
+			}
+			newDataColumn.set(newTypeName, newDataColumnObjectArray);
+			try {
+				newDataTable.addCol(coleName, newDataColumn);
+			} catch (DataTableException e) {
+				e.printStackTrace();
+			}
+
+		}
 		
+		return newDataTable;
+		
+	
 	}
+		
+}
 	
 	
 	
@@ -138,4 +180,3 @@ public class DataFilterManager {
 //				+ super.toString() + "]";
 //	}
 
-}

@@ -36,7 +36,7 @@
 }
 // Background color of the control itself
 .choice-box {
-  -fx-background-color: black;
+  -fx-background-color: grey;
   -fx-mark-color: orange; // arrow color
 }
 
