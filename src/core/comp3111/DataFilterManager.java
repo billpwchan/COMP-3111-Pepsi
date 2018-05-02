@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ui.comp3111;
+package core.comp3111;
 
 //For DataFiltering
 
@@ -32,8 +32,10 @@ public class DataFilterManager {
 			final Number b = (Number) sampleDataColumn.getData()[i];
 			final Float a = b.floatValue();
 			boolean satisfy = false;
-			if ((Operatorusing == "<" && (a < f)) || (Operatorusing == "=" && (a == f))
-					|| (Operatorusing == ">" && (a > f))) {
+			if ((Operatorusing == "<" && (a < f)) ||
+					(Operatorusing == "=" 
+					&& (a == f))|| 
+					(Operatorusing == ">" && (a > f))) {
 				satisfy = true;
 			}
 			boollist.add(satisfy);
@@ -58,9 +60,9 @@ public class DataFilterManager {
 			if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
 				newDataColumnObjectArray = new String[count];
 			}
-			if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
-				newDataColumnObjectArray = new Object[count];
-			}
+//			if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
+//				newDataColumnObjectArray = new Object[count];
+//			}
 
 			int countthis = 0;
 			for (int i = 0; i < numOfRowinSDT; i++) {
@@ -124,9 +126,6 @@ public class DataFilterManager {
 		if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
 			newDataColumnObjectArray = new String[count];
 		}
-		if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
-			newDataColumnObjectArray = new Object[count];
-		}
 		int countthis = 0;
 		// for (int i=0; i < boollist.size();i++) {
 		for (int i = 0; i < sampleDataTable.getNumRow(); i++) {
@@ -139,7 +138,7 @@ public class DataFilterManager {
 		try {
 			newDataTable.addCol(coleName, newDataColumn);
 		} catch (final DataTableException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 
