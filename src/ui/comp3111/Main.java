@@ -559,13 +559,11 @@ public class Main extends Application {
 			// Line Chart
 			case 0:
 				// no text column & at least 1 numeric column for each X and Y
-				if (Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() != 0
-						&& Ycol.numCountDT() != 0) {
+				if (Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() == 1
+						&& Ycol.numCountDT() == 1) {
 					LineChartP lineChart = new LineChartP(selectedDT, Xcol, Ycol, selectedDTTitle);
 					charts.add(lineChart);
-					for (int i = 0; i < charts.size(); ++i) {
-//						System.out.println(i + charts.get(i).getTitle());
-					}
+
 
 					updateSceneChart(lineChart);
 					populateToLineChart(Xcol, Ycol, selectedDTTitle);
@@ -751,24 +749,27 @@ public class Main extends Application {
 			barChartFinal.setTitle(xName + " bar chart");
 			xAxisTxt.setLabel(xName);
 
-			XYChart.Series<String, Number>[] series = (XYChart.Series<String, Number>[]) new XYChart.Series[yColumnsList
-					.size()];
+			XYChart.Series<String, Number>[] series = (XYChart.Series<String, Number>[]) new XYChart.Series[yColumnsList.size()];
 
 			for (int i = 0; i < yColumnsList.size(); ++i) {
 				series[i] = new XYChart.Series<String, Number>();
 				series[i].setName(yNames[i]);
-//				System.out.println(yNames[i]);
 				String[] xValues = (String[]) X.getCol(xName).getData();
 				Number[] yValues = (Number[]) Y.getCol(yNames[i]).getData();
 
 				for (int j = 1; j < yValues.length; ++j) {
 					series[i].getData().add(new XYChart.Data<String, Number>(xValues[j], yValues[j]));
+					//System.out.println(xValues[j]+"    "+yValues[j]);
 				}
 
 			}
 			barChartFinal.getData().clear();
-			for (int i = 0; i < series.length; ++i)
+			for (int i = 0; i < series.length; ++i) {
 				barChartFinal.getData().add(series[i]);
+			}
+				
+			for(int i=0; i< series[0].getData().size();++i)
+				System.out.println(series[0].getData().get(i));
 
 		}
 
