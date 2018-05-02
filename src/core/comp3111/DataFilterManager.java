@@ -21,7 +21,7 @@ public class DataFilterManager {
 	
 	private static DataTable newDataTable;
 	
-	public static DataTable NumberFilterSet(final String columnNamechosen, final String Operatorusing, final Float f, final DataTable sampleDataTable) {
+	public static DataTable NumberFilterSet(final String columnNamechosen, final String Operatorusing, final Float f, final DataTable sampleDataTable) throws DataTableException {
 	
 		final int numOfRowinSDT = sampleDataTable.getNumRow();
 		final DataColumn sampleDataColumn = sampleDataTable.getCol(columnNamechosen);
@@ -72,11 +72,9 @@ public class DataFilterManager {
 				}
 			}
 			newDataColumn.set(newTypeName, newDataColumnObjectArray);
-			try {
-				newDataTable.addCol(coleName, newDataColumn);
-			} catch (final DataTableException e) {
-				e.printStackTrace();
-			}
+
+			newDataTable.addCol(coleName, newDataColumn);
+			
 
 		}
 		
@@ -87,7 +85,7 @@ public class DataFilterManager {
 	
 	
 	
-	public static DataTable TextFilterSet(final String textChosenInTextField, final List<String>  checkeditems, final DataTable sampleDataTable) {
+	public static DataTable TextFilterSet(final String textChosenInTextField, final List<String>  checkeditems, final DataTable sampleDataTable) throws DataTableException {
 		
 	int count = 1;
 	final DataColumn sampleDataColumn = sampleDataTable.getCol(textChosenInTextField);
@@ -135,12 +133,9 @@ public class DataFilterManager {
 			}
 		}
 		newDataColumn.set(newTypeName, newDataColumnObjectArray);
-		try {
+		
 			newDataTable.addCol(coleName, newDataColumn);
-		} catch (final DataTableException e) {
-			// Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 
 	}
 	

@@ -237,7 +237,12 @@ public class Main extends Application {
 			Float f = Float.parseFloat(numberfield.getText());
 			String Operatorusing = cbforoperator.getValue(); 
 			String columnNamechosen = cbfornumfield.getValue();
-			sampleDataTable = DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, sampleDataTable);
+			try {
+				sampleDataTable = DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, sampleDataTable);
+			} catch (DataTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// perform number filter function on sampleDataTable
 		}
 		if (textfiltercb.isSelected()) {
@@ -246,7 +251,12 @@ public class Main extends Application {
 			}
 			String textChosenInTextField = cbfortextfield.getValue();
 			List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
-			sampleDataTable = DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, sampleDataTable);
+			try {
+				sampleDataTable = DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, sampleDataTable);
+			} catch (DataTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// perform text filter function
 		}
 		return true;
