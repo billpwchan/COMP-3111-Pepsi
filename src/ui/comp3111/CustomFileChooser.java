@@ -101,9 +101,9 @@ public class CustomFileChooser {
 		// JOptionPane.INFORMATION_MESSAGE);
 
 		Object[] possibilities = { "Replace with Mean", "Replace with Median", "Replace with Zero" };
-
+		
 		return JOptionPane.showOptionDialog(frame, "Please preferred way for replacing missing numerical values",
-				"Please select...", JOptionPane.INFORMATION_MESSAGE, 1, icon, possibilities, 0);
+				"Please select... ", JOptionPane.INFORMATION_MESSAGE, 1, icon, possibilities, 0);
 	}
 
 	/**
