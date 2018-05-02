@@ -17,6 +17,7 @@ import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 import core.comp3111.LineChartP;
 import core.comp3111.SampleDataGenerator;
+import core.comp3111.DataFilterManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;

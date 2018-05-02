@@ -2,18 +2,30 @@ package testing.comp3111;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import core.comp3111.BarChartP;
+import core.comp3111.Chart;
+import core.comp3111.DataFilterManager;
 import core.comp3111.DataColumn;
 import core.comp3111.DataTable;
 import core.comp3111.DataTableException;
 import core.comp3111.DataType;
+import core.comp3111.IOManagerModel;
+import core.comp3111.LineChartP;
 import core.comp3111.SampleDataGenerator;
+import ui.comp3111.IOManager;
 
 /**
  * Tests for the Datafiltermanagerclass class.
@@ -22,196 +34,291 @@ import core.comp3111.SampleDataGenerator;
  *
  */
 public class DataFilterManagerTest {
-	DataColumn testDataColumn;
 
+	DataTable testDataTable;
+	final String VeryLargeNumber = "10000000";
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@BeforeAll
+	static void setUpBeforeClass() throws Exception {
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@AfterAll
+	static void tearDownAfterClass() throws Exception {
+		
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
 	@BeforeEach
-	void init() {
-		testDataColumn = new DataColumn(DataType.TYPE_NUMBER, new Number[] { 1, 2, 3 });
+	void setUp() throws Exception {
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@AfterEach
+	void tearDown() throws Exception {
+		
 	}
 
 	@Test
-	void testGetNumRow_Empty() {
-		DataTable dataTable = new DataTable();
-		assertEquals(0, dataTable.getNumRow());
+	void DataFilterManagerTest_GenerateObject() {
+		DataFilterManager temp = new DataFilterManager();
+		assertTrue(temp instanceof DataFilterManager);
 	}
 
 	@Test
-	void testGetAllColValue_Empty() {
-		DataTable datatable = new DataTable();
-		assertEquals(null, datatable.getAllColValue());
+	void DataFilterManagerTest_NumberFilterSetEqualFalse() throws DataTableException {
+
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		Float f = Float.parseFloat("-1");
+		String Operatorusing = "="; 
+		String columnNamechosen = testDataList.get(0).getAllNumColName().get(0);
+		
+		
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(0)));
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(1)));
+		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+				testFilteredDataList.get(1).getDataTableName());
 	}
-
+	
 	@Test
-	void testGetAllColName_Empty() {
-		DataTable datatable = new DataTable();
-		assertEquals(null, datatable.getAllColName());
+	void DataFilterManagerTest_NumberFilterSetEqualTrue() throws DataTableException {
+
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		String Operatorusing = "="; 
+		String columnNamechosen = testDataList.get(0).getAllNumColName().get(0);
+
+		Float f = Float.parseFloat(testDataList.get(0).getCol(columnNamechosen).getData()[1].toString());
+		
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(0)));
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(1)));
+		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+				testFilteredDataList.get(1).getDataTableName());
 	}
-
+	
 	@Test
-	void testGetAllTextColName_Empty() {
-		DataTable datatable = new DataTable();
-		assertEquals(null, datatable.getAllTextColName());
+	void DataFilterManagerTest_NumberFilterSetLargerEqual() throws DataTableException {
+
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		String Operatorusing = "="; 
+		String columnNamechosen = testDataList.get(0).getAllNumColName().get(0);
+
+		Float f = Float.parseFloat(testDataList.get(0).getCol(columnNamechosen).getData()[1].toString())-1;
+		
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(0)));
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(1)));
+		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+				testFilteredDataList.get(1).getDataTableName());
 	}
-
 	@Test
-	void testGetAllNumColName_Empty() {
-		DataTable datatable = new DataTable();
-		assertEquals(null, datatable.getAllNumColName());
+	void DataFilterManagerTest_NumberFilterSetLargerthanTrue() throws DataTableException {
+
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		Float f = Float.parseFloat("-1");
+		String Operatorusing = ">"; 
+		String columnNamechosen = testDataList.get(0).getAllNumColName().get(0);
+		
+		
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(0)));
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(1)));
+		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+				testFilteredDataList.get(1).getDataTableName());
 	}
-
+	
 	@Test
-	void testGetNumRow_NonEmpty() throws DataTableException {
-		DataTable dataTable = new DataTable();
-		dataTable.addCol("testColumn", new DataColumn());
+	void DataFilterManagerTest_NumberFilterSetLargerthanFalse() throws DataTableException {
 
-		assertEquals(0, dataTable.getNumRow());
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		Float f = Float.parseFloat(VeryLargeNumber);
+		String Operatorusing = ">"; 
+		String columnNamechosen = testDataList.get(0).getAllNumColName().get(0);
+		
+		
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(0)));
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(1)));
+		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+				testFilteredDataList.get(1).getDataTableName());
 	}
-
+	
 	@Test
-	void testGetNumCol_NonEmpty() throws DataTableException {
-		DataTable dataTable = new DataTable();
-		dataTable.addCol("testNumberColumn", testDataColumn);
-		int numCol = dataTable.getNumCol();
+	void DataFilterManagerTest_NumberFilterSetSmallerthanFalse() throws DataTableException {
 
-		assertEquals(1, numCol);
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		Float f = Float.parseFloat("0");
+		String Operatorusing = "<"; 
+		String columnNamechosen = testDataList.get(0).getAllNumColName().get(0);
+		
+		
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(0)));
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(1)));
+		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+				testFilteredDataList.get(1).getDataTableName());
 	}
-
+	
 	@Test
-	void testGetNumCol_NonExistent() throws DataTableException {
-		DataTable dataTable = new DataTable();
-		dataTable.addCol("testNumberColumn", testDataColumn);
-		DataColumn dataColumn = dataTable.getCol("testStringColumn");
+	void DataFilterManagerTest_NumberFilterSetSmallerthanTrue() throws DataTableException {
 
-		assertEquals(null, dataColumn);
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		Float f = Float.parseFloat(VeryLargeNumber);
+		String Operatorusing = "<"; 
+		String columnNamechosen = testDataList.get(0).getAllNumColName().get(0);
+		
+		
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(0)));
+		testFilteredDataList.add(DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, testDataList.get(1)));
+		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+				testFilteredDataList.get(1).getDataTableName());
 	}
-
+	
 	@Test
-	void testAddCol_AlreadyExists() throws DataTableException {
-		DataTable dataTable = new DataTable();
-		dataTable.addCol("testNumberColumn", testDataColumn);
-		DataColumn dataColumn = dataTable.getCol("testStringColumn");
+	void DataFilterManagerTest_TextFilterSetNotEqual() throws DataTableException {
 
-		assertThrows(DataTableException.class, () -> dataTable.addCol("testNumberColumn", new DataColumn()));
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		String textChosenInTextField = testDataList.get(0).getAllTextColName().get(0);
+		List<String> checkeditems = new ArrayList() ;
+		checkeditems.add( "");
+		testFilteredDataList.add(DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, testDataList.get(0)));
+		
+//		textChosenInTextField = testDataList.get(1).getAllTextColName().get(0);
+//		List<String> checkeditems2  = new ArrayList() ;
+//		checkeditems2.add(  testDataList.get(1).getCol(textChosenInTextField).getData()[0].toString());
+//		testFilteredDataList.add(DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems2, testDataList.get(1)));
+//		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+//		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+//				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+//		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+//				testFilteredDataList.get(1).getDataTableName());
 	}
-
+	
 	@Test
-	void testAddCol_DifferentSize() throws DataTableException {
-		DataTable dataTable = new DataTable();
-		dataTable.addCol("testNumberColumn", testDataColumn);
-		testDataColumn = new DataColumn(DataType.TYPE_NUMBER, new Number[] { 1, 2, 3 });
-		DataColumn testDataColumn2 = new DataColumn(DataType.TYPE_NUMBER, new Number[] { 1, 2, 3, 4 });
+	void DataFilterManagerTest_TextFilterSetEqual() throws DataTableException {
 
-		assertThrows(DataTableException.class, () -> dataTable.addCol("testNumberColumn2", testDataColumn2));
-	}
-
-	@Test
-	void testAddCol_SameSize() throws DataTableException {
-		DataTable dataTable = new DataTable();
-		dataTable.addCol("testNumberColumn", testDataColumn);
-		testDataColumn = new DataColumn(DataType.TYPE_NUMBER, new Number[] { 1, 2, 3 });
-		DataColumn testDataColumn2 = new DataColumn(DataType.TYPE_NUMBER, new Number[] { 1, 2, 3 });
-
-		dataTable.addCol("testNumberColumn2", testDataColumn2);
-		int numCol = dataTable.getNumCol();
-
-		assertEquals(2, numCol);
-
-	}
-
-	@Test
-	void testGetDataTableName() {
-		DataTable dt = new DataTable();
-	}
-
-	@Test
-	void testSetDataTableName() {
-		DataTable dt = new DataTable();
-		dt.setDataTableName("temp");
-		assert (dt.getDataTableName() == "temp");
-	}
-
-	@Test
-	void testNumCountDT() throws DataTableException {
-		DataTable dt = new DataTable();
-		Number[] arrNum = new Number[] { 1, 4, 2 };
-		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
-		String[] arrStr = new String[] { "abc", "def", "gh" };
-		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING, arrStr);
-
-		assert (dt.numCountDT() == 0);
-		dt.addCol("dcNum", dcNum);
-		assert (dt.numCountDT() == 1);
-		dt.addCol("dcStr", dcStr);
-		assert (dt.numCountDT() == 1);
-
-	}
-
-	@Test
-	void testTextCountDT() throws DataTableException {
-		DataTable dt = new DataTable();
-		Number[] arrNum = new Number[] { 1, 4, 2 };
-		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
-		String[] arrStr = new String[] { "abc", "def", "gh" };
-		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING, arrStr);
-
-		assert (dt.textCountDT() == 0);
-		dt.addCol("dcNum", dcNum);
-		assert (dt.textCountDT() == 0);
-		dt.addCol("dcStr", dcStr);
-		assert (dt.textCountDT() == 1);
-
-	}
-
-	@Test
-	void testGetCol() throws DataTableException {
-		DataTable dt = new DataTable();
-		Number[] arrNum = new Number[] { 1, 4, 2 };
-		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
-		dt.addCol("dcNum", dcNum);
-
-		assert (dt.getCol("temp") == null);
-		assert (dt.getCol("dcNum") == dcNum);
-
-	}
-
-	@Test
-	void testRemoveCol() throws DataTableException {
-		DataTable dt = new DataTable();
-		Number[] arrNum = new Number[] { 1, 4, 2 };
-		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
-		dt.addCol("dcNum", dcNum);
-		// assertThrows(DataTableException.class, () -> dataTable.removeCol());
-
-		assert (dt.getNumCol() == 1);
-		dt.removeCol("dcNum");
-		assert (dt.getNumCol() == 0);
-		assertThrows(DataTableException.class, () -> dt.removeCol("temp"));
-	}
-
-	@Test
-	void testGetAllColValue() throws DataTableException {
-
-		Number[] arrNum = new Number[] { 1, 4, 2 };
-		DataColumn dcNum = new DataColumn(DataType.TYPE_NUMBER, arrNum);
-		String[] arrStr = new String[] { "1", "2", "3" };
-		DataColumn dcStr = new DataColumn(DataType.TYPE_STRING, arrStr);
-
-		List<DataColumn> allColAns = new ArrayList<>();
-		allColAns.add(dcNum);
-		allColAns.add(dcStr);
-
-		DataTable dt = new DataTable();
-		dt.addCol("NumCol Sample", allColAns.get(0));
-		dt.addCol("StrCol Sample", allColAns.get(1));
-
-		assertEquals("NumCol Sample", dt.getAllNumColName().get(0));
-		assertEquals("StrCol Sample", dt.getAllTextColName().get(0));
-	}
-
-	@Test
-	void testSampleGenerator() {
-		SampleDataGenerator temp = new SampleDataGenerator();
-		assert (temp != null);
+		List<DataTable> testDataList = new ArrayList<DataTable>();
+		List<DataTable> testFilteredDataList = new ArrayList<DataTable>();
+		
+		testDataList.add(SampleDataGenerator.generateSampleLineData());
+		testDataList.add(SampleDataGenerator.generateSampleLineDataV2());
+		
+		String textChosenInTextField = testDataList.get(0).getAllTextColName().get(0);
+		List<String> checkeditems = new ArrayList() ;
+		checkeditems.add( SampleDataGenerator.generateSampleLineData().getCol(textChosenInTextField).getData()[1].toString());
+		testFilteredDataList.add(DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, testDataList.get(0)));
+		
+//		textChosenInTextField = testDataList.get(1).getAllTextColName().get(0);
+//		List<String> checkeditems2  = new ArrayList() ;
+//		checkeditems2.add(  testDataList.get(1).getCol(textChosenInTextField).getData()[0].toString());
+//		testFilteredDataList.add(DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems2, testDataList.get(1)));
+//		
+		assertEquals(SampleDataGenerator.generateSampleLineData().getNumCol(),
+				testFilteredDataList.get(0).getNumCol());
+//		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getNumCol(),
+//				testFilteredDataList.get(1).getNumCol());
+		assertEquals(SampleDataGenerator.generateSampleLineData().getDataTableName(),
+				testFilteredDataList.get(0).getDataTableName());
+//		assertEquals(SampleDataGenerator.generateSampleLineDataV2().getDataTableName(),
+//				testFilteredDataList.get(1).getDataTableName());
 	}
 
 }
+
