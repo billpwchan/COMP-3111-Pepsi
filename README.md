@@ -7,10 +7,18 @@ Commit URL 3: https://github.com/billpwchan/COMP3111-Pepsi/commit/a076f9c5f1ff1a
 
 JUNG, Won Young	(wyjung@connect.ust.hk), Feature 2, 6
 Commit URL 1: 
+https://github.com/billpwchan/COMP3111-Pepsi/commit/d44664a457d515deb7d0d891be3e076482e05666
+
+
 Commit URL 2:
+https://github.com/billpwchan/COMP3111-Pepsi/commit/0e56d3ea8a63588c73ea859c5f8b596fe42dfb3a
+
+
 Commit URL 3:
+https://github.com/billpwchan/COMP3111-Pepsi/commit/019eb76d24aba985173882afabf7bb02ff4b3d14
+
 
 CHENG, Log G	(lgcheng@connect.ust.hk), Feature 3, 5
-Commit URL 1: 
-Commit URL 2:
-Commit URL 3:
+Commit URL 1: https://github.com/billpwchan/COMP3111-Pepsi/pull/7/commits/4ab5db27c8f821d30e2b7a6f8b6b529872ea2c0a
+Commit URL 2: https://github.com/billpwchan/COMP3111-Pepsi/pull/43/commits/81ff82d0852240f6b7486cd73f5774b291ffc240
+Commit URL 3: 

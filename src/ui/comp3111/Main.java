@@ -3,6 +3,7 @@ package ui.comp3111;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.controlsfx.control.CheckListView;
@@ -194,8 +195,6 @@ public class Main extends Application {
 	 */
 	private void updateDatasetsListandChartList() {
 
-		// TODO
-
 		datasetsname.clear();
 
 		for (int i = 0; i < dataTables.size(); i++) {
@@ -215,6 +214,11 @@ public class Main extends Application {
 
 	}
 
+	/**
+	 * Do filtering based on user selected preference on sampleDataTable
+	 * @return false if input is not complete
+	 * 
+	 */
 	private boolean filterSampleDataSet() {
 
 		// Check if one of them is ticked
@@ -226,166 +230,25 @@ public class Main extends Application {
 		if (numberfiltercb.isSelected()) {
 			// check if all field is chosen
 
-			if (cbfornumfield.getValue() == null) {
-				return false;
-			}
-			if (cbforoperator.getValue() == null) {
-				return false;
-			}
-			if (numberfield.getText() == null || numberfield.getText().trim().isEmpty()) {
+			if ((cbfornumfield.getValue() == null)||(cbforoperator.getValue() == null)||(numberfield.getText() == null || numberfield.getText().trim().isEmpty())) {
 				return false;
 			}
 			Float f = Float.parseFloat(numberfield.getText());
-
-			int count = 1;
-			DataColumn sampleDataColumn = sampleDataTable.getCol(cbfornumfield.getValue());
-			List<Boolean> boollist = new ArrayList<>();
-
-			// List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
-
-			boollist.add(true);
-			for (int i = 1; i < sampleDataTable.getNumRow(); i++) {
-				Number b = (Number) sampleDataColumn.getData()[i];
-				Float a = b.floatValue();
-
-				boolean satisfy = false;
-				if ((cbforoperator.getValue() == "<" && (a < f)) || (cbforoperator.getValue() == "=" && (a == f))
-						|| (cbforoperator.getValue() == ">" && (a > f))) {
-					satisfy = true;
-				}
-
-				boollist.add(satisfy);
-				if (satisfy) {
-					count = count + 1;
-				}
-			}
-
-			// todo
-
-			// boollist store all the array of true or false
-			// true will store in data table
-
-			DataTable newDataTable = new DataTable();
-			List<String> newDataColumnNameList = sampleDataTable.getAllColName();
-
-			for (int k = 0; k < newDataColumnNameList.size(); k++) {
-				DataColumn newDataColumn = new DataColumn();
-				Object[] newDataColumnObjectArray = new Object[count];
-				;
-				String coleName = newDataColumnNameList.get(k);
-				String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
-					newDataColumnObjectArray = new Number[count];
-				}
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
-					newDataColumnObjectArray = new String[count];
-				}
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
-					newDataColumnObjectArray = new Object[count];
-				}
-
-				int countthis = 0;
-				// for (int i=0; i < boollist.size();i++) {
-				for (int i = 0; i < count; i++) {
-					if (boollist.get(i)) {
-						newDataColumnObjectArray[countthis] = sampleDataTable.getCol(coleName).getData()[i];
-						countthis = countthis + 1;
-					}
-				}
-
-				newDataColumn.set(newTypeName, newDataColumnObjectArray);
-				try {
-					newDataTable.addCol(coleName, newDataColumn);
-				} catch (DataTableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-			sampleDataTable = newDataTable;
-			// perform text filter function
-
+			String Operatorusing = cbforoperator.getValue(); 
+			String columnNamechosen = cbfornumfield.getValue();
+			sampleDataTable = DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, sampleDataTable);
 			// perform number filter function on sampleDataTable
-
 		}
-
 		if (textfiltercb.isSelected()) {
-
 			if (cbfortextfield.getValue() == null) {
 				return false;
 			}
-			int count = 1;
-			DataColumn sampleDataColumn = sampleDataTable.getCol(cbfortextfield.getValue());
-			List<Boolean> boollist = new ArrayList<>();
-			//
+			String textChosenInTextField = cbfortextfield.getValue();
 			List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
-
-			boollist.add(true);
-			for (int i = 1; i < sampleDataTable.getNumRow(); i++) {
-				boolean same = false;
-				for (int j = 0; j < checkeditems.size(); j++) {
-
-					System.out.println(
-							"The number of row is " + sampleDataColumn.getData()[i] + "==" + checkeditems.get(j));
-
-					if (sampleDataColumn.getData()[i].equals(checkeditems.get(j))) {
-
-						same = true;
-					}
-				}
-				boollist.add(same);
-				if (same) {
-					count = count + 1;
-				}
-
-				System.out.println("The this row is " + same);
-			}
-			// boollist store all the array of true or false
-			// true will store in data table
-
-			DataTable newDataTable = new DataTable();
-			List<String> newDataColumnNameList = sampleDataTable.getAllColName();
-
-			for (int k = 0; k < newDataColumnNameList.size(); k++) {
-				DataColumn newDataColumn = new DataColumn();
-				Object[] newDataColumnObjectArray = new Object[count];
-				;
-				String coleName = newDataColumnNameList.get(k);
-				String newTypeName = sampleDataTable.getCol(coleName).getTypeName();
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_NUMBER)) {
-					newDataColumnObjectArray = new Number[count];
-				}
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_STRING)) {
-					newDataColumnObjectArray = new String[count];
-				}
-				if (sampleDataTable.getCol(coleName).getTypeName().equals(DataType.TYPE_OBJECT)) {
-					newDataColumnObjectArray = new Object[count];
-				}
-
-				int countthis = 0;
-				// for (int i=0; i < boollist.size();i++) {
-				for (int i = 0; i < count; i++) {
-					if (boollist.get(i)) {
-						newDataColumnObjectArray[countthis] = sampleDataTable.getCol(coleName).getData()[i];
-						countthis = countthis + 1;
-					}
-				}
-
-				newDataColumn.set(newTypeName, newDataColumnObjectArray);
-				try {
-					newDataTable.addCol(coleName, newDataColumn);
-				} catch (DataTableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-			sampleDataTable = newDataTable;
+			sampleDataTable = DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, sampleDataTable);
 			// perform text filter function
 		}
-
 		return true;
-
 	}
 
 	/**
@@ -497,8 +360,8 @@ public class Main extends Application {
 		cbfortextfield.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-				// System.out.println(cbfortextfield.getItems().get((Integer) number2));
-				System.out.println((Integer) number2);
+//				// System.out.println(cbfortextfield.getItems().get((Integer) number2));
+//				System.out.println((Integer) number2);
 
 				DataColumn b = sampleDataTable.getCol(cbfortextfield.getItems().get((Integer) number2));
 
@@ -510,8 +373,8 @@ public class Main extends Application {
 						a.add(xDouble[i]);
 					}
 				}
-
-				System.out.println("The size of a is " + xDouble.length);
+//
+//				System.out.println("The size of a is " + xDouble.length);
 
 				uniqueTextinColSelected = FXCollections.observableArrayList(a);
 				checkListView.setItems(uniqueTextinColSelected);
@@ -553,7 +416,6 @@ public class Main extends Application {
 						"Reminder!! 1. You have to check which filtering method you want to use! 2. Remember to select what you want to filter or we cannot perform filtering for you");
 
 			}
-			// TODO modify the sampleDataTable
 
 		});
 	}
@@ -572,7 +434,7 @@ public class Main extends Application {
 
 		selectChartTypeBtn.setOnAction(e -> {
 			graphSelectedIndex = plotChartTypeList.getFocusModel().getFocusedIndex();
-			System.out.println(graphSelectedIndex);
+//			System.out.println(graphSelectedIndex);
 			// data requirement check
 			switch (graphSelectedIndex) {
 			case 0:
@@ -701,7 +563,7 @@ public class Main extends Application {
 					LineChartP lineChart = new LineChartP(selectedDT, Xcol, Ycol, selectedDTTitle);
 					charts.add(lineChart);
 					for (int i = 0; i < charts.size(); ++i) {
-						System.out.println(i + charts.get(i).getTitle());
+//						System.out.println(i + charts.get(i).getTitle());
 					}
 
 					updateSceneChart(lineChart);
@@ -850,7 +712,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * change upper anad lower bound of Xaxis dynamically to animate the line chart
+	 * change upper and lower bound of Xaxis dynamically to animate the line chart
 	 */
 	private void plotAnimatedChart() {
 		// double speed = xAxisNum.getTickUnit()*2;
@@ -894,7 +756,7 @@ public class Main extends Application {
 			for (int i = 0; i < yColumnsList.size(); ++i) {
 				series[i] = new XYChart.Series<String, Number>();
 				series[i].setName(yNames[i]);
-				System.out.println(yNames[i]);
+//				System.out.println(yNames[i]);
 				String[] xValues = (String[]) X.getCol(xName).getData();
 				Number[] yValues = (Number[]) Y.getCol(yNames[i]).getData();
 
@@ -1232,6 +1094,8 @@ public class Main extends Application {
 				// icy
 				uniqueTextinColSelected.clear();
 				checkListView.setItems(uniqueTextinColSelected);
+				
+				
 
 				// System.out.println("Size of numFieldName: "+ numFieldName.size());
 				putSceneOnStage(SCENE_DATA_FILTER);
@@ -1264,7 +1128,7 @@ public class Main extends Application {
 		plotGraphButton.setOnAction(e -> {
 
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
-			System.out.println(datasetsSelectedIndex);
+//			System.out.println(datasetsSelectedIndex);
 			if (datasetsSelectedIndex == -1) {
 				showDataLabel.setText(String.format("Please select a dataset to plot a graph."));
 			} else {
@@ -1321,7 +1185,6 @@ public class Main extends Application {
 		dFS_Warninglb = new Label(
 				"Choose which kind of filtering do you want to perform! Remember to check the box of the respective method before you press the button!");
 
-		// icy
 		HBox numberfiltertitlegroup = new HBox(20);
 
 		numberfiltertitlelb = new Label(
