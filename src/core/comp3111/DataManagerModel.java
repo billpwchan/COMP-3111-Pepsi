@@ -98,13 +98,12 @@ public class DataManagerModel {
 				for (int i = 1; i < columns.get(column_index).size(); i++) {
 					numValues[i] = Double.parseDouble(columns.get(column_index).get(i));
 				}
+				
 				DataColumn numValuesCol = new DataColumn(DataType.TYPE_NUMBER, numValues);
 				// Add to DataTable
 				dataTable.addCol(columns.get(column_index).get(0), numValuesCol);
 
 			} else {
-				System.out.println("This is a string column");
-
 				String[] stringValues = columns.get(column_index).toArray(new String[columns.get(column_index).size()]);
 				DataColumn stringValuesCol = new DataColumn(DataType.TYPE_STRING, stringValues);
 				// Add to DataTable
@@ -319,7 +318,7 @@ public class DataManagerModel {
 
 		String result = value;
 		if (result.contains("\"")) {
-			result = result.replace("\"", "\"\"");
+			//result = result.replace("\"", "\"\"");
 		}
 		return result;
 
