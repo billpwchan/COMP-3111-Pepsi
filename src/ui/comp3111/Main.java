@@ -829,7 +829,8 @@ public class Main extends Application {
 
 		String xName = xColumnsList.get(0);
 		String yName = yColumnsList.get(0);
-
+		xAxisNum.setAutoRanging(false);
+		
 		DataColumn xCol = X.getCol(xName);
 		DataColumn yCol = Y.getCol(yName);
 
@@ -843,13 +844,29 @@ public class Main extends Application {
 
 			Number[] xValues = (Number[]) xCol.getData();
 			Number[] yValues = (Number[]) yCol.getData();
-
+			double[] xDouble = xCol.ascendingSort();
+			minVal = xDouble[0];
+			maxVal = xDouble[xDouble.length - 1];
+			for (int i = 1; i < xValues.length; ++i) {
+				xValues[i] = (Number) xDouble[i - 1];
+			}
+			
+			
 			for (int i = 1; i < xValues.length; i++) {
 				series.getData().add(new XYChart.Data<Number, Number>(xValues[i], yValues[i]));
 			}
 
 			lineChartFinal.getData().clear();
 			lineChartFinal.getData().add(series);
+			
+			//set initial x axis range. So that the line chart seems more full on the display
+			double space = (maxVal - minVal)/10;
+			double axisLowerBound = minVal - space;
+			if(minVal > 0 && axisLowerBound < 0)
+				axisLowerBound = 0;
+			double axisUpperBound = maxVal + space;
+			xAxisNum.setLowerBound(axisLowerBound);
+			xAxisNum.setUpperBound(axisUpperBound);
 		}
 
 	}
