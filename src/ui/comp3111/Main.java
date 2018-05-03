@@ -3,7 +3,6 @@ package ui.comp3111;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.controlsfx.control.CheckListView;
@@ -216,6 +215,7 @@ public class Main extends Application {
 
 	/**
 	 * Do filtering based on user selected preference on sampleDataTable
+	 * 
 	 * @return false if input is not complete
 	 * 
 	 */
@@ -230,11 +230,12 @@ public class Main extends Application {
 		if (numberfiltercb.isSelected()) {
 			// check if all field is chosen
 
-			if ((cbfornumfield.getValue() == null)||(cbforoperator.getValue() == null)||(numberfield.getText() == null || numberfield.getText().trim().isEmpty())) {
+			if ((cbfornumfield.getValue() == null) || (cbforoperator.getValue() == null)
+					|| (numberfield.getText() == null || numberfield.getText().trim().isEmpty())) {
 				return false;
 			}
 			Float f = Float.parseFloat(numberfield.getText());
-			String Operatorusing = cbforoperator.getValue(); 
+			String Operatorusing = cbforoperator.getValue();
 			String columnNamechosen = cbfornumfield.getValue();
 			sampleDataTable = DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, sampleDataTable);
 			// perform number filter function on sampleDataTable
@@ -360,8 +361,8 @@ public class Main extends Application {
 		cbfortextfield.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-//				// System.out.println(cbfortextfield.getItems().get((Integer) number2));
-//				System.out.println((Integer) number2);
+				// // System.out.println(cbfortextfield.getItems().get((Integer) number2));
+				// System.out.println((Integer) number2);
 
 				DataColumn b = sampleDataTable.getCol(cbfortextfield.getItems().get((Integer) number2));
 
@@ -373,8 +374,8 @@ public class Main extends Application {
 						a.add(xDouble[i]);
 					}
 				}
-//
-//				System.out.println("The size of a is " + xDouble.length);
+				//
+				// System.out.println("The size of a is " + xDouble.length);
 
 				uniqueTextinColSelected = FXCollections.observableArrayList(a);
 				checkListView.setItems(uniqueTextinColSelected);
@@ -434,7 +435,7 @@ public class Main extends Application {
 
 		selectChartTypeBtn.setOnAction(e -> {
 			graphSelectedIndex = plotChartTypeList.getFocusModel().getFocusedIndex();
-//			System.out.println(graphSelectedIndex);
+			// System.out.println(graphSelectedIndex);
 			// data requirement check
 			switch (graphSelectedIndex) {
 			case 0:
@@ -563,7 +564,7 @@ public class Main extends Application {
 					LineChartP lineChart = new LineChartP(selectedDT, Xcol, Ycol, selectedDTTitle);
 					charts.add(lineChart);
 					for (int i = 0; i < charts.size(); ++i) {
-//						System.out.println(i + charts.get(i).getTitle());
+						// System.out.println(i + charts.get(i).getTitle());
 					}
 
 					updateSceneChart(lineChart);
@@ -756,7 +757,7 @@ public class Main extends Application {
 			for (int i = 0; i < yColumnsList.size(); ++i) {
 				series[i] = new XYChart.Series<String, Number>();
 				series[i].setName(yNames[i]);
-//				System.out.println(yNames[i]);
+				// System.out.println(yNames[i]);
 				String[] xValues = (String[]) X.getCol(xName).getData();
 				Number[] yValues = (Number[]) Y.getCol(yNames[i]).getData();
 
@@ -1094,8 +1095,6 @@ public class Main extends Application {
 				// icy
 				uniqueTextinColSelected.clear();
 				checkListView.setItems(uniqueTextinColSelected);
-				
-				
 
 				// System.out.println("Size of numFieldName: "+ numFieldName.size());
 				putSceneOnStage(SCENE_DATA_FILTER);
@@ -1128,7 +1127,7 @@ public class Main extends Application {
 		plotGraphButton.setOnAction(e -> {
 
 			datasetsSelectedIndex = datasetslist.getFocusModel().getFocusedIndex();
-//			System.out.println(datasetsSelectedIndex);
+			// System.out.println(datasetsSelectedIndex);
 			if (datasetsSelectedIndex == -1) {
 				showDataLabel.setText(String.format("Please select a dataset to plot a graph."));
 			} else {

@@ -77,11 +77,8 @@ public class DataManagerModel {
 				int option = 0;
 				if (!containNumericalColumn) {
 					// For testing purpose, implement different options with testFlag (Int value)
-					if (testFlag != DEFAULT_TESTFLAG) {
-						option = testFlag;
-					} else {
-						option = CustomFileChooser.getUserReplacementOption();
-					}
+
+					option = CustomFileChooser.getUserReplacementOption(testFlag);
 				}
 				containNumericalColumn = true;
 
@@ -98,7 +95,7 @@ public class DataManagerModel {
 				for (int i = 1; i < columns.get(column_index).size(); i++) {
 					numValues[i] = Double.parseDouble(columns.get(column_index).get(i));
 				}
-				
+
 				DataColumn numValuesCol = new DataColumn(DataType.TYPE_NUMBER, numValues);
 				// Add to DataTable
 				dataTable.addCol(columns.get(column_index).get(0), numValuesCol);
@@ -181,7 +178,10 @@ public class DataManagerModel {
 		}
 
 		// Please check this. Should ensure always not 0.
-		average /= realNumCount == 0 ? 1.0 : realNumCount;
+		if (realNumCount != 0) {
+			average /= realNumCount;
+		}
+		average = average * 1.0;
 
 		Collections.sort(tempMedianCalc);
 
@@ -318,7 +318,7 @@ public class DataManagerModel {
 
 		String result = value;
 		if (result.contains("\"")) {
-			//result = result.replace("\"", "\"\"");
+			// result = result.replace("\"", "\"\"");
 		}
 		return result;
 
