@@ -157,6 +157,11 @@ public class DataTable implements Serializable {
 		return allCol;
 	}
 
+	/**
+	 * Return all text column name in the data table
+	 * 
+	 * @return the arraylist of text column names in the data table
+	 */
 	public List<String> getAllTextColName() {
 		if (dc.isEmpty()) {
 			return null;
@@ -174,6 +179,11 @@ public class DataTable implements Serializable {
 		return allCol;
 	}
 
+	/**
+	 * Return all numeric column name in the data table
+	 * 
+	 * @return the arraylist of numeric column names in the data table
+	 */
 	public List<String> getAllNumColName() {
 		if (dc.isEmpty()) {
 			return null;
@@ -206,10 +216,18 @@ public class DataTable implements Serializable {
 		return dc.get(entry.getKey()).getSize();
 	}
 
+	/**
+	 * 
+	 * @return string of data table name
+	 */
 	public String getDataTableName() {
 		return dataTableName;
 	}
 
+	/**
+	 * Set the data table name
+	 * @param dataTableName
+	 */
 	public void setDataTableName(String dataTableName) {
 		this.dataTableName = dataTableName;
 	}
