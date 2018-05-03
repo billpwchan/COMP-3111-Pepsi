@@ -17,6 +17,7 @@ import core.comp3111.DataTableException;
 import core.comp3111.DataType;
 import core.comp3111.LineChartP;
 import core.comp3111.SampleDataGenerator;
+import core.comp3111.DataFilterManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -236,7 +237,12 @@ public class Main extends Application {
 			Float f = Float.parseFloat(numberfield.getText());
 			String Operatorusing = cbforoperator.getValue(); 
 			String columnNamechosen = cbfornumfield.getValue();
-			sampleDataTable = DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, sampleDataTable);
+			try {
+				sampleDataTable = DataFilterManager.NumberFilterSet(columnNamechosen, Operatorusing, f, sampleDataTable);
+			} catch (DataTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// perform number filter function on sampleDataTable
 		}
 		if (textfiltercb.isSelected()) {
@@ -245,7 +251,12 @@ public class Main extends Application {
 			}
 			String textChosenInTextField = cbfortextfield.getValue();
 			List<String> checkeditems = checkListView.getCheckModel().getCheckedItems();
-			sampleDataTable = DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, sampleDataTable);
+			try {
+				sampleDataTable = DataFilterManager.TextFilterSet(textChosenInTextField, checkeditems, sampleDataTable);
+			} catch (DataTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// perform text filter function
 		}
 		return true;
@@ -558,13 +569,11 @@ public class Main extends Application {
 			// Line Chart
 			case 0:
 				// no text column & at least 1 numeric column for each X and Y
-				if (Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() != 0
-						&& Ycol.numCountDT() != 0) {
+				if (Xcol.textCountDT() == 0 && Ycol.textCountDT() == 0 && Xcol.numCountDT() == 1
+						&& Ycol.numCountDT() == 1) {
 					LineChartP lineChart = new LineChartP(selectedDT, Xcol, Ycol, selectedDTTitle);
 					charts.add(lineChart);
-					for (int i = 0; i < charts.size(); ++i) {
-//						System.out.println(i + charts.get(i).getTitle());
-					}
+
 
 					updateSceneChart(lineChart);
 					populateToLineChart(Xcol, Ycol, selectedDTTitle);
@@ -680,36 +689,6 @@ public class Main extends Application {
 
 	}
 
-	/**
-	 * sort an Number array into double array. Used for finding the min and max
-	 * boundary for X axis
-	 * 
-	 * @param inputArr
-	 * @return double array sorted in ascending order
-	 */
-	private double[] ascendingSort(Number[] inputArr) {
-		// sort xValues in ascending order. For min and max value of the xAxis
-		double[] xDouble = new double[inputArr.length - 1];
-		for (int i = 1; i < inputArr.length; ++i) {
-			xDouble[i - 1] = (double) inputArr[i];
-		}
-
-		for (int i = 0; i < xDouble.length; ++i) {
-			double min = xDouble[i];
-			double temp;
-			for (int j = i + 1; j < xDouble.length; ++j) {
-				if (min > xDouble[j]) {
-					min = xDouble[j];
-
-					temp = xDouble[i];
-					xDouble[i] = xDouble[j];
-					xDouble[j] = temp;
-				}
-			}
-		}
-
-		return xDouble;
-	}
 
 	/**
 	 * change upper and lower bound of Xaxis dynamically to animate the line chart
@@ -750,24 +729,27 @@ public class Main extends Application {
 			barChartFinal.setTitle(xName + " bar chart");
 			xAxisTxt.setLabel(xName);
 
-			XYChart.Series<String, Number>[] series = (XYChart.Series<String, Number>[]) new XYChart.Series[yColumnsList
-					.size()];
+			XYChart.Series<String, Number>[] series = (XYChart.Series<String, Number>[]) new XYChart.Series[yColumnsList.size()];
 
 			for (int i = 0; i < yColumnsList.size(); ++i) {
 				series[i] = new XYChart.Series<String, Number>();
 				series[i].setName(yNames[i]);
-//				System.out.println(yNames[i]);
 				String[] xValues = (String[]) X.getCol(xName).getData();
 				Number[] yValues = (Number[]) Y.getCol(yNames[i]).getData();
 
 				for (int j = 1; j < yValues.length; ++j) {
 					series[i].getData().add(new XYChart.Data<String, Number>(xValues[j], yValues[j]));
+					//System.out.println(xValues[j]+"    "+yValues[j]);
 				}
 
 			}
 			barChartFinal.getData().clear();
-			for (int i = 0; i < series.length; ++i)
+			for (int i = 0; i < series.length; ++i) {
 				barChartFinal.getData().add(series[i]);
+			}
+				
+			for(int i=0; i< series[0].getData().size();++i)
+				System.out.println(series[0].getData().get(i));
 
 		}
 
@@ -847,7 +829,8 @@ public class Main extends Application {
 
 		String xName = xColumnsList.get(0);
 		String yName = yColumnsList.get(0);
-
+		xAxisNum.setAutoRanging(false);
+		
 		DataColumn xCol = X.getCol(xName);
 		DataColumn yCol = Y.getCol(yName);
 
@@ -861,13 +844,29 @@ public class Main extends Application {
 
 			Number[] xValues = (Number[]) xCol.getData();
 			Number[] yValues = (Number[]) yCol.getData();
-
+			double[] xDouble = xCol.ascendingSort();
+			minVal = xDouble[0];
+			maxVal = xDouble[xDouble.length - 1];
+			for (int i = 1; i < xValues.length; ++i) {
+				xValues[i] = (Number) xDouble[i - 1];
+			}
+			
+			
 			for (int i = 1; i < xValues.length; i++) {
 				series.getData().add(new XYChart.Data<Number, Number>(xValues[i], yValues[i]));
 			}
 
 			lineChartFinal.getData().clear();
 			lineChartFinal.getData().add(series);
+			
+			//set initial x axis range. So that the line chart seems more full on the display
+			double space = (maxVal - minVal)/10;
+			double axisLowerBound = minVal - space;
+			if(minVal > 0 && axisLowerBound < 0)
+				axisLowerBound = 0;
+			double axisUpperBound = maxVal + space;
+			xAxisNum.setLowerBound(axisLowerBound);
+			xAxisNum.setUpperBound(axisUpperBound);
 		}
 
 	}
