@@ -36,7 +36,7 @@ class DataManagerTest {
 	List<String[]> table;
 	String[] titles = new String[] { "PureNum", "PureString", "MissingNum", "MissingString", "Empty", "NewPure",
 			"Diagnol" };
-	String[] row1 = new String[] { "1", "A", "1", "A", "", "1", "" };
+	String[] row1 = new String[] { "1.1", "A", "1", "A", "", "1", "" };
 	String[] row2 = new String[] { "2", "B", "2", "B", "", "2", "" };
 	String[] row3 = new String[] { "3", "C", "", "", "", "3", "" };
 	String[] row4 = new String[] { "4", "D", "4", "C", "", "4", "" };
@@ -104,21 +104,22 @@ class DataManagerTest {
 		table.add(row4);
 		table.add(row5);
 		table.add(row6);
+		table.add(row7);
 
 		writeTestFile(file, table);
 		try {
 			DataManagerModel.setTestFlag(0);
 			DataTable temp = DataManagerModel.handleCSVFile(file);
 			assertEquals(7, temp.getNumCol());
-			assertEquals(7, temp.getNumRow());
+			assertEquals(8, temp.getNumRow());
 			DataManagerModel.setTestFlag(1);
 			temp = DataManagerModel.handleCSVFile(file);
 			assertEquals(7, temp.getNumCol());
-			assertEquals(7, temp.getNumRow());
+			assertEquals(8, temp.getNumRow());
 			DataManagerModel.setTestFlag(2);
 			temp = DataManagerModel.handleCSVFile(file);
 			assertEquals(7, temp.getNumCol());
-			assertEquals(7, temp.getNumRow());
+			assertEquals(8, temp.getNumRow());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
