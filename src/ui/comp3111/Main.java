@@ -689,36 +689,6 @@ public class Main extends Application {
 
 	}
 
-	/**
-	 * sort an Number array into double array. Used for finding the min and max
-	 * boundary for X axis
-	 * 
-	 * @param inputArr
-	 * @return double array sorted in ascending order
-	 */
-	private double[] ascendingSort(Number[] inputArr) {
-		// sort xValues in ascending order. For min and max value of the xAxis
-		double[] xDouble = new double[inputArr.length - 1];
-		for (int i = 1; i < inputArr.length; ++i) {
-			xDouble[i - 1] = (double) inputArr[i];
-		}
-
-		for (int i = 0; i < xDouble.length; ++i) {
-			double min = xDouble[i];
-			double temp;
-			for (int j = i + 1; j < xDouble.length; ++j) {
-				if (min > xDouble[j]) {
-					min = xDouble[j];
-
-					temp = xDouble[i];
-					xDouble[i] = xDouble[j];
-					xDouble[j] = temp;
-				}
-			}
-		}
-
-		return xDouble;
-	}
 
 	/**
 	 * change upper and lower bound of Xaxis dynamically to animate the line chart
